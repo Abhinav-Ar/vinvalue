@@ -35,7 +35,7 @@ export async function GET(request) {
     });
 
     const mcRes = await fetch(
-      `https://marketcheck-prod.apigee.net/v2/search/car/active?${params}`,
+      `https://api.marketcheck.com/v2/search/car/active?${params}`,
       { headers: { "Content-Type": "application/json" } }
     );
 
