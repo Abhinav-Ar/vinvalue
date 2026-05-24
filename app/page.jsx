@@ -262,7 +262,7 @@ export default function VinValueMVP() {
             </div>
             <div>
               <p className="text-lg font-bold tracking-tight">VinValue</p>
-              <p className="text-xs text-slate-500">VIN based car valuation</p>
+              <p className="text-xs text-slate-500">VIN based car valuation · Live</p>
             </div>
           </div>
 
