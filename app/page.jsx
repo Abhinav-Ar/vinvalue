@@ -92,67 +92,6 @@ function getVehicleValue(results, variableId) {
   return found?.Value || "";
 }
 
-function generateMockListings(vehicle, mileage, zip) {
-  const year = Number(vehicle.ModelYear) || 2021;
-  const make = vehicle.Make || "Toyota";
-  const model = vehicle.Model || "Camry";
-  const trim = vehicle.Trim || "SE";
-
-  const age = Math.max(0, new Date().getFullYear() - year);
-  const base = Math.max(6500, 36500 - age * 2150);
-  const userMiles = Number(mileage) || 65000;
-
-  const cities = [
-    "San Jose, CA",
-    "Fremont, CA",
-    "Oakland, CA",
-    "Sacramento, CA",
-    "Los Angeles, CA",
-    "Irvine, CA",
-    "San Diego, CA",
-    "Stockton, CA",
-  ];
-
-  const sources = [
-    "Dealer Listing",
-    "Private Seller",
-    "Marketplace",
-    "Certified Dealer",
-    "Local Inventory",
-  ];
-
-  return Array.from({ length: 12 }).map((_, index) => {
-    const mileageShift = (index - 5) * 7800 + (index % 3) * 1800;
-    const listingMileage = Math.max(8000, userMiles + mileageShift);
-    const mileagePenalty = (listingMileage - 45000) * 0.055;
-    const trimBoost = trim && trim.length > 1 ? 750 : 0;
-
-    const randomness = [
-      1400, -600, 900, -1200, 300, 1600, -850, 500, -300, 1100, -1500, 700,
-    ][index];
-
-    const price = Math.max(
-      4000,
-      base + trimBoost - mileagePenalty + randomness
-    );
-
-    return {
-      id: index + 1,
-      title: `${year} ${make} ${model}${trim ? ` ${trim}` : ""}`,
-      price: Math.round(price / 100) * 100,
-      mileage: Math.round(listingMileage / 100) * 100,
-      location: cities[index % cities.length],
-      distance: 8 + index * 17,
-      source: sources[index % sources.length],
-      url: "#",
-      matchScore: Math.max(
-        68,
-        98 - Math.abs(listingMileage - userMiles) / 2500 - index
-      ),
-      zip,
-    };
-  });
-}
 
 function FieldLabel({ icon: Icon, label, children }) {
   return (
@@ -238,9 +177,26 @@ export default function VinValueMVP() {
     }
   }
 
-  function findMarketValue() {
+  async function findMarketValue() {
     if (!decoded) return;
-    setListings(generateMockListings(decoded, Number(mileage), zip));
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        year: decoded.ModelYear,
+        make: decoded.Make,
+        model: decoded.Model,
+        zip,
+        mileage,
+      });
+      const res = await fetch(`/api/listings?${params}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setListings(data.listings);
+    } catch (err) {
+      setDecodeError(err.message || "Failed to fetch listings.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const valuation = useMemo(() => {
@@ -565,7 +521,7 @@ export default function VinValueMVP() {
                         </div>
 
                         <Badge variant="secondary" className="w-fit rounded-full">
-                          Mock listing data
+                          Live listing data
                         </Badge>
                       </div>
 
@@ -658,8 +614,10 @@ export default function VinValueMVP() {
                         <p className="text-xl font-bold tracking-tight">
                           {money(item.price)}
                         </p>
-                        <Button variant="outline" size="sm" className="rounded-xl">
-                          View <ExternalLink className="ml-2 h-3 w-3" />
+                        <Button variant="outline" size="sm" className="rounded-xl" asChild>
+                          <a href={item.url} target="_blank" rel="noopener noreferrer">
+                            View <ExternalLink className="ml-2 h-3 w-3" />
+                          </a>
                         </Button>
                       </div>
                     </div>
