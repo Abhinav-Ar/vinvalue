@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Zap, Search, BarChart3, Car, ArrowRight, DollarSign, Users, TrendingUp, ShoppingCart } from "lucide-react";
+import { Zap, Search, BarChart3, Car, ArrowRight, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -77,12 +77,12 @@ export default function Landing() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/sell">
+            <Link href="/appraise">
               <Button
                 size="lg"
-                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-emerald-600 to-teal-600 px-10 text-base text-white shadow-xl shadow-emerald-900/40 hover:from-emerald-700 hover:to-teal-700"
+                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 px-10 text-base text-white shadow-xl shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700"
               >
-                Where Should I Sell? <ArrowRight className="ml-2 h-5 w-5" />
+                Full Appraisal + Where to Sell <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/value">
@@ -92,15 +92,6 @@ export default function Landing() {
                 className="h-14 rounded-2xl border-border px-10 text-base hover:border-indigo-700 hover:text-indigo-400"
               >
                 Quick Value Check
-              </Button>
-            </Link>
-            <Link href="/appraise">
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-14 rounded-2xl border-border px-10 text-base hover:border-violet-700 hover:text-violet-400"
-              >
-                Full Appraisal
               </Button>
             </Link>
           </div>
@@ -115,30 +106,10 @@ export default function Landing() {
       <section className="border-t border-border/50 px-6 py-28">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">Three tools</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">Two tools</p>
             <h2 className="text-4xl font-bold tracking-tight">Pick the right one for you</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            <Link href="/sell">
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="group cursor-pointer rounded-3xl border border-border bg-card p-8 transition-colors hover:border-emerald-800/60"
-              >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-950/80 ring-1 ring-emerald-800/40">
-                  <ShoppingCart className="h-6 w-6 text-emerald-400" />
-                </div>
-                <Badge className="mb-3 rounded-full border-emerald-800/50 bg-emerald-950/60 text-emerald-400">Sell · 2 minutes</Badge>
-                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-emerald-400">Where to Sell</h3>
-                <p className="mb-5 leading-relaxed text-muted-foreground">
-                  Compare estimated offers from Carvana, CarMax, Vroom, and more side-by-side, then click straight to their offer page.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {["Carvana", "CarMax", "Vroom", "KBB ICO", "Private sale tips"].map((f) => (
-                    <span key={f} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{f}</span>
-                  ))}
-                </div>
-              </motion.div>
-            </Link>
+          <div className="grid gap-6 md:grid-cols-2">
             <Link href="/value">
               <motion.div
                 whileHover={{ y: -4 }}
@@ -167,13 +138,13 @@ export default function Landing() {
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-950/80 ring-1 ring-violet-800/40">
                   <DollarSign className="h-6 w-6 text-violet-400" />
                 </div>
-                <Badge className="mb-3 rounded-full border-violet-800/50 bg-violet-950/60 text-violet-400">Comprehensive · 2 minutes</Badge>
-                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-violet-400">Full Dealer Appraisal</h3>
+                <Badge className="mb-3 rounded-full border-violet-800/50 bg-violet-950/60 text-violet-400">Full appraisal · 2 minutes</Badge>
+                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-violet-400">Appraise + Where to Sell</h3>
                 <p className="mb-5 leading-relaxed text-muted-foreground">
-                  Get three valuations at once — trade-in, private party, and retail — so you know what to expect from every type of buyer.
+                  Get your trade-in, private party, and retail values — then compare live estimated offers from Carvana, CarMax, Vroom, and more.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {["Trade-in value", "Private party value", "Retail value", "Reconditioning estimate"].map((f) => (
+                  {["Trade-in · Private · Retail", "Carvana", "CarMax", "Vroom", "Recalls + safety", "Selling tips"].map((f) => (
                     <span key={f} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{f}</span>
                   ))}
                 </div>
@@ -239,17 +210,12 @@ export default function Landing() {
             No account. No subscription. Just your VIN and the truth.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/sell">
+            <Link href="/appraise">
               <Button
                 size="lg"
-                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-emerald-600 to-teal-600 px-10 text-base text-white shadow-xl shadow-emerald-900/40 hover:from-emerald-700 hover:to-teal-700"
+                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 px-10 text-base text-white shadow-xl shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700"
               >
-                Where to Sell <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/appraise">
-              <Button size="lg" variant="outline" className="h-14 rounded-2xl border-border px-10 text-base hover:border-violet-700 hover:text-violet-400">
-                Full Appraisal
+                Full Appraisal + Where to Sell <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/value">

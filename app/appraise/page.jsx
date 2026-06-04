@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Search, Gauge, MapPin, ShieldCheck, AlertTriangle, Loader2,
-  ExternalLink, Zap, RotateCcw, Car, Users, Wrench, TrendingUp,
-  TrendingDown, DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
-  Clock, BarChart2,
+  ExternalLink, Zap, RotateCcw, Car, Users, Wrench,
+  DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
+  Clock, BarChart2, CheckCircle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,20 +17,47 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 
-function money(value) {
-  if (!Number.isFinite(value)) return "$0";
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+function money(v) {
+  if (!Number.isFinite(v)) return "$0";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v);
 }
 
-function miles(value) {
-  if (!Number.isFinite(value)) return "0 mi";
-  return new Intl.NumberFormat("en-US").format(Math.round(value)) + " mi";
+function miles(v) {
+  if (!Number.isFinite(v)) return "0 mi";
+  return new Intl.NumberFormat("en-US").format(Math.round(v)) + " mi";
 }
 
 function getVehicleValue(results, variableId) {
-  const found = results?.find((item) => item.VariableId === variableId);
+  const found = results?.find((r) => r.VariableId === variableId);
   return found?.Value || "";
 }
+
+// Group raw recall list into unique campaigns, categorised by primary component
+function groupRecalls(recalls) {
+  const seen = new Set();
+  const unique = recalls.filter((r) => {
+    if (seen.has(r.campaign)) return false;
+    seen.add(r.campaign);
+    return true;
+  });
+
+  const groups = {};
+  for (const r of unique) {
+    const cat = (r.component?.split(":")?.[0] || "Other")
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(r);
+  }
+  return groups; // { "Air Bags": [...], "Exterior Lighting": [...] }
+}
+
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 },
+  transition: { duration: 0.35 },
+};
 
 function FieldLabel({ icon: Icon, label, children }) {
   return (
@@ -44,50 +71,119 @@ function FieldLabel({ icon: Icon, label, children }) {
   );
 }
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -12 },
-  transition: { duration: 0.35 },
-};
+const INSTANT_BUYERS = [
+  {
+    id: "carvana",
+    name: "Carvana",
+    tagline: "Online · No store visit",
+    multiplier: 1.02,
+    spread: 0.07,
+    getUrl: (vin) => `https://www.carvana.com/sell-car/${vin}`,
+    pros: ["Offer in 2 minutes", "Free vehicle pickup", "7-day price lock"],
+    con: "Offer may drop if inspection finds undisclosed issues",
+    speed: "2 min",
+    badge: "Most popular",
+    gradient: "from-blue-600 to-cyan-600",
+  },
+  {
+    id: "carmax",
+    name: "CarMax",
+    tagline: "In-person · Instant payment",
+    multiplier: 0.97,
+    spread: 0.05,
+    getUrl: () => "https://www.carmax.com/sell-my-car",
+    pros: ["Check or deposit same day", "No-haggle pricing", "Accepts high mileage"],
+    con: "Must visit a physical store",
+    speed: "Same day",
+    badge: null,
+    gradient: "from-orange-600 to-amber-600",
+  },
+  {
+    id: "vroom",
+    name: "Vroom",
+    tagline: "Online · Free pickup",
+    multiplier: 1.0,
+    spread: 0.08,
+    getUrl: () => "https://www.vroom.com/sell",
+    pros: ["Fully online", "Free vehicle pickup"],
+    con: "Payment 2–5 days · Not all states",
+    speed: "2–5 days",
+    badge: null,
+    gradient: "from-emerald-600 to-teal-600",
+  },
+  {
+    id: "kbb",
+    name: "KBB Cash Offer",
+    tagline: "Local dealer network",
+    multiplier: 0.95,
+    spread: 0.10,
+    getUrl: () => "https://www.kbb.com/instant-cash-offer/",
+    pros: ["Compare multiple dealer offers", "Can apply to a new car purchase"],
+    con: "Varies heavily by location",
+    speed: "Same day",
+    badge: null,
+    gradient: "from-violet-600 to-purple-600",
+  },
+  {
+    id: "autonation",
+    name: "AutoNation",
+    tagline: "Large dealer group · Nationwide",
+    multiplier: 0.93,
+    spread: 0.08,
+    getUrl: () => "https://www.autonation.com/sell-my-car",
+    pros: ["Convenient if near a location", "Reputable large chain"],
+    con: "Typically lower than online buyers",
+    speed: "Same day",
+    badge: null,
+    gradient: "from-rose-600 to-pink-600",
+  },
+  {
+    id: "peddle",
+    name: "Peddle",
+    tagline: "Any condition · Free tow",
+    multiplier: 0.78,
+    spread: 0.12,
+    getUrl: () => "https://www.peddle.com/",
+    pros: ["Buys non-running and salvage", "Free towing"],
+    con: "Lowest offers of any buyer",
+    speed: "Same day",
+    badge: "Best for damaged/non-running",
+    gradient: "from-zinc-600 to-slate-600",
+  },
+];
 
-const BUYER_TYPES = [
+const PRIVATE_CHANNELS = [
   {
-    label: "Instant offer (CarMax, Carvana)",
-    desc: "Fastest sale, lowest price. These buyers price to guarantee a profit after resale.",
-    valueKey: "tradeIn",
-    rangeKey: "tradeInRange",
-    icon: TrendingDown,
-    color: "text-amber-400",
-    bg: "bg-amber-950/30 border-amber-800/40",
+    id: "facebook",
+    name: "Facebook Marketplace",
+    tagline: "Highest price · Largest local pool",
+    getUrl: () => "https://www.facebook.com/marketplace/create/vehicle",
+    pros: ["No fees", "Biggest local audience", "Negotiate for top dollar"],
+    con: "Days to weeks · Must meet strangers",
   },
   {
-    label: "Dealership trade-in",
-    desc: "Applied toward a new purchase. Dealers deduct reconditioning, transport, and profit margin.",
-    valueKey: "tradeIn",
-    rangeKey: "tradeInRange",
-    icon: Car,
-    color: "text-orange-400",
-    bg: "bg-orange-950/30 border-orange-800/40",
+    id: "craigslist",
+    name: "Craigslist",
+    tagline: "Free listing · Cash buyers",
+    getUrl: () => "https://www.craigslist.org/about/sites",
+    pros: ["Free to list", "Cash deals common"],
+    con: "More scam risk · No buyer verification",
   },
   {
-    label: "Private sale (FB Marketplace)",
-    desc: "Takes more effort but nets significantly more. You skip the dealer middleman.",
-    valueKey: "privateParty",
-    rangeKey: "privatePartyRange",
-    icon: Users,
-    color: "text-indigo-400",
-    bg: "bg-indigo-950/30 border-indigo-800/40",
+    id: "autotrader",
+    name: "AutoTrader",
+    tagline: "Paid listing · Serious buyers",
+    getUrl: () => "https://www.autotrader.com/sell-my-car",
+    pros: ["Active shoppers only", "Broader than local"],
+    con: "$49–$99 listing fee · Slower",
   },
-  {
-    label: "Dealer consignment / retail",
-    desc: "Dealer sells it for you at retail price. You get more but wait longer and pay a fee.",
-    valueKey: "retail",
-    rangeKey: "retailRange",
-    icon: TrendingUp,
-    color: "text-emerald-400",
-    bg: "bg-emerald-950/30 border-emerald-800/40",
-  },
+];
+
+const TIPS = [
+  ["Get 3+ instant offers first", "Carvana, CarMax, and Vroom quotes are binding for 7 days. Use them as leverage with dealers or private buyers."],
+  ["Clean the car before any appraisal", "A detailed car gets $300–$800 more on average. Do it before the CarMax visit and before listing photos."],
+  ["Have your title ready", "A lien slows everything down. Call your bank first if you're still paying it off."],
+  ["Don't mention a trade-in early", "If buying another car, negotiate the purchase price before disclosing you have a trade-in."],
 ];
 
 export default function AppraisePage() {
@@ -146,21 +242,11 @@ export default function AppraisePage() {
     setError("");
     try {
       const params = new URLSearchParams({
-        year: decoded.ModelYear,
-        make: decoded.Make,
-        model: decoded.Model,
-        trim: decoded.Trim || "",
-        body: decoded.BodyClass || "",
-        engine: decoded.EngineCylinders || "",
-        drive: decoded.DriveType || "",
+        year: decoded.ModelYear, make: decoded.Make, model: decoded.Model,
+        trim: decoded.Trim || "", body: decoded.BodyClass || "",
+        engine: decoded.EngineCylinders || "", drive: decoded.DriveType || "",
         fuel: decoded.FuelTypePrimary || "",
-        zip,
-        mileage,
-        condition,
-        titleStatus,
-        accidents,
-        serviceHistory,
-        owners,
+        zip, mileage, condition, titleStatus, accidents, serviceHistory, owners,
       });
       const res = await fetch(`/api/appraise?${params}`);
       const data = await res.json();
@@ -176,10 +262,13 @@ export default function AppraisePage() {
 
   function reset() {
     setVin(""); setDecoded(null); setError(""); setResult(null); setPhase("vin");
-    setShowRecon(false); setShowListings(false);
+    setShowRecon(false); setShowListings(false); setShowRecalls(false);
   }
 
-  const { appraisal, listings, recalls, safetyRating, marketStats } = result || {};
+  const { appraisal, listings, recalls = [], safetyRating, marketStats } = result || {};
+  const recallGroups = recalls.length > 0 ? groupRecalls(recalls) : {};
+  const uniqueRecallCount = Object.values(recallGroups).flat().length;
+  const privateDelta = appraisal ? appraisal.privateParty - appraisal.tradeIn : 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -192,11 +281,8 @@ export default function AppraisePage() {
             </div>
             <span className="text-lg font-bold tracking-tight transition-colors group-hover:text-indigo-400">AutoIQ</span>
           </Link>
-
           <div className="flex items-center gap-3">
-            <Badge className="rounded-full border-violet-800/50 bg-violet-950/50 text-violet-400">
-              Full Appraisal
-            </Badge>
+            <Badge className="rounded-full border-violet-800/50 bg-violet-950/50 text-violet-400">Full Appraisal</Badge>
             {phase !== "vin" && (
               <Button variant="ghost" size="sm" onClick={reset} className="gap-2 rounded-xl text-muted-foreground hover:text-foreground">
                 <RotateCcw className="h-4 w-4" /> New appraisal
@@ -207,12 +293,13 @@ export default function AppraisePage() {
       </header>
 
       <AnimatePresence mode="wait">
-        {/* Phase 1: VIN */}
+
+        {/* ── Phase 1: VIN ── */}
         {phase === "vin" && (
           <motion.main key="vin" {...fadeUp} className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-center px-6 py-20">
             <div className="w-full max-w-2xl">
               <Badge className="mb-6 rounded-full border-violet-800/50 bg-violet-950/50 text-violet-400">
-                Comprehensive dealer-grade appraisal
+                Value · Compare buyers · Sell
               </Badge>
               <h1 className="mb-3 text-5xl font-bold tracking-tight">
                 What is your car{" "}
@@ -221,9 +308,8 @@ export default function AppraisePage() {
                 </span>
               </h1>
               <p className="mb-10 text-lg text-muted-foreground">
-                Get three valuations at once — trade-in, private party, and retail — so you know exactly what to expect from every type of buyer.
+                Get your trade-in, private party, and retail values — then see estimated offers from Carvana, CarMax, Vroom, and more, all in one place.
               </p>
-
               <Card className="rounded-3xl border-border shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-3 sm:flex-row">
@@ -245,9 +331,8 @@ export default function AppraisePage() {
                     </Button>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    <span className={cleanVin.length === 17 ? "font-semibold text-emerald-400" : ""}>
-                      {cleanVin.length}/17
-                    </span>{" "}· No account needed
+                    <span className={cleanVin.length === 17 ? "font-semibold text-emerald-400" : ""}>{cleanVin.length}/17</span>
+                    {" "}· No account needed
                   </p>
                   {error && (
                     <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
@@ -260,7 +345,7 @@ export default function AppraisePage() {
           </motion.main>
         )}
 
-        {/* Phase 2: Details */}
+        {/* ── Phase 2: Details ── */}
         {phase === "details" && decoded && (
           <motion.main key="details" {...fadeUp} className="mx-auto max-w-7xl px-6 py-16">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-indigo-500">Vehicle confirmed</p>
@@ -271,7 +356,6 @@ export default function AppraisePage() {
             <p className="mb-12 text-lg text-muted-foreground">Tell us about this specific car to get an accurate appraisal.</p>
 
             <div className="grid gap-8 lg:grid-cols-2">
-              {/* Specs */}
               <div>
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">From your VIN</p>
                 <div className="grid grid-cols-2 gap-3">
@@ -291,7 +375,6 @@ export default function AppraisePage() {
                 </div>
               </div>
 
-              {/* Form */}
               <Card className="rounded-3xl border-border">
                 <CardContent className="grid gap-5 p-6">
                   <div className="grid gap-5 sm:grid-cols-2">
@@ -302,7 +385,6 @@ export default function AppraisePage() {
                       <Input value={zip} onChange={(e) => setZip(e.target.value)} className="h-11 rounded-2xl" />
                     </FieldLabel>
                   </div>
-
                   <div className="grid gap-5 sm:grid-cols-2">
                     <FieldLabel icon={ShieldCheck} label="Condition">
                       <Select value={condition} onValueChange={setCondition}>
@@ -321,7 +403,6 @@ export default function AppraisePage() {
                       </Select>
                     </FieldLabel>
                   </div>
-
                   <div className="grid gap-5 sm:grid-cols-3">
                     <FieldLabel icon={AlertTriangle} label="Accidents">
                       <Select value={accidents} onValueChange={setAccidents}>
@@ -354,13 +435,11 @@ export default function AppraisePage() {
                       </Select>
                     </FieldLabel>
                   </div>
-
                   {error && (
                     <div className="flex items-center gap-2 rounded-2xl border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
                       <AlertTriangle className="h-4 w-4 shrink-0" />{error}
                     </div>
                   )}
-
                   <Button
                     onClick={runAppraisal}
                     disabled={loading}
@@ -375,7 +454,7 @@ export default function AppraisePage() {
           </motion.main>
         )}
 
-        {/* Phase 3: Results */}
+        {/* ── Phase 3: Results ── */}
         {phase === "results" && appraisal && (
           <motion.main key="results" {...fadeUp} className="mx-auto max-w-7xl px-6 py-16">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-indigo-500">Appraisal complete</p>
@@ -383,43 +462,19 @@ export default function AppraisePage() {
               {decoded.ModelYear} {decoded.Make} {decoded.Model}
             </h1>
             <p className="mb-12 text-lg text-muted-foreground">
-              {miles(Number(mileage))} · {condition} condition · {titleStatus} title · {owners} owner{owners !== "1" ? "s" : ""} · {serviceHistory} service history
+              {miles(Number(mileage))} · {condition} · {titleStatus} title · {owners} owner{owners !== "1" ? "s" : ""}
               {accidents === "Yes" ? " · Accident reported" : ""}
             </p>
 
-            {/* Three value cards */}
-            <div className="mb-8 grid gap-4 sm:grid-cols-3">
+            {/* ── Value summary ── */}
+            <div className="mb-10 grid gap-4 sm:grid-cols-3">
               {[
-                {
-                  label: "Trade-in / Instant offer",
-                  sublabel: "CarMax, Carvana, dealership",
-                  value: appraisal.tradeIn,
-                  range: appraisal.tradeInRange,
-                  color: "from-amber-600 to-orange-600",
-                  shadow: "shadow-amber-900/30",
-                  badge: "Lowest",
-                },
-                {
-                  label: "Private party",
-                  sublabel: "Facebook Marketplace, Craigslist",
-                  value: appraisal.privateParty,
-                  range: appraisal.privatePartyRange,
-                  color: "from-indigo-600 to-violet-600",
-                  shadow: "shadow-indigo-900/30",
-                  badge: "Most common",
-                },
-                {
-                  label: "Retail / Consignment",
-                  sublabel: "What dealers sell it for",
-                  value: appraisal.retail,
-                  range: appraisal.retailRange,
-                  color: "from-emerald-600 to-teal-600",
-                  shadow: "shadow-emerald-900/30",
-                  badge: "Highest",
-                },
-              ].map(({ label, sublabel, value, range, color, shadow, badge }) => (
+                { label: "Trade-in / Instant offer", sublabel: "CarMax, Carvana, dealership", value: appraisal.tradeIn, range: appraisal.tradeInRange, gradient: "from-amber-600 to-orange-600", shadow: "shadow-amber-900/30", badge: "Lowest" },
+                { label: "Private party", sublabel: "Facebook Marketplace, Craigslist", value: appraisal.privateParty, range: appraisal.privatePartyRange, gradient: "from-indigo-600 to-violet-600", shadow: "shadow-indigo-900/30", badge: "Most common" },
+                { label: "Retail / Consignment", sublabel: "What dealers sell it for", value: appraisal.retail, range: appraisal.retailRange, gradient: "from-emerald-600 to-teal-600", shadow: "shadow-emerald-900/30", badge: "Highest" },
+              ].map(({ label, sublabel, value, range, gradient, shadow, badge }) => (
                 <Card key={label} className={`overflow-hidden rounded-3xl border-0 shadow-2xl ${shadow}`}>
-                  <div className={`bg-gradient-to-br ${color} p-6 text-white`}>
+                  <div className={`bg-gradient-to-br ${gradient} p-6 text-white`}>
                     <Badge className="mb-3 rounded-full border-white/20 bg-white/15 text-white text-xs">{badge}</Badge>
                     <p className="text-sm font-medium text-white/80">{label}</p>
                     <p className="mt-1 text-4xl font-bold tracking-tight">{money(value)}</p>
@@ -432,44 +487,103 @@ export default function AppraisePage() {
               ))}
             </div>
 
-            {/* Who to sell to */}
-            <div className="mb-8">
-              <h2 className="mb-4 text-xl font-bold">Who to sell to</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {BUYER_TYPES.map(({ label, desc, valueKey, rangeKey, icon: Icon, color, bg }) => (
-                  <div key={label} className={`flex items-start gap-4 rounded-2xl border p-5 ${bg}`}>
-                    <div className="mt-0.5 shrink-0">
-                      <Icon className={`h-5 w-5 ${color}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-sm">{label}</p>
-                        <p className={`text-lg font-bold shrink-0 ${color}`}>{money(appraisal[valueKey])}</p>
+            {/* ── Instant offer companies ── */}
+            <div className="mb-10">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-500">Fastest money</p>
+              <h2 className="mb-2 text-2xl font-bold">Get an instant cash offer</h2>
+              <p className="mb-6 text-muted-foreground">These companies buy your car outright — no listing, no waiting. Click to get your actual offer.</p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, pros, con, speed, badge, gradient }) => {
+                  const estimate = Math.round(appraisal.tradeIn * multiplier);
+                  const low = Math.round(estimate * (1 - spread / 2));
+                  const high = Math.round(estimate * (1 + spread / 2));
+                  return (
+                    <Card key={id} className="overflow-hidden rounded-3xl border-border">
+                      <div className={`bg-gradient-to-br ${gradient} p-5 text-white`}>
+                        <div className="mb-3 flex items-start justify-between">
+                          <div>
+                            <h3 className="text-lg font-bold">{name}</h3>
+                            <p className="text-sm text-white/70">{tagline}</p>
+                          </div>
+                          <div className="flex shrink-0 items-center gap-1 rounded-full bg-black/20 px-2.5 py-1 text-xs">
+                            <Clock className="h-3 w-3" />{speed}
+                          </div>
+                        </div>
+                        {badge && <Badge className="mb-3 rounded-full border-white/20 bg-white/15 text-white text-xs">{badge}</Badge>}
+                        <p className="text-2xl font-bold">{money(estimate)}</p>
+                        <p className="text-sm text-white/60">{money(low)} – {money(high)} est.</p>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
-                    </div>
-                  </div>
+                      <CardContent className="p-5">
+                        <ul className="mb-4 space-y-1.5">
+                          {pros.map((p) => (
+                            <li key={p} className="flex items-start gap-2 text-sm">
+                              <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />{p}
+                            </li>
+                          ))}
+                          <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <span className="mt-0.5 shrink-0 text-xs text-red-400">✕</span>{con}
+                          </li>
+                        </ul>
+                        <Button className={`w-full rounded-2xl border-0 bg-gradient-to-r ${gradient} text-white`} asChild>
+                          <a href={getUrl(decoded.VIN)} target="_blank" rel="noopener noreferrer">
+                            Get {name.split(" ")[0]} Offer <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                          </a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Private sale channels ── */}
+            <div className="mb-10">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-indigo-500">Keep more money</p>
+              <h2 className="mb-2 text-2xl font-bold">Sell it yourself</h2>
+              <p className="mb-6 text-muted-foreground">
+                More effort, but you pocket an extra{" "}
+                <span className="font-semibold text-foreground">{money(privateDelta)}</span> on average vs. an instant offer.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {PRIVATE_CHANNELS.map(({ id, name, tagline, getUrl, pros, con }) => (
+                  <Card key={id} className="rounded-3xl border-border">
+                    <CardContent className="p-5">
+                      <h3 className="mb-0.5 text-lg font-bold">{name}</h3>
+                      <p className="mb-4 text-xs text-muted-foreground">{tagline}</p>
+                      <ul className="mb-4 space-y-1.5">
+                        {pros.map((p) => (
+                          <li key={p} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />{p}
+                          </li>
+                        ))}
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="mt-0.5 shrink-0 text-xs text-red-400">✕</span>{con}
+                        </li>
+                      </ul>
+                      <Button variant="outline" className="w-full rounded-2xl" asChild>
+                        <a href={getUrl()} target="_blank" rel="noopener noreferrer">
+                          List on {name.split(" ")[0]} <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                        </a>
+                      </Button>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </div>
 
-            {/* Reconditioning breakdown */}
+            {/* ── Reconditioning breakdown ── */}
             <Card className="mb-8 rounded-3xl border-border">
               <CardContent className="p-6">
-                <button
-                  onClick={() => setShowRecon((v) => !v)}
-                  className="flex w-full items-center justify-between"
-                >
+                <button onClick={() => setShowRecon((v) => !v)} className="flex w-full items-center justify-between">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500">Reconditioning estimate</p>
                     <h2 className="mt-1 text-xl font-bold">
-                      Est. dealer cost to resell this car:{" "}
+                      Est. dealer cost to resell:{" "}
                       <span className="text-amber-400">{money(appraisal.reconditioning)}</span>
                     </h2>
                   </div>
                   {showRecon ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
                 </button>
-
                 {showRecon && (
                   <div className="mt-5 grid gap-2 sm:grid-cols-2">
                     {[
@@ -495,33 +609,26 @@ export default function AppraisePage() {
               </CardContent>
             </Card>
 
-            {/* Adjustments applied */}
+            {/* ── Adjustments applied ── */}
             <Card className="mb-8 rounded-3xl border-border">
               <CardContent className="p-6">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-indigo-500">How we adjusted</p>
                 <h2 className="mb-5 text-xl font-bold">Factors applied to market median</h2>
                 <div className="grid gap-2 sm:grid-cols-3">
                   {[
-                    ["Condition", appraisal.adjustments.condition],
-                    ["Title status", appraisal.adjustments.title],
-                    ["Accident history", appraisal.adjustments.accident],
-                    ["Service history", appraisal.adjustments.service],
-                    ["Ownership count", appraisal.adjustments.owner],
-                    ...(appraisal.adjustments.recalls !== 0 ? [["Open recalls", appraisal.adjustments.recalls]] : []),
-                  ].map(([label, pct]) => (
+                    ["Condition", `${appraisal.adjustments.condition >= 0 ? "+" : ""}${appraisal.adjustments.condition}%`, appraisal.adjustments.condition >= 0],
+                    ["Title status", `${appraisal.adjustments.title >= 0 ? "+" : ""}${appraisal.adjustments.title}%`, appraisal.adjustments.title >= 0],
+                    ["Accident history", `${appraisal.adjustments.accident >= 0 ? "+" : ""}${appraisal.adjustments.accident}%`, appraisal.adjustments.accident >= 0],
+                    ["Service history", `${appraisal.adjustments.service >= 0 ? "+" : ""}${appraisal.adjustments.service}%`, appraisal.adjustments.service >= 0],
+                    ["Ownership count", `${appraisal.adjustments.owner >= 0 ? "+" : ""}${appraisal.adjustments.owner}%`, appraisal.adjustments.owner >= 0],
+                    ...(appraisal.adjustments.recalls !== 0 ? [["Open recalls", `−$${Math.abs(appraisal.adjustments.recalls).toLocaleString()}`, false]] : []),
+                    ["Mileage vs comps", `${appraisal.adjustments.mileage >= 0 ? "+" : ""}${money(appraisal.adjustments.mileage)}`, appraisal.adjustments.mileage >= 0],
+                  ].map(([label, display, positive]) => (
                     <div key={label} className="flex items-center justify-between rounded-2xl bg-card px-4 py-3">
                       <p className="text-sm text-muted-foreground">{label}</p>
-                      <p className={`text-sm font-bold ${pct >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                        {pct >= 0 ? "+" : ""}{pct}%
-                      </p>
+                      <p className={`text-sm font-bold ${positive ? "text-emerald-400" : "text-red-400"}`}>{display}</p>
                     </div>
                   ))}
-                  <div className="flex items-center justify-between rounded-2xl bg-card px-4 py-3">
-                    <p className="text-sm text-muted-foreground">Mileage vs comps</p>
-                    <p className={`text-sm font-bold ${appraisal.adjustments.mileage >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                      {appraisal.adjustments.mileage >= 0 ? "+" : ""}{money(appraisal.adjustments.mileage)}
-                    </p>
-                  </div>
                 </div>
                 <p className="mt-4 text-xs text-muted-foreground">
                   Based on {appraisal.comparables} comparable listings · {appraisal.confidence}% confidence
@@ -529,34 +636,28 @@ export default function AppraisePage() {
               </CardContent>
             </Card>
 
-            {/* Safety & Recalls */}
-            {(safetyRating || (recalls && recalls.length > 0)) && (
+            {/* ── Safety & Recalls ── */}
+            {(safetyRating || recalls.length > 0) && (
               <Card className="mb-8 rounded-3xl border-border">
                 <CardContent className="p-6">
-                  <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
-                    {/* NCAP safety rating */}
+                  <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
+
+                    {/* NCAP rating */}
                     {safetyRating && (
                       <div className="shrink-0">
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">NHTSA Safety Rating</p>
-                        <p className="mb-1 text-sm font-medium text-muted-foreground truncate max-w-[220px]">{safetyRating.description}</p>
-                        <div className="flex items-center gap-1 mb-3">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">NHTSA Safety</p>
+                        <p className="mb-2 max-w-[200px] truncate text-xs text-muted-foreground">{safetyRating.description}</p>
+                        <div className="mb-3 flex items-center gap-1">
                           {[1,2,3,4,5].map((n) => (
-                            <Star
-                              key={n}
-                              className={`h-5 w-5 ${Number(safetyRating.overall) >= n ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`}
-                            />
+                            <Star key={n} className={`h-5 w-5 ${Number(safetyRating.overall) >= n ? "fill-amber-400 text-amber-400" : "text-muted-foreground/25"}`} />
                           ))}
                           <span className="ml-2 text-sm font-bold">{safetyRating.overall}/5</span>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs text-center">
-                          {[
-                            ["Front", safetyRating.frontCrash],
-                            ["Side", safetyRating.sideCrash],
-                            ["Rollover", safetyRating.rollover],
-                          ].map(([label, val]) => (
-                            <div key={label} className="rounded-xl bg-card p-2">
-                              <p className="text-muted-foreground">{label}</p>
-                              <p className="font-bold">{val ?? "—"}</p>
+                        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                          {[["Front", safetyRating.frontCrash], ["Side", safetyRating.sideCrash], ["Rollover", safetyRating.rollover]].map(([l, v]) => (
+                            <div key={l} className="rounded-xl bg-card p-2">
+                              <p className="text-muted-foreground">{l}</p>
+                              <p className="font-bold">{v ?? "—"}</p>
                             </div>
                           ))}
                         </div>
@@ -566,45 +667,61 @@ export default function AppraisePage() {
                     {/* Recalls */}
                     <div className="flex-1">
                       <button
-                        onClick={() => setShowRecalls((v) => !v)}
-                        className="flex w-full items-center justify-between text-left"
+                        onClick={() => recalls.length > 0 && setShowRecalls((v) => !v)}
+                        className="flex w-full items-start justify-between text-left"
                       >
                         <div>
-                          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-indigo-500">Open Recalls</p>
-                          {recalls && recalls.length > 0 ? (
-                            <div className="flex items-center gap-2">
-                              <TriangleAlert className="h-4 w-4 text-amber-400" />
-                              <h2 className="text-xl font-bold">
-                                {recalls.length} open recall{recalls.length !== 1 ? "s" : ""}
-                                <span className="ml-2 text-base font-medium text-amber-400">
-                                  (−${Math.min(recalls.length * 300, 1000).toLocaleString()} applied)
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-indigo-500">Open Recalls</p>
+                          {recalls.length > 0 ? (
+                            <>
+                              <div className="mb-3 flex items-center gap-2">
+                                <TriangleAlert className="h-4 w-4 text-amber-400" />
+                                <span className="text-xl font-bold">
+                                  {uniqueRecallCount} recall{uniqueRecallCount !== 1 ? "s" : ""}
                                 </span>
-                              </h2>
-                            </div>
+                                <span className="text-base font-medium text-amber-400">
+                                  (−${Math.min(uniqueRecallCount * 300, 1000).toLocaleString()} applied)
+                                </span>
+                              </div>
+                              {/* Component category pills */}
+                              <div className="flex flex-wrap gap-2">
+                                {Object.entries(recallGroups).map(([cat, items]) => (
+                                  <span key={cat} className="rounded-full border border-amber-800/40 bg-amber-950/30 px-3 py-1 text-xs text-amber-300">
+                                    {cat} ×{items.length}
+                                  </span>
+                                ))}
+                              </div>
+                            </>
                           ) : (
                             <div className="flex items-center gap-2">
                               <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                              <h2 className="text-xl font-bold text-emerald-400">No open recalls</h2>
+                              <span className="text-xl font-bold text-emerald-400">No open recalls</span>
                             </div>
                           )}
                         </div>
-                        {recalls && recalls.length > 0 && (
-                          showRecalls ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        {recalls.length > 0 && (
+                          <div className="ml-4 shrink-0 mt-1">
+                            {showRecalls ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                          </div>
                         )}
                       </button>
 
-                      {showRecalls && recalls && recalls.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          {recalls.map((r) => (
-                            <div key={r.campaign} className="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-4">
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <p className="text-sm font-semibold text-amber-300">{r.component}</p>
-                                <Badge className="rounded-full border-amber-800/50 bg-amber-950/50 text-amber-400 text-xs">{r.campaign}</Badge>
-                              </div>
-                              <p className="text-xs text-muted-foreground leading-relaxed">{r.summary}</p>
-                              {r.remedy && (
-                                <p className="mt-1.5 text-xs text-emerald-400"><span className="font-medium">Fix:</span> {r.remedy}</p>
-                              )}
+                      {showRecalls && recalls.length > 0 && (
+                        <div className="mt-5 space-y-3">
+                          {Object.entries(recallGroups).map(([cat, items]) => (
+                            <div key={cat} className="rounded-2xl border border-amber-900/40 bg-amber-950/15 p-4">
+                              <p className="mb-2 text-sm font-semibold text-amber-300">{cat}</p>
+                              {items.map((r) => (
+                                <div key={r.campaign} className="mb-2 last:mb-0">
+                                  <div className="flex items-center gap-2 mb-0.5">
+                                    <Badge className="rounded-full border-amber-800/50 bg-amber-950/50 text-amber-400 text-xs">{r.campaign}</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground leading-relaxed">{r.summary}</p>
+                                  {r.remedy && (
+                                    <p className="mt-1 text-xs text-emerald-400"><span className="font-medium">Fix:</span> {r.remedy}</p>
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           ))}
                         </div>
@@ -615,7 +732,7 @@ export default function AppraisePage() {
               </Card>
             )}
 
-            {/* Market stats */}
+            {/* ── Market conditions ── */}
             {marketStats && (
               <Card className="mb-8 rounded-3xl border-border">
                 <CardContent className="p-6">
@@ -623,9 +740,9 @@ export default function AppraisePage() {
                   <h2 className="mb-5 text-xl font-bold">How this car is moving right now</h2>
                   <div className="grid gap-3 sm:grid-cols-4">
                     {[
-                      { icon: BarChart2, label: "Active listings", value: marketStats.totalListings?.toLocaleString() ?? "—", note: "within 200 mi" },
+                      { icon: BarChart2, label: "Active listings", value: marketStats.totalListings?.toLocaleString() ?? "—", note: "within 100 mi" },
                       { icon: DollarSign, label: "Market median", value: marketStats.medianPrice ? `$${marketStats.medianPrice.toLocaleString()}` : "—", note: "asking price" },
-                      { icon: Gauge, label: "Avg mileage", value: marketStats.avgMiles ? `${marketStats.avgMiles.toLocaleString()} mi` : "—", note: "on comparable cars" },
+                      { icon: Gauge, label: "Avg mileage", value: marketStats.avgMiles ? `${marketStats.avgMiles.toLocaleString()} mi` : "—", note: "comparable cars" },
                       { icon: Clock, label: "Avg days on market", value: marketStats.avgDaysOnMarket ? `${marketStats.avgDaysOnMarket}d` : "—", note: "before it sells" },
                     ].map(({ icon: Icon, label, value, note }) => (
                       <div key={label} className="rounded-2xl bg-card p-4">
@@ -640,7 +757,23 @@ export default function AppraisePage() {
               </Card>
             )}
 
-            {/* Comparable listings */}
+            {/* ── Strategy tips ── */}
+            <Card className="mb-8 rounded-3xl border-border">
+              <CardContent className="p-6">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-emerald-500">Strategy</p>
+                <h2 className="mb-5 text-xl font-bold">How to get the most money</h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {TIPS.map(([tip, detail]) => (
+                    <div key={tip} className="rounded-2xl bg-card p-4">
+                      <p className="mb-1 text-sm font-semibold">{tip}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ── Comparable listings ── */}
             <div>
               <button
                 onClick={() => setShowListings((v) => !v)}
@@ -652,14 +785,10 @@ export default function AppraisePage() {
                 </div>
                 {showListings ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
               </button>
-
               {showListings && (
                 <div className="grid gap-3">
                   {listings.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex flex-col justify-between gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-indigo-800/60 sm:flex-row sm:items-center"
-                    >
+                    <div key={item.id} className="flex flex-col justify-between gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-indigo-800/60 sm:flex-row sm:items-center">
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold">{item.title}</h3>
                         <p className="mt-1 truncate text-sm text-muted-foreground">
@@ -684,6 +813,7 @@ export default function AppraisePage() {
             </div>
           </motion.main>
         )}
+
       </AnimatePresence>
     </div>
   );
