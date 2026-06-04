@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Zap, Search, BarChart3, Car, ArrowRight } from "lucide-react";
+import { Zap, Search, BarChart3, Car, ArrowRight, DollarSign, Users, TrendingUp, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -77,12 +77,30 @@ export default function Landing() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link href="/sell">
+              <Button
+                size="lg"
+                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-emerald-600 to-teal-600 px-10 text-base text-white shadow-xl shadow-emerald-900/40 hover:from-emerald-700 hover:to-teal-700"
+              >
+                Where Should I Sell? <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Link href="/value">
               <Button
                 size="lg"
-                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 px-10 text-base text-white shadow-xl shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700"
+                variant="outline"
+                className="h-14 rounded-2xl border-border px-10 text-base hover:border-indigo-700 hover:text-indigo-400"
               >
-                Value My Car <ArrowRight className="ml-2 h-5 w-5" />
+                Quick Value Check
+              </Button>
+            </Link>
+            <Link href="/appraise">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-14 rounded-2xl border-border px-10 text-base hover:border-violet-700 hover:text-violet-400"
+              >
+                Full Appraisal
               </Button>
             </Link>
           </div>
@@ -91,6 +109,78 @@ export default function Landing() {
             Free · No signup required · Results in seconds
           </p>
         </motion.div>
+      </section>
+
+      {/* Two tools */}
+      <section className="border-t border-border/50 px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">Three tools</p>
+            <h2 className="text-4xl font-bold tracking-tight">Pick the right one for you</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            <Link href="/sell">
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="group cursor-pointer rounded-3xl border border-border bg-card p-8 transition-colors hover:border-emerald-800/60"
+              >
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-950/80 ring-1 ring-emerald-800/40">
+                  <ShoppingCart className="h-6 w-6 text-emerald-400" />
+                </div>
+                <Badge className="mb-3 rounded-full border-emerald-800/50 bg-emerald-950/60 text-emerald-400">Sell · 2 minutes</Badge>
+                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-emerald-400">Where to Sell</h3>
+                <p className="mb-5 leading-relaxed text-muted-foreground">
+                  Compare estimated offers from Carvana, CarMax, Vroom, and more side-by-side, then click straight to their offer page.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["Carvana", "CarMax", "Vroom", "KBB ICO", "Private sale tips"].map((f) => (
+                    <span key={f} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{f}</span>
+                  ))}
+                </div>
+              </motion.div>
+            </Link>
+            <Link href="/value">
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="group cursor-pointer rounded-3xl border border-border bg-card p-8 transition-colors hover:border-indigo-800/60"
+              >
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-950/80 ring-1 ring-indigo-800/40">
+                  <Search className="h-6 w-6 text-indigo-400" />
+                </div>
+                <Badge className="mb-3 rounded-full border-indigo-800/50 bg-indigo-950/60 text-indigo-400">Quick · 30 seconds</Badge>
+                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-indigo-400">Quick Value Check</h3>
+                <p className="mb-5 leading-relaxed text-muted-foreground">
+                  Enter a VIN, add mileage and condition, and instantly see what similar cars are selling for on the market.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["Live market comps", "Price vs mileage chart", "Adjusted estimate"].map((f) => (
+                    <span key={f} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{f}</span>
+                  ))}
+                </div>
+              </motion.div>
+            </Link>
+            <Link href="/appraise">
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="group cursor-pointer rounded-3xl border border-border bg-card p-8 transition-colors hover:border-violet-800/60"
+              >
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-950/80 ring-1 ring-violet-800/40">
+                  <DollarSign className="h-6 w-6 text-violet-400" />
+                </div>
+                <Badge className="mb-3 rounded-full border-violet-800/50 bg-violet-950/60 text-violet-400">Comprehensive · 2 minutes</Badge>
+                <h3 className="mb-2 text-2xl font-bold transition-colors group-hover:text-violet-400">Full Dealer Appraisal</h3>
+                <p className="mb-5 leading-relaxed text-muted-foreground">
+                  Get three valuations at once — trade-in, private party, and retail — so you know what to expect from every type of buyer.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["Trade-in value", "Private party value", "Retail value", "Reconditioning estimate"].map((f) => (
+                    <span key={f} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{f}</span>
+                  ))}
+                </div>
+              </motion.div>
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* How it works */}
@@ -139,22 +229,32 @@ export default function Landing() {
           className="mx-auto max-w-3xl text-center"
         >
           <h2 className="text-5xl font-bold tracking-tight">
-            Ready to find out what
+            Know your car's value.
             <br />
-            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-              your car is really worth?
+            <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              Then sell it smarter.
             </span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
             No account. No subscription. Just your VIN and the truth.
           </p>
-          <div className="mt-10">
-            <Link href="/value">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link href="/sell">
               <Button
                 size="lg"
-                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 px-10 text-base text-white shadow-xl shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700"
+                className="h-14 rounded-2xl border-0 bg-gradient-to-r from-emerald-600 to-teal-600 px-10 text-base text-white shadow-xl shadow-emerald-900/40 hover:from-emerald-700 hover:to-teal-700"
               >
-                Get My Valuation <ArrowRight className="ml-2 h-5 w-5" />
+                Where to Sell <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/appraise">
+              <Button size="lg" variant="outline" className="h-14 rounded-2xl border-border px-10 text-base hover:border-violet-700 hover:text-violet-400">
+                Full Appraisal
+              </Button>
+            </Link>
+            <Link href="/value">
+              <Button size="lg" variant="outline" className="h-14 rounded-2xl border-border px-10 text-base hover:border-indigo-700 hover:text-indigo-400">
+                Quick Value Check
               </Button>
             </Link>
           </div>
