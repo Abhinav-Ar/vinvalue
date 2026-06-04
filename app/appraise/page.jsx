@@ -7,8 +7,9 @@ import {
   Search, Gauge, MapPin, ShieldCheck, AlertTriangle, Loader2,
   ExternalLink, Zap, RotateCcw, Car, Users, Wrench,
   DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
-  Clock, BarChart2, CheckCircle,
+  Clock, BarChart2, CheckCircle, FileText,
 } from "lucide-react";
+import { encodeProfile } from "@/lib/profileEncoding";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -198,6 +199,12 @@ export default function AppraisePage() {
   const [accidents, setAccidents] = useState("No");
   const [serviceHistory, setServiceHistory] = useState("Partial");
   const [owners, setOwners] = useState("1");
+  // Extended condition fields — mirrors what CarMax & Carvana ask
+  const [warningLights, setWarningLights] = useState("None");
+  const [mechanicalIssues, setMechanicalIssues] = useState("None");
+  const [bodyDamage, setBodyDamage] = useState("None");
+  const [featuresWorking, setFeaturesWorking] = useState("Yes");
+  const [keysCount, setKeysCount] = useState("Both sets");
   const [result, setResult] = useState(null);
   const [phase, setPhase] = useState("vin");
   const [showRecon, setShowRecon] = useState(false);
@@ -247,6 +254,7 @@ export default function AppraisePage() {
         engine: decoded.EngineCylinders || "", drive: decoded.DriveType || "",
         fuel: decoded.FuelTypePrimary || "",
         zip, mileage, condition, titleStatus, accidents, serviceHistory, owners,
+        warningLights, mechanicalIssues, bodyDamage, featuresWorking, keysCount,
       });
       const res = await fetch(`/api/appraise?${params}`);
       const data = await res.json();
@@ -263,6 +271,8 @@ export default function AppraisePage() {
   function reset() {
     setVin(""); setDecoded(null); setError(""); setResult(null); setPhase("vin");
     setShowRecon(false); setShowListings(false); setShowRecalls(false);
+    setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
+    setFeaturesWorking("Yes"); setKeysCount("Both sets");
   }
 
   const { appraisal, listings, recalls = [], safetyRating, marketStats } = result || {};
@@ -308,7 +318,7 @@ export default function AppraisePage() {
                 </span>
               </h1>
               <p className="mb-10 text-lg text-muted-foreground">
-                Get your trade-in, private party, and retail values — then see estimated offers from Carvana, CarMax, Vroom, and more, all in one place.
+                Get your trade-in, private party, and retail values — then see estimated offers from Carvana, CarMax, CarGurus, and more, all in one place.
               </p>
               <Card className="rounded-3xl border-border shadow-2xl">
                 <CardContent className="p-6">
@@ -435,22 +445,94 @@ export default function AppraisePage() {
                       </Select>
                     </FieldLabel>
                   </div>
-                  {error && (
-                    <div className="flex items-center gap-2 rounded-2xl border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
-                      <AlertTriangle className="h-4 w-4 shrink-0" />{error}
-                    </div>
-                  )}
-                  <Button
-                    onClick={runAppraisal}
-                    disabled={loading}
-                    className="h-12 rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700"
-                  >
-                    {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <DollarSign className="mr-2 h-5 w-5" />}
-                    Run Full Appraisal
-                  </Button>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Condition details — full width, mirrors CarMax / Carvana questions */}
+            <Card className="mt-8 rounded-3xl border-border">
+              <CardContent className="p-6">
+                <div className="mb-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500">Condition details</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    These are the exact questions CarMax and Carvana ask. Answering now gives you a more accurate estimate and saves time on their sites.
+                  </p>
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  <FieldLabel icon={AlertTriangle} label="Warning lights on dash">
+                    <Select value={warningLights} onValueChange={setWarningLights}>
+                      <SelectTrigger className="h-11 rounded-2xl"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="None">None</SelectItem>
+                        <SelectItem value="Check engine">Check engine light</SelectItem>
+                        <SelectItem value="Multiple">Multiple lights</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldLabel>
+
+                  <FieldLabel icon={Wrench} label="Mechanical issues">
+                    <Select value={mechanicalIssues} onValueChange={setMechanicalIssues}>
+                      <SelectTrigger className="h-11 rounded-2xl"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="None">None — runs great</SelectItem>
+                        <SelectItem value="Minor">Minor — runs but has issues</SelectItem>
+                        <SelectItem value="Major">Major — unreliable or won't start</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldLabel>
+
+                  <FieldLabel icon={Car} label="Exterior / body damage">
+                    <Select value={bodyDamage} onValueChange={setBodyDamage}>
+                      <SelectTrigger className="h-11 rounded-2xl"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="None">None</SelectItem>
+                        <SelectItem value="Minor">Minor — light scratches or dings</SelectItem>
+                        <SelectItem value="Moderate">Moderate — dents or paint damage</SelectItem>
+                        <SelectItem value="Major">Major — collision or structural</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldLabel>
+
+                  <FieldLabel icon={ShieldCheck} label="Features & electronics">
+                    <Select value={featuresWorking} onValueChange={setFeaturesWorking}>
+                      <SelectTrigger className="h-11 rounded-2xl"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Yes">All working — AC, windows, infotainment</SelectItem>
+                        <SelectItem value="Minor issues">Minor issues — one or two small things</SelectItem>
+                        <SelectItem value="Major issues">Major issues — AC, sunroof, or electronics out</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldLabel>
+
+                  <FieldLabel icon={Search} label="Keys / remotes available">
+                    <Select value={keysCount} onValueChange={setKeysCount}>
+                      <SelectTrigger className="h-11 rounded-2xl"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Both sets">Both sets</SelectItem>
+                        <SelectItem value="One set">One set only</SelectItem>
+                        <SelectItem value="No keys">No keys</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldLabel>
+                </div>
+
+                {error && (
+                  <div className="mt-5 flex items-center gap-2 rounded-2xl border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />{error}
+                  </div>
+                )}
+
+                <Button
+                  onClick={runAppraisal}
+                  disabled={loading}
+                  className="mt-6 h-12 w-full rounded-2xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/40 hover:from-indigo-700 hover:to-violet-700 sm:w-auto sm:px-10"
+                >
+                  {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <DollarSign className="mr-2 h-5 w-5" />}
+                  Run Full Appraisal
+                </Button>
+              </CardContent>
+            </Card>
           </motion.main>
         )}
 
@@ -461,10 +543,48 @@ export default function AppraisePage() {
             <h1 className="mb-1 text-4xl font-bold tracking-tight">
               {decoded.ModelYear} {decoded.Make} {decoded.Model}
             </h1>
-            <p className="mb-12 text-lg text-muted-foreground">
+            <p className="mb-6 text-lg text-muted-foreground">
               {miles(Number(mileage))} · {condition} · {titleStatus} title · {owners} owner{owners !== "1" ? "s" : ""}
               {accidents === "Yes" ? " · Accident reported" : ""}
             </p>
+
+            {/* Share / profile CTA */}
+            {(() => {
+              const encoded = encodeProfile({
+                decoded, mileage, zip, condition, titleStatus, accidents,
+                serviceHistory, owners, warningLights, mechanicalIssues,
+                bodyDamage, featuresWorking, keysCount, appraisal,
+                recalls, safetyRating, marketStats,
+              });
+              if (!encoded) return null;
+              const profileUrl = `/profile?d=${encoded}`;
+              return (
+                <div className="mb-12 flex flex-wrap items-center gap-3 rounded-2xl border border-indigo-800/40 bg-indigo-950/20 px-5 py-4">
+                  <FileText className="h-5 w-5 shrink-0 text-indigo-400" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold">Your seller's report is ready</p>
+                    <p className="text-xs text-muted-foreground">Share this link with buyers, or open it before visiting CarMax / Carvana so you have all your answers ready.</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      className="rounded-xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
+                      onClick={() => window.open(profileUrl, "_blank")}
+                    >
+                      View Report <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => navigator.clipboard?.writeText(window.location.origin + profileUrl)}
+                    >
+                      Copy link
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── Value summary ── */}
             <div className="mb-10 grid gap-4 sm:grid-cols-3">
@@ -593,6 +713,11 @@ export default function AppraisePage() {
                       ["Title status", appraisal.reconditioningBreakdown.title, "Documentation and compliance costs"],
                       ["Service history gap", appraisal.reconditioningBreakdown.service, "Unknown maintenance catch-up"],
                       ["Open recalls", appraisal.reconditioningBreakdown.recalls, "Dealer recall repair time and liability"],
+                      ["Warning lights", appraisal.reconditioningBreakdown.warningLights, "Diagnostic scan and repairs"],
+                      ["Mechanical issues", appraisal.reconditioningBreakdown.mechanical, "Repairs to make road-ready"],
+                      ["Body damage", appraisal.reconditioningBreakdown.bodyDamage, "Bodywork, paint, or structural repair"],
+                      ["Features / electronics", appraisal.reconditioningBreakdown.features, "AC, infotainment, or electrical repairs"],
+                      ["Missing keys", appraisal.reconditioningBreakdown.keys, "Key programming and replacement"],
                     ].map(([label, value, note]) => (
                       value > 0 && (
                         <div key={label} className="rounded-2xl bg-card p-4">

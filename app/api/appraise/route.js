@@ -106,9 +106,14 @@ export async function GET(request) {
     const mileage       = Number(searchParams.get("mileage"))  || 65000;
     const condition     = searchParams.get("condition")     || "Good";
     const titleStatus   = searchParams.get("titleStatus")   || "Clean";
-    const accidents     = searchParams.get("accidents")     || "No";
+    const accidents      = searchParams.get("accidents")      || "No";
     const serviceHistory = searchParams.get("serviceHistory") || "Partial";
-    const owners        = Number(searchParams.get("owners")) || 1;
+    const owners         = Number(searchParams.get("owners")) || 1;
+    const warningLights  = searchParams.get("warningLights")  || "None";
+    const mechanicalIssues = searchParams.get("mechanicalIssues") || "None";
+    const bodyDamage     = searchParams.get("bodyDamage")     || "None";
+    const featuresWorking = searchParams.get("featuresWorking") || "Yes";
+    const keysCount      = searchParams.get("keysCount")      || "Both sets";
 
     if (!year || !make || !model)
       return Response.json({ error: "year, make, and model are required" }, { status: 400 });
@@ -168,7 +173,14 @@ export async function GET(request) {
     const reconTitle    = RECON_TITLE[titleStatus] ?? 0;
     const reconService  = serviceHistory === "None" ? 300 : serviceHistory === "Partial" ? 150 : 0;
     const reconRecalls  = recalls.length > 0 ? Math.min(recalls.length * 200, 600) : 0;
-    const reconditioning = reconBase + reconMileage + reconAccident + reconTitle + reconService + reconRecalls;
+    // Extended condition fields
+    const reconWarningLights   = warningLights   === "Multiple"     ? 1500 : warningLights   === "Check engine" ? 400  : 0;
+    const reconMechanical      = mechanicalIssues === "Major"       ? 2500 : mechanicalIssues === "Minor"       ? 600  : 0;
+    const reconBodyDamage      = bodyDamage       === "Major"       ? 2000 : bodyDamage       === "Moderate"    ? 800  : bodyDamage === "Minor" ? 300 : 0;
+    const reconFeatures        = featuresWorking  === "Major issues" ? 600 : featuresWorking  === "Minor issues" ? 200 : 0;
+    const reconKeys            = keysCount        === "No keys"     ? 350  : keysCount        === "One set"     ? 150  : 0;
+    const reconditioning = reconBase + reconMileage + reconAccident + reconTitle + reconService + reconRecalls
+      + reconWarningLights + reconMechanical + reconBodyDamage + reconFeatures + reconKeys;
 
     // ── Three-tier valuation ──
     const retailMedian  = medianOf(prices);
@@ -194,6 +206,8 @@ export async function GET(request) {
         reconditioningBreakdown: {
           base: reconBase, mileage: reconMileage, accident: reconAccident,
           title: reconTitle, service: reconService, recalls: reconRecalls,
+          warningLights: reconWarningLights, mechanical: reconMechanical,
+          bodyDamage: reconBodyDamage, features: reconFeatures, keys: reconKeys,
         },
         adjustments: {
           condition: Math.round((conditionFactor - 1) * 100),
