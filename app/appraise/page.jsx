@@ -7,7 +7,7 @@ import {
   Search, Gauge, MapPin, ShieldCheck, AlertTriangle, Loader2,
   ExternalLink, Zap, RotateCcw, Car, Users, Wrench,
   DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
-  Clock, BarChart2, CheckCircle, FileText,
+  Clock, BarChart2, CheckCircle, FileText, Copy, ClipboardCheck,
 } from "lucide-react";
 import { encodeProfile } from "@/lib/profileEncoding";
 import { useSession } from "next-auth/react";
@@ -95,7 +95,7 @@ const INSTANT_BUYERS = [
     tagline: "In-person · Instant payment",
     multiplier: 0.97,
     spread: 0.05,
-    getUrl: () => "https://www.carmax.com/sell-my-car",
+    getUrl: (vin) => `https://www.carmax.com/sell-my-car?vin=${vin}`,
     pros: ["Check or deposit same day", "No-haggle pricing", "Accepts high mileage"],
     con: "Must visit a physical store",
     speed: "Same day",
@@ -215,7 +215,14 @@ export default function AppraisePage() {
   const [showRecalls, setShowRecalls] = useState(false);
   const [inGarage, setInGarage] = useState(false);
   const [savingGarage, setSavingGarage] = useState(false);
+  const [copiedLabel, setCopiedLabel] = useState(null);
   const { data: session } = useSession();
+
+  function copyText(text, label) {
+    navigator.clipboard?.writeText(text);
+    setCopiedLabel(label);
+    setTimeout(() => setCopiedLabel(null), 2000);
+  }
 
   // Pre-fill VIN if arriving from /garage re-appraise link
   React.useEffect(() => {
@@ -674,7 +681,40 @@ export default function AppraisePage() {
             <div className="mb-10">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-500">Fastest money</p>
               <h2 className="mb-2 text-2xl font-bold">Get an instant cash offer</h2>
-              <p className="mb-6 text-muted-foreground">These companies buy your car outright — no listing, no waiting. Click to get your actual offer.</p>
+              <p className="mb-4 text-muted-foreground">These companies buy your car outright — no listing, no waiting. Click to get your actual offer.</p>
+
+              {/* Quick Reference — copy key details before visiting each site */}
+              <Card className="mb-6 rounded-2xl border-border bg-muted/30">
+                <CardContent className="p-4">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your info — copy before you go</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: "VIN", value: decoded?.VIN },
+                      { label: "Year / Make / Model", value: `${decoded?.ModelYear} ${decoded?.Make} ${decoded?.Model}${decoded?.Trim ? " " + decoded.Trim : ""}` },
+                      { label: "Mileage", value: miles(Number(mileage)) },
+                      { label: "Condition", value: condition },
+                      { label: "ZIP", value: zip },
+                    ].map(({ label, value }) => (
+                      <button
+                        key={label}
+                        onClick={() => copyText(value, label)}
+                        className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm transition-colors hover:border-indigo-500 hover:bg-indigo-950/30"
+                      >
+                        <span className="text-xs text-muted-foreground">{label}:</span>
+                        <span className="font-mono font-medium">{value}</span>
+                        {copiedLabel === label
+                          ? <ClipboardCheck className="h-3.5 w-3.5 text-emerald-400" />
+                          : <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                        }
+                      </button>
+                    ))}
+                  </div>
+                  {copiedLabel && (
+                    <p className="mt-2 text-xs text-emerald-400">{copiedLabel} copied — paste it when prompted on their site.</p>
+                  )}
+                </CardContent>
+              </Card>
+
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, pros, con, speed, badge, gradient }) => {
                   const estimate = Math.round(appraisal.tradeIn * multiplier);
@@ -707,10 +747,14 @@ export default function AppraisePage() {
                             <span className="mt-0.5 shrink-0 text-xs text-red-400">✕</span>{con}
                           </li>
                         </ul>
-                        <Button className={`w-full rounded-2xl border-0 bg-gradient-to-r ${gradient} text-white`} asChild>
-                          <a href={getUrl(decoded.VIN)} target="_blank" rel="noopener noreferrer">
-                            Get {name.split(" ")[0]} Offer <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                          </a>
+                        <Button
+                          className={`w-full rounded-2xl border-0 bg-gradient-to-r ${gradient} text-white`}
+                          onClick={() => {
+                            copyText(decoded.VIN, "VIN");
+                            window.open(getUrl(decoded.VIN), "_blank", "noopener,noreferrer");
+                          }}
+                        >
+                          Get {name.split(" ")[0]} Offer <ExternalLink className="ml-2 h-3.5 w-3.5" />
                         </Button>
                       </CardContent>
                     </Card>
