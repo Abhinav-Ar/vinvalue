@@ -10,6 +10,9 @@ import {
   Clock, BarChart2, CheckCircle, FileText,
 } from "lucide-react";
 import { encodeProfile } from "@/lib/profileEncoding";
+import { useSession } from "next-auth/react";
+import UserMenu from "@/components/UserMenu";
+import DepreciationChart from "@/components/DepreciationChart";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,6 +213,16 @@ export default function AppraisePage() {
   const [showRecon, setShowRecon] = useState(false);
   const [showListings, setShowListings] = useState(false);
   const [showRecalls, setShowRecalls] = useState(false);
+  const [inGarage, setInGarage] = useState(false);
+  const [savingGarage, setSavingGarage] = useState(false);
+  const { data: session } = useSession();
+
+  // Pre-fill VIN if arriving from /garage re-appraise link
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("vin");
+    if (v) setVin(v.toUpperCase());
+  }, []);
 
   const cleanVin = vin.trim().toUpperCase();
 
@@ -261,6 +274,29 @@ export default function AppraisePage() {
       if (data.error) throw new Error(data.error);
       setResult(data);
       setPhase("results");
+
+      // Auto-save to history if signed in (fire-and-forget)
+      if (session?.user) {
+        const encoded = encodeProfile({
+          decoded, mileage, zip, condition, titleStatus, accidents,
+          serviceHistory, owners, warningLights, mechanicalIssues,
+          bodyDamage, featuresWorking, keysCount,
+          appraisal: data.appraisal, recalls: data.recalls ?? [],
+          safetyRating: data.safetyRating, marketStats: data.marketStats,
+        });
+        fetch("/api/history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            vin: decoded.VIN, make: decoded.Make, model: decoded.Model,
+            year: decoded.ModelYear, trim: decoded.Trim, mileage, condition, zip,
+            tradeIn: data.appraisal.tradeIn,
+            privateParty: data.appraisal.privateParty,
+            retail: data.appraisal.retail,
+            profileEncoded: encoded,
+          }),
+        }).catch(() => {});
+      }
     } catch (err) {
       setError(err.message || "Appraisal failed.");
     } finally {
@@ -273,6 +309,7 @@ export default function AppraisePage() {
     setShowRecon(false); setShowListings(false); setShowRecalls(false);
     setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
     setFeaturesWorking("Yes"); setKeysCount("Both sets");
+    setInGarage(false);
   }
 
   const { appraisal, listings, recalls = [], safetyRating, marketStats } = result || {};
@@ -298,6 +335,7 @@ export default function AppraisePage() {
                 <RotateCcw className="h-4 w-4" /> New appraisal
               </Button>
             )}
+            <UserMenu />
           </div>
         </div>
       </header>
@@ -565,7 +603,7 @@ export default function AppraisePage() {
                     <p className="text-sm font-semibold">Your seller's report is ready</p>
                     <p className="text-xs text-muted-foreground">Share this link with buyers, or open it before visiting CarMax / Carvana so you have all your answers ready.</p>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex flex-wrap gap-2 shrink-0">
                     <Button
                       size="sm"
                       className="rounded-xl border-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
@@ -581,6 +619,31 @@ export default function AppraisePage() {
                     >
                       Copy link
                     </Button>
+                    {session?.user && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={savingGarage}
+                        className={`rounded-xl ${inGarage ? "border-violet-700 text-violet-400" : ""}`}
+                        onClick={async () => {
+                          setSavingGarage(true);
+                          await fetch("/api/garage", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              vin: decoded.VIN, make: decoded.Make, model: decoded.Model,
+                              year: decoded.ModelYear, trim: decoded.Trim, mileage, condition,
+                              tradeIn: appraisal.tradeIn, privateParty: appraisal.privateParty,
+                              retail: appraisal.retail, profileEncoded: encoded,
+                            }),
+                          });
+                          setInGarage(true);
+                          setSavingGarage(false);
+                        }}
+                      >
+                        {inGarage ? "✓ In Garage" : "Save to Garage"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
@@ -690,6 +753,121 @@ export default function AppraisePage() {
                 ))}
               </div>
             </div>
+
+            {/* ── Depreciation projection ── */}
+            <Card className="mb-8 rounded-3xl border-border">
+              <CardContent className="p-6">
+                <DepreciationChart retail={appraisal.retail} vehicleYear={decoded.ModelYear} />
+              </CardContent>
+            </Card>
+
+            {/* ── Worth fixing? ── */}
+            {(() => {
+              const fixes = [
+                warningLights === "Check engine" && {
+                  label: "Fix check engine light", repairLow: 150, repairHigh: 500,
+                  tradeGain: 400, privateGain: 700, verdict: "worth",
+                  note: "Dealers flag lit dash lights immediately — fixing it recovers more than it costs most of the time.",
+                },
+                warningLights === "Multiple" && {
+                  label: "Fix all dashboard lights", repairLow: 500, repairHigh: 1500,
+                  tradeGain: 1500, privateGain: 2200, verdict: "worth",
+                  note: "Multiple lights signal systemic issues. Addressing them adds significant trust value with any buyer.",
+                },
+                mechanicalIssues === "Minor" && {
+                  label: "Fix minor mechanical issues", repairLow: 300, repairHigh: 800,
+                  tradeGain: 600, privateGain: 1000, verdict: "worth",
+                  note: "Minor mechanical fixes almost always net more than they cost, especially for private sales.",
+                },
+                mechanicalIssues === "Major" && {
+                  label: "Fix major mechanical issues", repairLow: 1500, repairHigh: 5000,
+                  tradeGain: 2000, privateGain: 3500, verdict: "depends",
+                  note: "Get a repair quote first. If under $1,500 it's usually worth it. Above that, sell as-is to a specialty buyer like Peddle.",
+                },
+                bodyDamage === "Minor" && {
+                  label: "Fix minor scratches / dings", repairLow: 200, repairHigh: 600,
+                  tradeGain: 300, privateGain: 700, verdict: "worth",
+                  note: "PDR (paintless dent repair) is cheap and has a strong ROI for private party sales.",
+                },
+                bodyDamage === "Moderate" && {
+                  label: "Fix moderate body damage", repairLow: 800, repairHigh: 2500,
+                  tradeGain: 800, privateGain: 1500, verdict: "depends",
+                  note: "Get two body shop quotes. If under $1,000 it's likely worth fixing for private sale. Dealers often price this in regardless.",
+                },
+                bodyDamage === "Major" && {
+                  label: "Fix major collision damage", repairLow: 3000, repairHigh: 10000,
+                  tradeGain: 2000, privateGain: 4000, verdict: "skip",
+                  note: "Repair costs almost always exceed the value recovered. Sell as-is to an instant buyer or specialty buyer.",
+                },
+                featuresWorking === "Minor issues" && {
+                  label: "Fix minor electronics / features", repairLow: 100, repairHigh: 400,
+                  tradeGain: 200, privateGain: 450, verdict: "worth",
+                  note: "Small functional issues like a stuck window or broken AC vent are cheap fixes with good ROI.",
+                },
+                featuresWorking === "Major issues" && {
+                  label: "Fix major electronics (AC, infotainment)", repairLow: 500, repairHigh: 2000,
+                  tradeGain: 600, privateGain: 1100, verdict: "depends",
+                  note: "AC repair is almost always worth it in warm climates — buyers heavily discount no-AC cars. Infotainment less so.",
+                },
+                keysCount === "One set" && {
+                  label: "Get a replacement key / fob", repairLow: 200, repairHigh: 400,
+                  tradeGain: 150, privateGain: 300, verdict: "marginal",
+                  note: "Marginal for trade-in. Worth doing for private sale where buyers notice the missing set.",
+                },
+                keysCount === "No keys" && {
+                  label: "Get keys made", repairLow: 400, repairHigh: 800,
+                  tradeGain: 350, privateGain: 600, verdict: "worth",
+                  note: "No-key cars are heavily discounted. Getting keys made almost always pays back.",
+                },
+              ].filter(Boolean);
+
+              if (!fixes.length) return null;
+
+              const verdictStyle = {
+                worth: { label: "Worth it", color: "border-emerald-800/50 bg-emerald-950/50 text-emerald-400" },
+                depends: { label: "Case by case", color: "border-amber-800/50 bg-amber-950/50 text-amber-400" },
+                skip: { label: "Skip it", color: "border-red-800/50 bg-red-950/50 text-red-400" },
+                marginal: { label: "Marginal", color: "border-zinc-700/50 bg-zinc-900/50 text-zinc-400" },
+              };
+
+              return (
+                <Card className="mb-8 rounded-3xl border-border">
+                  <CardContent className="p-6">
+                    <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-emerald-500">Before you sell</p>
+                    <h2 className="mb-2 text-xl font-bold">Worth fixing?</h2>
+                    <p className="mb-5 text-sm text-muted-foreground">ROI estimate for each issue on your car. Repair costs are real-world ranges, not dealer markup.</p>
+                    <div className="space-y-3">
+                      {fixes.map(({ label, repairLow, repairHigh, tradeGain, privateGain, verdict, note }) => {
+                        const v = verdictStyle[verdict];
+                        return (
+                          <div key={label} className="rounded-2xl border border-border bg-card p-4">
+                            <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                              <p className="font-semibold text-sm">{label}</p>
+                              <Badge className={`rounded-full border text-xs shrink-0 ${v.color}`}>{v.label}</Badge>
+                            </div>
+                            <div className="mb-2 grid grid-cols-3 gap-3 text-xs">
+                              <div className="rounded-xl bg-background p-2.5">
+                                <p className="text-muted-foreground">Repair cost</p>
+                                <p className="font-semibold">${repairLow.toLocaleString()}–${repairHigh.toLocaleString()}</p>
+                              </div>
+                              <div className="rounded-xl bg-background p-2.5">
+                                <p className="text-muted-foreground">Trade-in gain</p>
+                                <p className="font-semibold text-amber-400">+${tradeGain.toLocaleString()}</p>
+                              </div>
+                              <div className="rounded-xl bg-background p-2.5">
+                                <p className="text-muted-foreground">Private gain</p>
+                                <p className="font-semibold text-indigo-400">+${privateGain.toLocaleString()}</p>
+                              </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-relaxed">{note}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {/* ── Reconditioning breakdown ── */}
             <Card className="mb-8 rounded-3xl border-border">

@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import UserMenu from "@/components/UserMenu";
 import {
   Car,
   Search,
@@ -276,6 +277,7 @@ export default function ValuePage() {
                 </React.Fragment>
               ))}
             </div>
+            <UserMenu />
           </div>
         </div>
       </header>
