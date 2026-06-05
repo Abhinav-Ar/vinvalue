@@ -282,6 +282,23 @@ export default function AppraisePage() {
       setResult(data);
       setPhase("results");
 
+      // Send data to the AutoIQ browser extension if installed
+      window.dispatchEvent(new CustomEvent("autoiq:appraisal", {
+        detail: {
+          vin: decoded.VIN,
+          year: decoded.ModelYear,
+          make: decoded.Make,
+          model: decoded.Model,
+          trim: decoded.Trim || "",
+          mileage: String(mileage),
+          condition,
+          zip,
+          tradeIn: data.appraisal?.tradeIn,
+          privateParty: data.appraisal?.privateParty,
+          retail: data.appraisal?.retail,
+        },
+      }));
+
       // Auto-save to history if signed in (fire-and-forget)
       if (session?.user) {
         const encoded = encodeProfile({

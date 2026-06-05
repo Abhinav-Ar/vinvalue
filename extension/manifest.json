@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "AutoIQ — Car Form Filler",
+  "version": "1.0.0",
+  "description": "Autofills Carvana, CarMax, CarGurus and more with your car details from AutoIQ.",
+  "permissions": ["storage", "scripting", "tabs"],
+  "host_permissions": [
+    "https://vinvalue-ebon.vercel.app/*",
+    "https://www.carvana.com/*",
+    "https://www.carmax.com/*",
+    "https://www.cargurus.com/*",
+    "https://www.kbb.com/*",
+    "https://www.peddle.com/*",
+    "https://www.autonation.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://vinvalue-ebon.vercel.app/*"],
+      "js": ["content/autoiq.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.carvana.com/*",
+        "https://www.carmax.com/*",
+        "https://www.cargurus.com/*",
+        "https://www.kbb.com/*",
+        "https://www.peddle.com/*",
+        "https://www.autonation.com/*"
+      ],
+      "js": ["content/filler.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AutoIQ"
+  }
+}
