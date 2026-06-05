@@ -380,7 +380,7 @@ export default function AppraisePage() {
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
                     <span className={cleanVin.length === 17 ? "font-semibold text-emerald-400" : ""}>{cleanVin.length}/17</span>
-                    {" "}· No account needed
+                    {" "}
                   </p>
                   {error && (
                     <div className="mt-4 flex items-center gap-2 rounded-2xl border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">

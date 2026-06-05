@@ -249,7 +249,7 @@ export default function Landing() {
           className="relative mx-auto max-w-4xl text-center"
         >
           <Badge className="mb-8 rounded-full border-indigo-800/60 bg-indigo-950/60 px-4 py-1.5 text-indigo-400">
-            Live market data · No account needed · Free
+            Live market data · Free
           </Badge>
 
           <h1 className="text-6xl font-bold leading-[1.05] tracking-tight sm:text-7xl">
@@ -287,7 +287,7 @@ export default function Landing() {
           </div>
 
           <p className="mt-5 text-sm text-muted-foreground/60">
-            Free · No signup required · Results in seconds
+            Free · Results in seconds
           </p>
         </motion.div>
       </section>
@@ -397,7 +397,7 @@ export default function Landing() {
             </span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            No account. No subscription. Just your VIN and the truth.
+            No subscription. Just your VIN and the truth.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link href="/appraise">

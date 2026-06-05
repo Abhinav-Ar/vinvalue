@@ -338,7 +338,7 @@ export default function ValuePage() {
                       {cleanVin.length}/17 characters
                     </span>
                     <span>·</span>
-                    <span>Free · No account needed</span>
+                    <span>Free</span>
                   </div>
 
                   {decodeError && (
