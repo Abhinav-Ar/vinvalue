@@ -71,9 +71,32 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     zip: selectedCar.zip || "",
   };
 
+  // Decode condition details from profile_encoded (always available, no re-deploy needed)
+  function decodeConditions(encoded) {
+    try {
+      const d = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+      return {
+        bodyDamage:       d.dmg,
+        mechanicalIssues: d.mch,
+        warningLights:    d.wl,
+        accidents:        d.ac,
+        titleStatus:      d.tl,
+        serviceHistory:   d.sv,
+        owners:           d.ow,
+        keysCount:        d.ky,
+        featuresWorking:  d.ft,
+      };
+    } catch (_) { return {}; }
+  }
+
+  const profileCond = selectedCar.profile_encoded
+    ? decodeConditions(selectedCar.profile_encoded)
+    : {};
+
   chrome.storage.local.get("conditions", ({ conditions = {} }) => {
-    const cond = conditions[car.vin] || {};
-    const carWithCondition = { ...car, ...cond };
+    const storedCond = conditions[car.vin] || {};
+    // profile_encoded is the source of truth; stored conditions are a fallback
+    const carWithCondition = { ...car, ...storedCond, ...profileCond };
 
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
