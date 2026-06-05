@@ -32,6 +32,39 @@ function setSelectValue(el, value) {
   return false;
 }
 
+// Handle custom React/ARIA dropdowns (role="combobox", role="listbox" etc.)
+async function fillAriaDropdown(trigger, value) {
+  const lower = value.toLowerCase();
+  trigger.click();
+  trigger.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+
+  // Wait for options to render
+  await new Promise((r) => setTimeout(r, 400));
+
+  const optionSelectors = [
+    '[role="option"]',
+    '[role="listitem"]',
+    '[role="menuitem"]',
+    "li[data-value]",
+    "li",
+  ];
+
+  for (const sel of optionSelectors) {
+    const options = [...document.querySelectorAll(sel)];
+    for (const opt of options) {
+      if (opt.textContent.trim().toLowerCase().includes(lower)) {
+        opt.click();
+        opt.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        return true;
+      }
+    }
+  }
+
+  // Close dropdown if nothing matched
+  document.body.click();
+  return false;
+}
+
 function clickRadio(el) {
   el.checked = true;
   el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
@@ -156,11 +189,32 @@ function fillPage(car) {
     { keys: ["fuel", "fuel type"], value: car.fuelType },
     { keys: ["cylinder", "engine"], value: car.cylinders ? car.cylinders + " cylinder" : null },
   ];
+
+  // Native <select> elements
   for (const sel of document.querySelectorAll("select")) {
     const label = getLabelText(sel);
     for (const { keys, value } of selectTargets) {
       if (value && keys.some((k) => label.includes(k))) {
         if (setSelectValue(sel, value)) filled++;
+        break;
+      }
+    }
+  }
+
+  // ARIA / custom React dropdowns (role="combobox", role="button" acting as select)
+  const ariaDropdowns = [
+    ...document.querySelectorAll('[role="combobox"]'),
+    ...document.querySelectorAll('[aria-haspopup="listbox"]'),
+    ...document.querySelectorAll('[aria-haspopup="true"]'),
+  ];
+  for (const trigger of ariaDropdowns) {
+    const label = getLabelText(trigger) ||
+      trigger.closest("label,div,fieldset")?.querySelector("label,legend,p,span[id]")
+        ?.textContent?.toLowerCase() || "";
+    for (const { keys, value } of selectTargets) {
+      if (value && keys.some((k) => label.includes(k))) {
+        fillAriaDropdown(trigger, value).then((ok) => { if (ok) {} });
+        filled++;
         break;
       }
     }

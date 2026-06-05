@@ -27,6 +27,11 @@ export async function POST(request) {
   const body = await request.json();
   const { vin, make, model, year, trim, mileage, condition, zip, tradeIn, privateParty, retail, profileEncoded } = body;
 
+  // Delete any previous entry for this VIN so we only keep the latest appraisal per car
+  await pool.query(
+    `DELETE FROM searches WHERE user_id = $1 AND vin = $2`,
+    [session.user.id, vin]
+  );
   await pool.query(
     `INSERT INTO searches (user_id, vin, make, model, year, trim, mileage, condition, zip,
                            trade_in, private_party, retail, profile_encoded)

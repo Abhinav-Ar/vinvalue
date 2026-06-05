@@ -79,7 +79,12 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     args: [car],
   }).then(() => {
     status.className = "status ok";
-    status.textContent = `Filling form for ${car.year} ${car.make} ${car.model}…`;
+    status.textContent = `Filling… check the page for results.`;
+    // Content scripts can't message back to popup, so resolve after a delay
+    setTimeout(() => {
+      status.className = "status";
+      status.textContent = "Done. Amber fields (color, features) need manual input — that data isn't in the VIN.";
+    }, 2500);
   }).catch(() => {
     status.className = "status err";
     status.textContent = "This page isn't supported for autofill.";
