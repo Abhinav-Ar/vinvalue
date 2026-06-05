@@ -298,14 +298,27 @@ function highlightUnfilled() {
   }
 
   // Button-style choices where nothing is selected
-  for (const group of document.querySelectorAll('[role="group"], fieldset')) {
-    const buttons = [...group.querySelectorAll("button, [role='button']")].filter(isVisible);
+  // Group buttons by their direct parent to catch plain-div wrappers (e.g. Carvana modifications)
+  const choiceButtons = [...document.querySelectorAll("button, [role='button']")].filter((b) =>
+    isVisible(b) &&
+    !b.closest("nav, header, footer, form > *, [role='navigation']") &&
+    b.textContent.trim().length > 0 &&
+    b.textContent.trim().length < 60
+  );
+  const byParent = new Map();
+  for (const btn of choiceButtons) {
+    const p = btn.parentElement;
+    if (!byParent.has(p)) byParent.set(p, []);
+    byParent.get(p).push(btn);
+  }
+  for (const [, buttons] of byParent) {
+    if (buttons.length < 2) continue;
     const anyActive = buttons.some((b) =>
       b.getAttribute("aria-pressed") === "true" ||
       b.getAttribute("aria-selected") === "true" ||
-      b.classList.toString().match(/active|selected|chosen/)
+      b.classList.toString().match(/active|selected|chosen|highlighted/)
     );
-    if (buttons.length > 1 && !anyActive) {
+    if (!anyActive) {
       buttons.forEach((b) => unfilled.push(markNeedsInput(b)));
     }
   }
