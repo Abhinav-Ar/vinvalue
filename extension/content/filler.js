@@ -298,10 +298,19 @@ function highlightUnfilled() {
   }
 
   // Button-style choices where nothing is selected
-  // Group buttons by their direct parent to catch plain-div wrappers (e.g. Carvana modifications)
+  // Only highlight groups near a question (contains "?") — filters out Back/Continue/nav buttons
+  function nearQuestion(el) {
+    let cur = el.parentElement;
+    for (let i = 0; i < 5; i++) {
+      if (!cur || cur === document.body) break;
+      if (cur.textContent.includes("?")) return true;
+      cur = cur.parentElement;
+    }
+    return false;
+  }
+
   const choiceButtons = [...document.querySelectorAll("button, [role='button']")].filter((b) =>
     isVisible(b) &&
-    !b.closest("nav, header, footer, form > *, [role='navigation']") &&
     b.textContent.trim().length > 0 &&
     b.textContent.trim().length < 60
   );
@@ -313,6 +322,7 @@ function highlightUnfilled() {
   }
   for (const [, buttons] of byParent) {
     if (buttons.length < 2) continue;
+    if (!nearQuestion(buttons[0])) continue;
     const anyActive = buttons.some((b) =>
       b.getAttribute("aria-pressed") === "true" ||
       b.getAttribute("aria-selected") === "true" ||
