@@ -15,7 +15,24 @@ async function syncGarage() {
 
 syncGarage();
 
-// Re-sync after a new appraisal is saved to the garage
-window.addEventListener("autoiq:appraisal", () => {
+// Store detailed condition data keyed by VIN so filler can use it
+window.addEventListener("autoiq:appraisal", (e) => {
+  const d = e.detail;
+  if (!d?.vin) return;
+  chrome.storage.local.get("conditions", ({ conditions = {} }) => {
+    conditions[d.vin] = {
+      bodyDamage:       d.bodyDamage,
+      mechanicalIssues: d.mechanicalIssues,
+      warningLights:    d.warningLights,
+      accidents:        d.accidents,
+      titleStatus:      d.titleStatus,
+      serviceHistory:   d.serviceHistory,
+      owners:           d.owners,
+      keysCount:        d.keysCount,
+      featuresWorking:  d.featuresWorking,
+      condition:        d.condition,
+    };
+    chrome.storage.local.set({ conditions });
+  });
   setTimeout(syncGarage, 1500);
 });

@@ -220,6 +220,9 @@ function fillPage(car) {
     }
   }
 
+  // Apply condition-based answers (body damage, mechanical, accidents etc.)
+  filled += applyConditionAnswers(car);
+
   return filled;
 }
 
@@ -455,6 +458,103 @@ function finishFill(n, car) {
       showToast(`All done — filled ${n} field${n > 1 ? "s" : ""} for ${car.year} ${car.make} ${car.model}`);
     }
   }, 600);
+}
+
+// ── Condition-based auto-clicking ────────────────────────────────────────────
+// Maps our AutoIQ condition values to text patterns Carvana/CarMax use on their forms
+const CONDITION_ANSWERS = [
+  {
+    questionKeywords: ["exterior damage", "body damage", "paint damage", "damage to the exterior"],
+    field: "bodyDamage",
+    answers: {
+      "None":     ["no exterior damage", "no damage", "none"],
+      "Minor":    ["minor damage", "scuffs", "scratches", "chips"],
+      "Moderate": ["dents", "scrapes", "moderate"],
+      "Severe":   ["major damage", "severe", "significant"],
+    },
+  },
+  {
+    questionKeywords: ["mechanical", "engine", "does it run", "vehicle run", "running"],
+    field: "mechanicalIssues",
+    answers: {
+      "None":  ["no mechanical", "runs", "no issues", "no problems"],
+      "Minor": ["minor mechanical", "minor issue"],
+      "Major": ["major mechanical", "does not run", "doesn't run", "not running"],
+    },
+  },
+  {
+    questionKeywords: ["warning light", "check engine", "dashboard light"],
+    field: "warningLights",
+    answers: {
+      "None":          ["no warning", "no lights", "none"],
+      "Check Engine":  ["check engine"],
+      "Multiple":      ["multiple", "several", "other"],
+    },
+  },
+  {
+    questionKeywords: ["accident", "collision", "been in", "reported accident"],
+    field: "accidents",
+    answers: {
+      "No":          ["no accident", "no collision", "no", "none"],
+      "Yes - minor": ["minor accident", "yes"],
+      "Yes - major": ["major accident", "frame damage", "yes"],
+    },
+  },
+  {
+    questionKeywords: ["title", "lien", "loan"],
+    field: "titleStatus",
+    answers: {
+      "Clean":   ["clean", "no lien", "i own it outright"],
+      "Salvage": ["salvage"],
+      "Rebuilt": ["rebuilt"],
+    },
+  },
+];
+
+function clickByText(text) {
+  const lower = text.toLowerCase();
+  // Try checkboxes and radio labels first
+  for (const label of document.querySelectorAll("label")) {
+    if (label.textContent.trim().toLowerCase().includes(lower)) {
+      const input = label.querySelector("input") ||
+        (label.htmlFor ? document.getElementById(label.htmlFor) : null);
+      if (input) {
+        input.checked = true;
+        input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        return true;
+      }
+      label.click();
+      return true;
+    }
+  }
+  // Try any clickable element with matching text
+  for (const el of document.querySelectorAll("button, [role='option'], [role='radio'], li")) {
+    if (el.textContent.trim().toLowerCase().includes(lower) && isVisible(el)) {
+      el.click();
+      return true;
+    }
+  }
+  return false;
+}
+
+function applyConditionAnswers(car) {
+  let filled = 0;
+  for (const { questionKeywords, field, answers } of CONDITION_ANSWERS) {
+    const value = car[field];
+    if (!value || !answers[value]) continue;
+
+    // Find a question on the page matching this condition type
+    const pageText = document.body.innerText.toLowerCase();
+    const questionFound = questionKeywords.some((kw) => pageText.includes(kw));
+    if (!questionFound) continue;
+
+    // Try each answer text until one clicks successfully
+    for (const answerText of answers[value]) {
+      if (clickByText(answerText)) { filled++; break; }
+    }
+  }
+  return filled;
 }
 
 // ── Triggered by popup "Fill form" button ────────────────────────────────────

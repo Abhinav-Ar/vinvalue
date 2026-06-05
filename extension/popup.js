@@ -71,22 +71,26 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     zip: selectedCar.zip || "",
   };
 
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: (carData) => {
-      window.dispatchEvent(new CustomEvent("autoiq:fill", { detail: carData }));
-    },
-    args: [car],
-  }).then(() => {
-    status.className = "status ok";
-    status.textContent = `Filling… check the page for results.`;
-    // Content scripts can't message back to popup, so resolve after a delay
-    setTimeout(() => {
-      status.className = "status";
-      status.textContent = "Done. Amber fields (color, features) need manual input — that data isn't in the VIN.";
-    }, 2500);
-  }).catch(() => {
-    status.className = "status err";
-    status.textContent = "This page isn't supported for autofill.";
+  chrome.storage.local.get("conditions", ({ conditions = {} }) => {
+    const cond = conditions[car.vin] || {};
+    const carWithCondition = { ...car, ...cond };
+
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (carData) => {
+        window.dispatchEvent(new CustomEvent("autoiq:fill", { detail: carData }));
+      },
+      args: [carWithCondition],
+    }).then(() => {
+      status.className = "status ok";
+      status.textContent = "Filling… check the page for results.";
+      setTimeout(() => {
+        status.className = "status";
+        status.textContent = "Done. Amber fields need manual input.";
+      }, 2500);
+    }).catch(() => {
+      status.className = "status err";
+      status.textContent = "This page isn't supported for autofill.";
+    });
   });
 });
