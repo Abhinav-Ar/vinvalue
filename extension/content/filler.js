@@ -316,7 +316,7 @@ function highlightUnfilled() {
     }
   }
 
-  // Unchecked required radio groups — find groups where nothing is selected
+  // Unchecked radio groups — find groups where nothing is selected
   const radioGroups = {};
   for (const el of document.querySelectorAll("input[type=radio]")) {
     if (!el.name) continue;
@@ -327,6 +327,14 @@ function highlightUnfilled() {
     if (radios.every((r) => !r.checked) && radios.some(isVisible)) {
       radios.filter(isVisible).forEach((r) => r.classList.add("autoiq-needs-input"));
       unfilled.push(radios[0]);
+    }
+  }
+
+  // Unchecked checkboxes — on sell forms every checkbox is a feature question needing an answer
+  for (const el of document.querySelectorAll("input[type=checkbox]")) {
+    if (!el.checked && isVisible(el)) {
+      el.classList.add("autoiq-needs-input");
+      unfilled.push(el);
     }
   }
 
