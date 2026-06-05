@@ -229,33 +229,15 @@ function highlightUnfilled() {
   style.id = "autoiq-highlight-style";
   style.textContent = `
     @keyframes autoiq-pulse {
-      0%, 100% { box-shadow: 0 0 0 2px rgba(251,146,60,0.8); }
-      50%       { box-shadow: 0 0 0 4px rgba(251,146,60,0.3); }
+      0%, 100% { box-shadow: 0 0 0 2px rgba(251,146,60,0.85), 0 0 8px rgba(251,146,60,0.3); }
+      50%       { box-shadow: 0 0 0 4px rgba(251,146,60,0.4), 0 0 16px rgba(251,146,60,0.15); }
     }
     .autoiq-needs-input {
-      outline: 2px solid rgba(251,146,60,0.9) !important;
-      outline-offset: 2px !important;
+      outline: 2.5px solid rgba(251,146,60,0.95) !important;
+      outline-offset: 3px !important;
       animation: autoiq-pulse 1.6s ease-in-out infinite !important;
-      border-radius: 4px !important;
-    }
-    .autoiq-needs-label {
-      position: relative !important;
-    }
-    .autoiq-needs-label::after {
-      content: "⚡ Needs input";
-      position: absolute;
-      top: -20px;
-      left: 0;
-      background: #f97316;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      white-space: nowrap;
-      font-family: -apple-system, sans-serif;
-      pointer-events: none;
-      z-index: 2147483646;
+      border-radius: 6px !important;
+      background-color: rgba(251,146,60,0.06) !important;
     }
   `;
   const existing = document.getElementById("autoiq-highlight-style");
@@ -267,56 +249,68 @@ function highlightUnfilled() {
     el.classList.remove("autoiq-needs-input");
   });
 
+  // For hidden inputs (custom checkboxes, styled selects), highlight the visible wrapper instead
+  function markNeedsInput(el) {
+    // Walk up to find a visible ancestor to attach the glow to
+    let target = el;
+    if (!isVisible(el) || el.offsetWidth < 10) {
+      target = el.closest("label,fieldset,div,li") || el;
+      // Keep walking up until we find something visible with reasonable size
+      let cur = target;
+      while (cur && cur !== document.body) {
+        if (isVisible(cur) && cur.offsetWidth > 20 && cur.offsetHeight > 10) {
+          target = cur;
+          break;
+        }
+        cur = cur.parentElement;
+      }
+    }
+    target.classList.add("autoiq-needs-input");
+    return target;
+  }
+
   const unfilled = [];
 
   // Visible text/number inputs that are empty
-  const inputs = [...document.querySelectorAll(
+  for (const el of document.querySelectorAll(
     "input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio])"
-  )];
-  for (const el of inputs) {
+  )) {
     if (!el.value.trim() && isVisible(el)) {
-      el.classList.add("autoiq-needs-input");
-      unfilled.push(el);
+      unfilled.push(markNeedsInput(el));
     }
   }
 
-  // Selects still on default (first) option
+  // Native selects still on default option
   for (const el of document.querySelectorAll("select")) {
     if (el.selectedIndex <= 0 && isVisible(el)) {
-      el.classList.add("autoiq-needs-input");
-      unfilled.push(el);
+      unfilled.push(markNeedsInput(el));
     }
   }
 
-  // ARIA custom dropdowns (Carvana color picker etc.) still showing placeholder text
+  // ARIA custom dropdowns still showing placeholder text
   const placeholderWords = ["select", "choose", "color", "pick", "enter", "exterior", "interior"];
   for (const el of document.querySelectorAll('[role="combobox"], [aria-haspopup="listbox"]')) {
     if (!isVisible(el)) continue;
     const text = el.textContent.trim().toLowerCase();
-    const looksUnset = placeholderWords.some((w) => text.includes(w)) || text === "";
-    if (looksUnset) {
-      el.classList.add("autoiq-needs-input");
-      unfilled.push(el);
+    if (placeholderWords.some((w) => text.includes(w)) || text === "") {
+      unfilled.push(markNeedsInput(el));
     }
   }
 
-  // Button-style choices where nothing is selected (e.g. Carvana "No modifications / Modifications")
-  const buttonGroups = document.querySelectorAll('[role="group"], fieldset');
-  for (const group of buttonGroups) {
+  // Button-style choices where nothing is selected
+  for (const group of document.querySelectorAll('[role="group"], fieldset')) {
     const buttons = [...group.querySelectorAll("button, [role='button']")].filter(isVisible);
     const anyActive = buttons.some((b) =>
-      b.classList.toString().includes("active") ||
-      b.classList.toString().includes("selected") ||
       b.getAttribute("aria-pressed") === "true" ||
-      b.getAttribute("aria-selected") === "true"
+      b.getAttribute("aria-selected") === "true" ||
+      b.classList.toString().match(/active|selected|chosen/)
     );
     if (buttons.length > 1 && !anyActive) {
-      buttons.forEach((b) => b.classList.add("autoiq-needs-input"));
-      unfilled.push(buttons[0]);
+      buttons.forEach((b) => unfilled.push(markNeedsInput(b)));
     }
   }
 
-  // Unchecked radio groups — find groups where nothing is selected
+  // Unchecked radio groups
   const radioGroups = {};
   for (const el of document.querySelectorAll("input[type=radio]")) {
     if (!el.name) continue;
@@ -324,17 +318,15 @@ function highlightUnfilled() {
     radioGroups[el.name].push(el);
   }
   for (const radios of Object.values(radioGroups)) {
-    if (radios.every((r) => !r.checked) && radios.some(isVisible)) {
-      radios.filter(isVisible).forEach((r) => r.classList.add("autoiq-needs-input"));
-      unfilled.push(radios[0]);
+    if (radios.every((r) => !r.checked)) {
+      radios.forEach((r) => unfilled.push(markNeedsInput(r)));
     }
   }
 
-  // Unchecked checkboxes — on sell forms every checkbox is a feature question needing an answer
+  // Unchecked checkboxes — every feature checkbox on a sell form needs an answer
   for (const el of document.querySelectorAll("input[type=checkbox]")) {
-    if (!el.checked && isVisible(el)) {
-      el.classList.add("autoiq-needs-input");
-      unfilled.push(el);
+    if (!el.checked) {
+      unfilled.push(markNeedsInput(el));
     }
   }
 
