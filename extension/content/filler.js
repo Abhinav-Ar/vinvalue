@@ -513,28 +513,65 @@ const CONDITION_ANSWERS = [
 
 function clickByText(text) {
   const lower = text.toLowerCase();
-  // Try checkboxes and radio labels first
-  for (const label of document.querySelectorAll("label")) {
-    if (label.textContent.trim().toLowerCase().includes(lower)) {
-      const input = label.querySelector("input") ||
-        (label.htmlFor ? document.getElementById(label.htmlFor) : null);
-      if (input) {
-        input.checked = true;
-        input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-        input.dispatchEvent(new Event("change", { bubbles: true }));
-        return true;
+
+  // Walk every visible element, find the most specific one whose text contains the target
+  const candidates = [...document.querySelectorAll("*")].filter((el) => {
+    if (!isVisible(el)) return false;
+    const ownText = [...el.childNodes]
+      .filter((n) => n.nodeType === Node.TEXT_NODE)
+      .map((n) => n.textContent)
+      .join("")
+      .trim()
+      .toLowerCase();
+    if (ownText.includes(lower)) return true;
+    const full = el.textContent.trim().toLowerCase();
+    return full.includes(lower) && el.children.length <= 3;
+  });
+
+  // Prefer smaller (more specific) elements
+  candidates.sort((a, b) => a.textContent.length - b.textContent.length);
+
+  for (const el of candidates) {
+    // 1. Input in the element itself
+    let input = el.querySelector("input[type=checkbox], input[type=radio], input") ||
+      (el.htmlFor ? document.getElementById(el.htmlFor) : null);
+
+    // 2. Input in closest label ancestor
+    if (!input) input = el.closest("label")?.querySelector("input");
+
+    // 3. Input in parent element (Carvana-style: <div><input/><p>text</p></div>)
+    if (!input) input = el.parentElement?.querySelector("input[type=checkbox], input[type=radio]");
+
+    // 4. Walk up MAX 3 levels — only the immediate card wrapper, not the whole question block
+    // Going higher would find the first input in the container (wrong checkbox)
+    if (!input) {
+      let cur = el.parentElement;
+      for (let depth = 0; depth < 3 && cur && cur !== document.body; depth++) {
+        const found = cur.querySelector("input[type=checkbox], input[type=radio]");
+        if (found) { input = found; break; }
+        cur = cur.parentElement;
       }
-      label.click();
+    }
+
+    if (input) {
+      input.checked = true;
+      input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      triggerReact(input);
+      console.log("[AutoIQ] checked input for:", text);
       return true;
     }
+
+    // 5. No input — click the closest interactive ancestor
+    const interactive = el.closest("button, a, label, [role='button'], [role='checkbox'], [role='radio'], [onclick]");
+    const clickTarget = interactive || el;
+    clickTarget.click();
+    clickTarget.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    console.log("[AutoIQ] clicked:", clickTarget.tagName, el.textContent.trim().slice(0, 40));
+    return true;
   }
-  // Try any clickable element with matching text
-  for (const el of document.querySelectorAll("button, [role='option'], [role='radio'], li")) {
-    if (el.textContent.trim().toLowerCase().includes(lower) && isVisible(el)) {
-      el.click();
-      return true;
-    }
-  }
+
+  console.log("[AutoIQ] clickByText found nothing for:", text);
   return false;
 }
 
@@ -561,5 +598,9 @@ function applyConditionAnswers(car) {
 window.addEventListener("autoiq:fill", (e) => {
   const car = e?.detail;
   if (!car) return showToast("No car selected.", false);
+
+  // Debug: log what condition data arrived
+  console.log("[AutoIQ] car data received:", JSON.stringify(car, null, 2));
+
   fillWithRetry(car);
 });
