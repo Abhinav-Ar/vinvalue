@@ -288,6 +288,34 @@ function highlightUnfilled() {
     }
   }
 
+  // ARIA custom dropdowns (Carvana color picker etc.) still showing placeholder text
+  const placeholderWords = ["select", "choose", "color", "pick", "enter", "exterior", "interior"];
+  for (const el of document.querySelectorAll('[role="combobox"], [aria-haspopup="listbox"]')) {
+    if (!isVisible(el)) continue;
+    const text = el.textContent.trim().toLowerCase();
+    const looksUnset = placeholderWords.some((w) => text.includes(w)) || text === "";
+    if (looksUnset) {
+      el.classList.add("autoiq-needs-input");
+      unfilled.push(el);
+    }
+  }
+
+  // Button-style choices where nothing is selected (e.g. Carvana "No modifications / Modifications")
+  const buttonGroups = document.querySelectorAll('[role="group"], fieldset');
+  for (const group of buttonGroups) {
+    const buttons = [...group.querySelectorAll("button, [role='button']")].filter(isVisible);
+    const anyActive = buttons.some((b) =>
+      b.classList.toString().includes("active") ||
+      b.classList.toString().includes("selected") ||
+      b.getAttribute("aria-pressed") === "true" ||
+      b.getAttribute("aria-selected") === "true"
+    );
+    if (buttons.length > 1 && !anyActive) {
+      buttons.forEach((b) => b.classList.add("autoiq-needs-input"));
+      unfilled.push(buttons[0]);
+    }
+  }
+
   // Unchecked required radio groups — find groups where nothing is selected
   const radioGroups = {};
   for (const el of document.querySelectorAll("input[type=radio]")) {
@@ -364,27 +392,38 @@ function fillWithRetry(car) {
     finishFill(n, car);
     return;
   }
+
+  // Page may already be rendered with no pending mutations — use a timer fallback
+  let resolved = false;
+
+  function resolve(filled) {
+    if (resolved) return;
+    resolved = true;
+    observer.disconnect();
+    if (filled > 0) {
+      finishFill(filled, car);
+    } else {
+      const unfilled = highlightUnfilled();
+      showToast(
+        unfilled > 0
+          ? `Nothing to autofill here — ${unfilled} field${unfilled > 1 ? "s" : ""} highlighted for manual input`
+          : "No form fields found on this page.",
+        unfilled === 0
+      );
+    }
+  }
+
   let attempts = 0;
   const observer = new MutationObserver(() => {
     attempts++;
     const n2 = fillPage(car);
-    if (n2 > 0) {
-      finishFill(n2, car);
-      observer.disconnect();
-    }
-    if (attempts > 60) {
-      observer.disconnect();
-      // Even if nothing filled, still highlight empty fields
-      const unfilled = highlightUnfilled();
-      showToast(
-        unfilled > 0
-          ? `Couldn't autofill — ${unfilled} field${unfilled > 1 ? "s" : ""} highlighted for you`
-          : "No fillable fields found on this page.",
-        false
-      );
-    }
+    if (n2 > 0) resolve(n2);
+    if (attempts > 40) resolve(0);
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // Fallback: if no mutations fire within 1.2s, the page was already loaded
+  setTimeout(() => resolve(0), 1200);
 }
 
 function finishFill(n, car) {
