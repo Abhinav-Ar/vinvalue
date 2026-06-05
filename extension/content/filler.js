@@ -298,17 +298,8 @@ function highlightUnfilled() {
   }
 
   // Button-style choices where nothing is selected
-  // Only highlight groups near a question (contains "?") — filters out Back/Continue/nav buttons
-  function nearQuestion(el) {
-    let cur = el.parentElement;
-    for (let i = 0; i < 5; i++) {
-      if (!cur || cur === document.body) break;
-      if (cur.textContent.includes("?")) return true;
-      cur = cur.parentElement;
-    }
-    return false;
-  }
-
+  // A genuine choice group: buttons must be the dominant children of their container
+  // (rules out Back/Continue living inside a large page wrapper)
   const choiceButtons = [...document.querySelectorAll("button, [role='button']")].filter((b) =>
     isVisible(b) &&
     b.textContent.trim().length > 0 &&
@@ -320,9 +311,12 @@ function highlightUnfilled() {
     if (!byParent.has(p)) byParent.set(p, []);
     byParent.get(p).push(btn);
   }
-  for (const [, buttons] of byParent) {
+  for (const [parent, buttons] of byParent) {
     if (buttons.length < 2) continue;
-    if (!nearQuestion(buttons[0])) continue;
+    // Skip if buttons are a minority of the parent's visible children
+    // (means parent is a page/section container, not a dedicated choice row)
+    const visibleChildren = [...parent.children].filter((c) => isVisible(c));
+    if (buttons.length < visibleChildren.length * 0.6) continue;
     const anyActive = buttons.some((b) =>
       b.getAttribute("aria-pressed") === "true" ||
       b.getAttribute("aria-selected") === "true" ||
