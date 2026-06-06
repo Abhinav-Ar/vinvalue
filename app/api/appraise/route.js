@@ -159,8 +159,15 @@ export async function GET(request) {
       return Response.json({ error: "No listings found for this vehicle in your area." }, { status: 404 });
 
     // ── Adjustment factors ──
-    const avgMileage    = listings.reduce((s, l) => s + l.mileage, 0) / listings.length;
-    const mileageDelta  = (avgMileage - mileage) * 0.045;
+    const avgMileage = listings.reduce((s, l) => s + l.mileage, 0) / listings.length;
+    // Base rate: $0.12/mile vs market average (industry standard for used cars).
+    // Steep buyer-concern surcharges kick in past 75k and 100k miles — beyond those
+    // thresholds buyers price in powertrain risk, battery degradation (EVs), etc.
+    const mileageDelta       = (avgMileage - mileage) * 0.12;
+    const highMileagePenalty = mileage > 100000 ? (mileage - 100000) * 0.10
+                             : mileage > 75000  ? (mileage - 75000)  * 0.05
+                             : 0;
+    const mileageImpact = Math.max(-25000, Math.round(mileageDelta - highMileagePenalty));
 
     const conditionFactor = CONDITION_FACTORS[condition]     ?? 1.0;
     const titleFactor     = TITLE_FACTORS[titleStatus]       ?? 1.0;
@@ -174,7 +181,7 @@ export async function GET(request) {
 
     // ── Reconditioning estimate ──
     const reconBase     = RECON_BASE[condition]   ?? 900;
-    const reconMileage  = Math.round(Math.max(0, (mileage - 50000) / 10000) * 150);
+    const reconMileage  = Math.round(Math.max(0, (mileage - 50000) / 10000) * 300);
     const reconAccident = accidents === "Yes" ? 800 : 0;
     const reconTitle    = RECON_TITLE[titleStatus] ?? 0;
     const reconService  = serviceHistory === "None" ? 300 : serviceHistory === "Partial" ? 150 : 0;
@@ -190,7 +197,7 @@ export async function GET(request) {
 
     // ── Three-tier valuation ──
     const retailMedian  = medianOf(prices);
-    const retail        = Math.max(0, Math.round(retailMedian * totalFactor + mileageDelta - recallPenalty));
+    const retail        = Math.max(0, Math.round(retailMedian * totalFactor + mileageImpact - recallPenalty));
     const tradeIn       = Math.max(0, Math.round(retail - reconditioning - retail * 0.17));
     const ppMultiplier  = classification?.privatePartyMultiplier ?? 0.88;
     const privateParty  = Math.max(0, Math.round(retail * ppMultiplier));
@@ -222,7 +229,7 @@ export async function GET(request) {
           accident:  Math.round((accidentFactor  - 1) * 100),
           service:   Math.round((serviceFactor   - 1) * 100),
           owner:     Math.round((ownerFactor     - 1) * 100),
-          mileage:   Math.round(mileageDelta),
+          mileage:   mileageImpact,
           recalls:   -recallPenalty,
         },
         comparables: prices.length,
