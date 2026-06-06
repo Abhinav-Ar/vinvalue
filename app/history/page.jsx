@@ -34,7 +34,6 @@ function Nav() {
           <span className="text-sm font-semibold">AutoIQ</span>
         </Link>
         <nav className="hidden items-center gap-1 sm:flex">
-          <Link href="/value" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Value</Link>
           <Link href="/appraise" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Appraise</Link>
           <Link href="/garage" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Garage</Link>
         </nav>

@@ -6,142 +6,192 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 320px;
-      background: #0f0f1a;
-      color: #e2e8f0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      width: 340px;
+      background: #161616;
+      color: #e4e4e4;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
       font-size: 13px;
     }
 
     .header {
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     .logo {
-      width: 30px; height: 30px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 8px;
+      width: 28px; height: 28px;
+      background: #e4e4e4;
+      border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px; flex-shrink: 0;
+      font-size: 13px; flex-shrink: 0; color: #161616;
+      font-weight: 800;
     }
-    .header-title { font-weight: 700; font-size: 15px; }
-    .header-sub { font-size: 11px; opacity: 0.7; }
+    .header-title { font-weight: 600; font-size: 13px; }
+    .header-sub { font-size: 11px; color: #555; margin-top: 1px; }
 
-    .body { padding: 14px 16px; }
+    .body { padding: 12px 14px; }
 
-    /* Empty / not logged in */
     .empty {
       text-align: center;
-      padding: 28px 0;
-      color: #64748b;
+      padding: 24px 0;
+      color: #555;
       line-height: 1.6;
     }
-    .empty-icon { font-size: 28px; margin-bottom: 8px; }
-    .empty a { color: #818cf8; text-decoration: none; font-weight: 600; }
+    .empty-icon { font-size: 24px; margin-bottom: 8px; }
+    .empty a { color: #aaa; text-decoration: underline; }
 
-    /* Garage list */
     .section-label {
       font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #475569;
+      color: #555;
       margin-bottom: 8px;
     }
 
     .car-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      max-height: 260px;
+      gap: 4px;
+      max-height: 140px;
       overflow-y: auto;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
-    .car-list::-webkit-scrollbar { width: 4px; }
+    .car-list::-webkit-scrollbar { width: 3px; }
     .car-list::-webkit-scrollbar-track { background: transparent; }
-    .car-list::-webkit-scrollbar-thumb { background: #2d2d4a; border-radius: 4px; }
+    .car-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
     .car-item {
-      background: #1a1a2e;
-      border: 1.5px solid #2d2d4a;
-      border-radius: 10px;
-      padding: 10px 12px;
+      background: #1e1e1e;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 9px 11px;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.12s, background 0.12s;
       user-select: none;
     }
-    .car-item:hover { border-color: #4f46e5; background: #1e1e3a; }
-    .car-item.selected {
-      border-color: #7c3aed;
-      background: #1e1535;
-    }
+    .car-item:hover { border-color: rgba(255,255,255,0.2); background: #222; }
+    .car-item.selected { border-color: rgba(255,255,255,0.38); background: #232323; }
 
-    .car-item-name {
-      font-weight: 600;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-    .car-item-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    .car-item-name { font-weight: 600; font-size: 12.5px; }
+    .car-item-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
     .chip {
-      background: #0f0f1a;
-      border: 1px solid #2d2d4a;
-      border-radius: 6px;
-      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 1px 6px;
       font-size: 10px;
-      color: #94a3b8;
+      color: #777;
     }
 
-    /* Fill button */
-    .btn {
-      width: 100%;
-      padding: 11px;
+    .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 10px 0; }
+
+    /* Detail panel */
+    .detail-panel {
+      background: #1e1e1e;
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 10px;
-      border: none;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .detail-panel-header {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: #232323;
+    }
+    .detail-panel-title { font-size: 11px; font-weight: 600; }
+    .detail-panel-sub { font-size: 10px; color: #555; margin-top: 1px; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .detail-cell {
+      padding: 7px 12px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
+      transition: background 0.1s;
+      position: relative;
+    }
+    .detail-cell:nth-child(even) { border-right: none; }
+    .detail-cell:hover { background: rgba(255,255,255,0.03); }
+    .detail-cell.full-width {
+      grid-column: 1 / -1;
+      border-right: none;
+    }
+    .detail-cell-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #555;
+      margin-bottom: 2px;
+    }
+    .detail-cell-value {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #d0d0d0;
+      word-break: break-all;
+    }
+    .detail-cell-value.mono {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.03em;
+    }
+    .detail-cell-value.good { color: #6ee7b7; }
+    .detail-cell-value.warn { color: #fde68a; }
+    .detail-cell-value.bad  { color: #fca5a5; }
+
+    .copy-hint {
+      position: absolute;
+      top: 4px; right: 7px;
+      font-size: 9px;
+      color: #555;
+      opacity: 0;
       transition: opacity 0.15s;
     }
-    .btn:hover:not(:disabled) { opacity: 0.85; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-primary {
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      color: #fff;
+    .detail-cell:hover .copy-hint { opacity: 1; }
+    .detail-cell.copied .copy-hint { opacity: 1; color: #6ee7b7; }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: opacity 0.12s;
     }
+    .btn:hover:not(:disabled) { opacity: 0.85; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary { background: #e4e4e4; color: #111; }
 
     .status {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 11px;
-      color: #64748b;
+      color: #555;
       text-align: center;
-      min-height: 16px;
+      min-height: 15px;
     }
-    .status.ok { color: #34d399; }
-    .status.err { color: #f87171; }
-
-    .divider { height: 1px; background: #1e1e35; margin: 10px 0; }
+    .status.ok { color: #6ee7b7; }
+    .status.err { color: #fca5a5; }
 
     .open-link {
       display: block;
       text-align: center;
-      color: #475569;
-      font-size: 11px;
+      color: #444;
+      font-size: 10.5px;
       text-decoration: none;
-      padding-top: 2px;
     }
-    .open-link:hover { color: #818cf8; }
+    .open-link:hover { color: #888; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="logo">⚡</div>
+    <div class="logo">A</div>
     <div>
       <div class="header-title">AutoIQ</div>
       <div class="header-sub">Car form filler</div>
@@ -152,7 +202,7 @@
     <div id="state-empty" class="empty" style="display:none">
       <div class="empty-icon">🚗</div>
       <div>No cars in your garage.</div>
-      <div>Save a car on <a href="https://vinvalue-ebon.vercel.app/appraise" target="_blank">AutoIQ</a> first.</div>
+      <div style="margin-top:4px">Save a car on <a href="https://vinvalue-ebon.vercel.app/appraise" target="_blank">AutoIQ</a> first.</div>
     </div>
 
     <div id="state-login" class="empty" style="display:none">
@@ -161,8 +211,17 @@
     </div>
 
     <div id="state-cars" style="display:none">
-      <div class="section-label">Your garage — pick a car</div>
+      <div class="section-label">Your garage</div>
       <div class="car-list" id="car-list"></div>
+
+      <div class="detail-panel" id="detail-panel" style="display:none">
+        <div class="detail-panel-header">
+          <div class="detail-panel-title" id="detail-panel-title">Car details</div>
+          <div class="detail-panel-sub">Tap a field to copy · used for autofill</div>
+        </div>
+        <div class="detail-grid" id="detail-grid"></div>
+      </div>
+
       <button class="btn btn-primary" id="btn-fill" disabled>Fill form on this page</button>
       <div class="status" id="status"></div>
       <div class="divider"></div>

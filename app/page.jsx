@@ -34,7 +34,6 @@ function Nav({ links = true }) {
         </Link>
         {links && (
           <nav className="hidden items-center gap-1 sm:flex">
-            <Link href="/value" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Value</Link>
             <Link href="/appraise" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Appraise</Link>
             <Link href="/garage" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Garage</Link>
           </nav>
@@ -348,72 +347,13 @@ export default function Landing() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/appraise">
               <Button size="lg" className="h-11 rounded-xl px-7 text-sm gap-2">
-                Full appraisal + where to sell <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/value">
-              <Button size="lg" variant="outline" className="h-11 rounded-xl px-7 text-sm">
-                Quick value check
+                Appraise your car <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
         </motion.div>
       </section>
 
-      {/* Two tools */}
-      <section className="border-t border-border px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-3">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Two tools</p>
-          </div>
-          <div className="mb-10 flex items-end justify-between gap-4">
-            <h2 className="text-3xl font-bold tracking-tight">Pick the right one for you</h2>
-            <p className="text-sm text-muted-foreground hidden sm:block">Both are free. Both take under 2 minutes.</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Link href="/value">
-              <motion.div
-                whileHover={{ y: -2 }}
-                className="group cursor-pointer rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                  <Search className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="mb-1 text-xs text-muted-foreground">Quick · 30 seconds</p>
-                <h3 className="mb-2 text-xl font-semibold">Quick Value Check</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Enter a VIN, add mileage and condition, and see what similar cars are selling for right now.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {["Live market comps", "Price vs mileage chart", "Adjusted estimate"].map((f) => (
-                    <span key={f} className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground">{f}</span>
-                  ))}
-                </div>
-              </motion.div>
-            </Link>
-            <Link href="/appraise">
-              <motion.div
-                whileHover={{ y: -2 }}
-                className="group cursor-pointer rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                  <DollarSign className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="mb-1 text-xs text-muted-foreground">Full appraisal · 2 minutes</p>
-                <h3 className="mb-2 text-xl font-semibold">Appraise + Where to Sell</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Trade-in, private party, and retail values — plus live estimated offers from Carvana, CarMax, and more.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {["Trade-in · Private · Retail", "Carvana", "CarMax", "Recalls", "Selling tips"].map((f) => (
-                    <span key={f} className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground">{f}</span>
-                  ))}
-                </div>
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* How it works */}
       <section className="border-t border-border px-6 py-24">
@@ -460,12 +400,7 @@ export default function Landing() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/appraise">
               <Button size="lg" className="h-11 rounded-xl px-7 text-sm gap-2">
-                Get a full appraisal <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/value">
-              <Button size="lg" variant="outline" className="h-11 rounded-xl px-7 text-sm">
-                Quick value check
+                Get started <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>

@@ -5,8 +5,15 @@
 function triggerReact(el) {
   const tag = el.tagName.toLowerCase();
   if (tag === "input" || tag === "textarea") {
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-    if (setter) setter.call(el, el.value);
+    const type = (el.type || "").toLowerCase();
+    if (type === "checkbox" || type === "radio") {
+      // React tracks checked via the native checked setter, not value
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "checked")?.set;
+      if (setter) setter.call(el, el.checked);
+    } else {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      if (setter) setter.call(el, el.value);
+    }
   }
   ["input", "change", "blur"].forEach((evt) =>
     el.dispatchEvent(new Event(evt, { bubbles: true }))
@@ -554,7 +561,10 @@ function clickByText(text) {
     }
 
     if (input) {
-      input.checked = true;
+      // Use native checked setter so React's synthetic event system sees the change
+      const checkedSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "checked")?.set;
+      if (checkedSetter) checkedSetter.call(input, true);
+      else input.checked = true;
       input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
       triggerReact(input);
