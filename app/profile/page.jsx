@@ -1,7 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   Zap, Copy, Check, AlertTriangle, ShieldCheck,
@@ -82,6 +83,7 @@ function ProfileContent() {
   const searchParams = useSearchParams();
   const encoded = searchParams.get("d");
   const profile = encoded ? decodeProfile(encoded) : null;
+  const { data: session } = useSession();
 
   if (!profile) {
     return (
@@ -96,8 +98,44 @@ function ProfileContent() {
   const guide  = buildBuyerGuide(condition);
   const status = issueLevel(condition);
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-
   const hasExtended = condition.exteriorColor || condition.tireCondition;
+
+  const [displayPhoto, setDisplayPhoto] = useState(vehiclePhoto);
+
+  useEffect(() => {
+    if (vehiclePhoto || !vehicle?.make) return;
+    const params = new URLSearchParams({ make: vehicle.make, model: vehicle.model, year: vehicle.year });
+    if (condition.exteriorColor) params.set("color", condition.exteriorColor);
+    fetch(`/api/photo?${params}`)
+      .then((r) => r.json())
+      .then(async (d) => {
+        if (!d.photo) return;
+        setDisplayPhoto(d.photo);
+        // Patch the photo into the garage entry if this VIN belongs to the signed-in user
+        if (!session?.user || !encoded) return;
+        try {
+          const garageRes = await fetch("/api/garage");
+          const garageData = await garageRes.json();
+          if (!garageData.cars?.find((c) => c.vin === vin)) return;
+          // Inject ph into the existing compact JSON without re-encoding everything
+          const compact = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+          compact.ph = d.photo;
+          const newEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+          fetch("/api/garage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              vin, make: vehicle.make, model: vehicle.model, year: vehicle.year,
+              trim: vehicle.trim, mileage: condition.mileage, condition: condition.condition,
+              tradeIn: appraisal.tradeIn, privateParty: appraisal.privateParty,
+              retail: appraisal.retail, profileEncoded: newEncoded,
+            }),
+          }).catch(() => {});
+        } catch {}
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vin]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -123,11 +161,11 @@ function ProfileContent() {
       <main className="mx-auto max-w-5xl px-6 py-12">
 
         {/* ── Hero: photo + title ── */}
-        {vehiclePhoto ? (
+        {displayPhoto ? (
           <div className="mb-10 overflow-hidden rounded-xl border border-border relative">
             <div className="relative aspect-[21/9] overflow-hidden bg-muted">
               <img
-                src={vehiclePhoto}
+                src={displayPhoto}
                 alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                 className="absolute left-0 w-full object-cover"
                 style={{ top: "-12%", height: "112%" }}

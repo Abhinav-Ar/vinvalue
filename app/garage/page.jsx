@@ -403,7 +403,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => setEditOpen(true)}
-              className="rounded-md p-1 text-muted-foreground/40 transition-colors hover:bg-muted hover:text-muted-foreground"
+              className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               title="Edit"
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -411,7 +411,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
             <button
               onClick={() => onRemove(car.vin)}
               disabled={removing === car.vin}
-              className="rounded-md p-1 text-muted-foreground/40 transition-colors hover:bg-muted hover:text-muted-foreground"
+              className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               title="Remove"
             >
               <Trash2 className="h-3.5 w-3.5" />

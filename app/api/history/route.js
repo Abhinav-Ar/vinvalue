@@ -7,6 +7,12 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Prune stale entries first — fire-and-forget, don't block the response
+  pool.query(
+    `DELETE FROM searches WHERE user_id = $1 AND created_at < NOW() - INTERVAL '7 days'`,
+    [session.user.id]
+  ).catch(() => {});
+
   const { rows } = await pool.query(
     `SELECT id, vin, make, model, year, trim, mileage, condition, zip,
             trade_in, private_party, retail, profile_encoded, created_at
