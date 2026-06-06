@@ -210,6 +210,13 @@ export async function GET(request) {
     const ppMultiplier  = classification?.privatePartyMultiplier ?? 0.88;
     const privateParty  = Math.max(0, Math.round(retail * ppMultiplier));
 
+    // Scarce cars have wider ranges — less market data means more price uncertainty.
+    // High-supply cars get tighter ranges because the market is well-defined.
+    const rangeSpread = supplyFactor >= 1.04 ? 0.13
+                      : supplyFactor >= 1.01 ? 0.09
+                      : supplyFactor <= 0.96 ? 0.05
+                      : 0.06;
+
     return Response.json({
       listings: cleanListings,
       vehiclePhoto,
@@ -219,11 +226,11 @@ export async function GET(request) {
       classification,
       appraisal: {
         retail,
-        retailRange:       { low: Math.round(retail       * 0.94), high: Math.round(retail       * 1.06) },
+        retailRange:       { low: Math.round(retail       * (1 - rangeSpread)),       high: Math.round(retail       * (1 + rangeSpread))       },
         privateParty,
-        privatePartyRange: { low: Math.round(privateParty * 0.94), high: Math.round(privateParty * 1.06) },
+        privatePartyRange: { low: Math.round(privateParty * (1 - rangeSpread)),       high: Math.round(privateParty * (1 + rangeSpread))       },
         tradeIn,
-        tradeInRange:      { low: Math.round(tradeIn      * 0.93), high: Math.round(tradeIn      * 1.07) },
+        tradeInRange:      { low: Math.round(tradeIn      * (1 - rangeSpread - 0.01)), high: Math.round(tradeIn     * (1 + rangeSpread + 0.01)) },
         reconditioning,
         reconditioningBreakdown: {
           base: reconBase, mileage: reconMileage, accident: reconAccident,

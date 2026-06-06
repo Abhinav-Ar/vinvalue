@@ -174,6 +174,7 @@ export default function AppraisePage() {
   const [result, setResult] = useState(null);
   const [vehiclePhoto, setVehiclePhoto] = useState(null);
   const [phase, setPhase] = useState("vin");
+  const [activeTab, setActiveTab] = useState("offers");
   const [showRecon, setShowRecon] = useState(false);
   const [showListings, setShowListings] = useState(false);
   const [showRecalls, setShowRecalls] = useState(false);
@@ -327,6 +328,7 @@ export default function AppraisePage() {
     setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
     setFeaturesWorking("Yes"); setKeysCount("Both sets");
     setInGarage(false); setSellProfileOpen(false); setVehiclePhoto(null);
+    setActiveTab("offers");
     setExteriorColor(""); setInteriorColor(""); setTireCondition("All good");
     setGlassCondition("None"); setInteriorCleanliness("Clean");
     setOdors("None"); setRoofType("Standard");
@@ -762,13 +764,21 @@ export default function AppraisePage() {
 
         {/* ── Phase 3: Results ── */}
         {phase === "results" && appraisal && (
-          <motion.main key="results" {...fadeUp} className="mx-auto max-w-6xl px-6 py-14">
+          <motion.main key="results" {...fadeUp} className="mx-auto max-w-4xl px-6 py-10">
 
-            {/* Page header */}
+            {/* Photo */}
+            {vehiclePhoto && (
+              <div className="mb-6 overflow-hidden rounded-xl border border-border bg-muted relative aspect-video">
+                <img src={vehiclePhoto} alt={`${decoded.ModelYear} ${decoded.Make} ${decoded.Model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
+              </div>
+            )}
+
+            {/* Title */}
             <div className="mb-8">
               <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Appraisal complete</p>
               <h1 className="text-3xl font-bold tracking-tight">
                 {decoded.ModelYear} {decoded.Make} {decoded.Model}
+                {decoded.Trim && <span className="ml-2 text-xl font-normal text-muted-foreground">{decoded.Trim}</span>}
               </h1>
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {miles(Number(mileage))} · {condition} · {titleStatus} title · {owners} owner{owners !== "1" ? "s" : ""}
@@ -776,544 +786,399 @@ export default function AppraisePage() {
               </p>
             </div>
 
-            {/* Vehicle photo */}
-            {vehiclePhoto && (
-              <div className="mb-8 overflow-hidden rounded-xl border border-border bg-muted relative aspect-video">
-                <img
-                  src={vehiclePhoto}
-                  alt={`${decoded.ModelYear} ${decoded.Make} ${decoded.Model}`}
-                  className="absolute left-0 w-full object-cover"
-                  style={{ top: "-12%", height: "112%" }}
-                  loading="lazy"
-                />
+            {/* ── Three clickable value tabs ── */}
+            <div className="mb-4 grid gap-3 sm:grid-cols-3">
+              {[
+                { id: "offers",  label: "Instant offer",   sub: "Carvana, CarMax & more",   value: appraisal.tradeIn,      range: appraisal.tradeInRange },
+                { id: "private", label: "Private sale",    sub: "Sell it yourself",          value: appraisal.privateParty, range: appraisal.privatePartyRange },
+                { id: "market",  label: "Market / retail", sub: "What dealers pay & charge", value: appraisal.retail,       range: appraisal.retailRange },
+              ].map(({ id, label, sub, value, range }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`rounded-xl border p-5 text-left transition-all ${
+                    activeTab === id
+                      ? "border-foreground bg-card"
+                      : "border-border bg-card/50 hover:border-foreground/30 hover:bg-card/80"
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
+                  <p className="mt-2 text-3xl font-bold tracking-tight">{money(value)}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{money(range.low)} – {money(range.high)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground/50">{sub}</p>
+                  {activeTab === id && <div className="mt-3 h-0.5 w-6 rounded-full bg-foreground" />}
+                </button>
+              ))}
+            </div>
+
+            {/* Action strip */}
+            <div className="mb-8 flex flex-wrap gap-2">
+              {session?.user ? (
+                <button className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm hover:border-foreground/30 transition-colors" onClick={() => setSellProfileOpen(true)}>
+                  {inGarage ? "✓ In garage · Update" : "Save to garage"}
+                </button>
+              ) : (
+                <button className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm hover:border-foreground/30 transition-colors" onClick={() => signIn("google")}>
+                  Sign in to save
+                </button>
+              )}
+              {(() => {
+                const enc = encodeProfile({
+                  decoded, mileage, zip, condition, titleStatus, accidents,
+                  serviceHistory, owners, warningLights, mechanicalIssues,
+                  bodyDamage, featuresWorking, keysCount, appraisal,
+                  recalls, safetyRating, marketStats, vehiclePhoto,
+                });
+                if (!enc) return null;
+                return (
+                  <>
+                    <button className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm hover:border-foreground/30 transition-colors" onClick={() => window.open(`/profile?d=${enc}`, "_blank")}>
+                      Full report <ExternalLink className="h-3 w-3" />
+                    </button>
+                    <button className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors" onClick={() => navigator.clipboard?.writeText(window.location.origin + `/profile?d=${enc}`)}>
+                      <Copy className="h-3 w-3" /> Copy link
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* ══════════════════════ OFFERS TAB ══════════════════════ */}
+            {activeTab === "offers" && (
+              <div className="space-y-5">
+                <div>
+                  <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Fastest money</p>
+                  <h2 className="mb-1 text-xl font-semibold">Instant cash offers</h2>
+                  <p className="mb-4 text-sm text-muted-foreground">These companies buy your car outright — no listing, no waiting.</p>
+                  {!session?.user ? (
+                    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
+                      <Lock className="h-6 w-6 text-muted-foreground/40" />
+                      <p className="text-sm font-medium">Sign in to see buyer estimates</p>
+                      <p className="text-xs text-muted-foreground max-w-xs">Estimated Carvana, CarMax, and CarGurus prices for this exact car.</p>
+                      <Button size="sm" className="rounded-lg mt-1" onClick={() => signIn("google")}>Sign in with Google</Button>
+                    </div>
+                  ) : !inGarage ? (
+                    <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
+                      <Lock className="h-6 w-6 text-muted-foreground/40" />
+                      <p className="text-sm font-medium">Save this car to unlock buyer offers</p>
+                      <p className="text-xs text-muted-foreground max-w-xs">Unlocks estimated offers from Carvana, CarMax, and 4 more buyers with direct links.</p>
+                      <Button size="sm" className="rounded-lg mt-1" onClick={() => setSellProfileOpen(true)}>Save to garage →</Button>
+                    </div>
+                  ) : (
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, speed }, i) => {
+                        const estimate = Math.round(appraisal.tradeIn * multiplier);
+                        const low = Math.round(estimate * (1 - spread / 2));
+                        const high = Math.round(estimate * (1 + spread / 2));
+                        return (
+                          <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium">{name}</p>
+                              <p className="text-xs text-muted-foreground">{tagline} · {speed}</p>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <p className="font-semibold">{money(estimate)}</p>
+                              <p className="text-xs text-muted-foreground">{money(low)}–{money(high)}</p>
+                            </div>
+                            <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5 text-xs" onClick={() => { copyText(decoded.VIN, "VIN"); window.open(getUrl(decoded.VIN), "_blank", "noopener,noreferrer"); }}>
+                              Get offer <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Copy strip */}
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Copy before you go</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: "VIN", value: decoded?.VIN },
+                      { label: "Year / Make / Model", value: `${decoded?.ModelYear} ${decoded?.Make} ${decoded?.Model}${decoded?.Trim ? " " + decoded.Trim : ""}` },
+                      { label: "Mileage", value: miles(Number(mileage)) },
+                      { label: "Condition", value: condition },
+                      { label: "ZIP", value: zip },
+                    ].map(({ label, value }) => (
+                      <button key={label} onClick={() => copyText(value, label)} className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 transition-colors hover:border-foreground/20 hover:bg-muted/40">
+                        <span className="text-xs text-muted-foreground">{label}:</span>
+                        <span className="font-mono text-xs font-medium">{value}</span>
+                        {copiedLabel === label ? <ClipboardCheck className="h-3 w-3 text-foreground" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                      </button>
+                    ))}
+                  </div>
+                  {copiedLabel && <p className="mt-2 text-xs text-muted-foreground">{copiedLabel} copied.</p>}
+                </div>
               </div>
             )}
 
-            {/* Report CTA */}
-            {(() => {
-              const encoded = encodeProfile({
-                decoded, mileage, zip, condition, titleStatus, accidents,
-                serviceHistory, owners, warningLights, mechanicalIssues,
-                bodyDamage, featuresWorking, keysCount, appraisal,
-                recalls, safetyRating, marketStats, vehiclePhoto,
-              });
-              if (!encoded) return null;
-              const profileUrl = `/profile?d=${encoded}`;
-              return (
-                <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-card px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Seller's report ready</p>
-                      <p className="text-xs text-muted-foreground">Share this link with buyers or open it before visiting CarMax / Carvana.</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 shrink-0">
-                    <Button size="sm" className="rounded-lg gap-1.5" onClick={() => window.open(profileUrl, "_blank")}>
-                      View report <ExternalLink className="h-3 w-3" />
-                    </Button>
-                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => navigator.clipboard?.writeText(window.location.origin + profileUrl)}>
-                      Copy link
-                    </Button>
-                    {session?.user && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-lg"
-                        onClick={() => setSellProfileOpen(true)}
-                      >
-                        {inGarage ? "✓ In garage · Update profile" : "Save to garage"}
-                      </Button>
-                    )}
-                  </div>
+            {/* ══════════════════════ PRIVATE TAB ══════════════════════ */}
+            {activeTab === "private" && (
+              <div className="space-y-5">
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Upside vs. instant offer</p>
+                  <p className="text-3xl font-bold tracking-tight">{money(privateDelta)} more</p>
+                  <p className="mt-1 text-sm text-muted-foreground">on average by selling directly instead of to an instant buyer.</p>
                 </div>
-              );
-            })()}
 
-            {/* ── Values ── */}
-            <div className="mb-8 overflow-hidden rounded-xl border border-border">
-              <div className="grid divide-y divide-border sm:divide-x sm:divide-y-0 sm:grid-cols-3">
-                {[
-                  { label: "Trade-in / Instant offer", sub: "CarMax, Carvana, dealerships", value: appraisal.tradeIn, range: appraisal.tradeInRange },
-                  { label: "Private party", sub: "Facebook Marketplace, Craigslist", value: appraisal.privateParty, range: appraisal.privatePartyRange },
-                  { label: "Retail", sub: "What dealers resell it for", value: appraisal.retail, range: appraisal.retailRange },
-                ].map(({ label, sub, value, range }) => (
-                  <div key={label} className="bg-card p-6">
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-                    <p className="mt-3 text-4xl font-bold tracking-tight">{money(value)}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{money(range.low)} – {money(range.high)}</p>
-                    <p className="mt-1 text-xs text-muted-foreground/60">{sub}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Quick reference ── */}
-            <div className="mb-8 rounded-xl border border-border bg-card p-4">
-              <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Copy before you go</p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: "VIN", value: decoded?.VIN },
-                  { label: "Year / Make / Model", value: `${decoded?.ModelYear} ${decoded?.Make} ${decoded?.Model}${decoded?.Trim ? " " + decoded.Trim : ""}` },
-                  { label: "Mileage", value: miles(Number(mileage)) },
-                  { label: "Condition", value: condition },
-                  { label: "ZIP", value: zip },
-                ].map(({ label, value }) => (
-                  <button
-                    key={label}
-                    onClick={() => copyText(value, label)}
-                    className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm transition-colors hover:border-foreground/20 hover:bg-muted/40"
-                  >
-                    <span className="text-xs text-muted-foreground">{label}:</span>
-                    <span className="font-mono text-xs font-medium">{value}</span>
-                    {copiedLabel === label
-                      ? <ClipboardCheck className="h-3 w-3 text-foreground" />
-                      : <Copy className="h-3 w-3 text-muted-foreground" />
-                    }
-                  </button>
-                ))}
-              </div>
-              {copiedLabel && <p className="mt-2 text-xs text-muted-foreground">{copiedLabel} copied to clipboard.</p>}
-            </div>
-
-            {/* ── Instant buyers ── */}
-            <div className="mb-8">
-              <div className="mb-4">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">Fastest money</p>
-                <h2 className="mt-1 text-xl font-semibold">Instant cash offers</h2>
-                <p className="mt-0.5 text-sm text-muted-foreground">These companies buy your car outright — no listing, no waiting.</p>
-              </div>
-              {!session?.user ? (
-                <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
-                  <Lock className="h-6 w-6 text-muted-foreground/40" />
-                  <div>
-                    <p className="text-sm font-medium">Sign in to see buyer offers</p>
-                    <p className="mt-1 text-xs text-muted-foreground max-w-xs">See estimated Carvana, CarMax, and CarGurus prices for this exact car.</p>
-                  </div>
-                  <Button size="sm" className="rounded-lg mt-1" onClick={() => signIn("google")}>Sign in with Google</Button>
-                </div>
-              ) : !inGarage ? (
-                <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
-                  <Lock className="h-6 w-6 text-muted-foreground/40" />
-                  <div>
-                    <p className="text-sm font-medium">Save this car to unlock buyer offers</p>
-                    <p className="mt-1 text-xs text-muted-foreground max-w-xs">Saving to your garage unlocks estimated offers from Carvana, CarMax, and 4 other buyers with direct links.</p>
-                  </div>
-                  <Button size="sm" className="rounded-lg mt-1" onClick={() => setSellProfileOpen(true)}>Save to garage →</Button>
-                </div>
-              ) : (
-                <div className="overflow-hidden rounded-xl border border-border">
-                  {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, speed }, i) => {
-                    const estimate = Math.round(appraisal.tradeIn * multiplier);
-                    const low = Math.round(estimate * (1 - spread / 2));
-                    const high = Math.round(estimate * (1 + spread / 2));
-                    return (
+                <div>
+                  <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Where to list</p>
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    {PRIVATE_CHANNELS.map(({ id, name, tagline, getUrl, con }, i) => (
                       <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium">{name}</p>
-                          <p className="text-xs text-muted-foreground">{tagline} · {speed}</p>
+                          <p className="text-xs text-muted-foreground">{tagline}</p>
+                          <p className="text-xs text-muted-foreground/50">{con}</p>
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="font-semibold">{money(estimate)}</p>
-                          <p className="text-xs text-muted-foreground">{money(low)}–{money(high)}</p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-lg shrink-0 gap-1.5 text-xs"
-                          onClick={() => {
-                            copyText(decoded.VIN, "VIN");
-                            window.open(getUrl(decoded.VIN), "_blank", "noopener,noreferrer");
-                          }}
-                        >
-                          Get offer <ExternalLink className="h-3 w-3" />
+                        <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5 text-xs" asChild>
+                          <a href={getUrl()} target="_blank" rel="noopener noreferrer">List <ExternalLink className="h-3 w-3" /></a>
                         </Button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* ── Private sale ── */}
-            {(session?.user && inGarage) && (
-              <div className="mb-8">
-                <div className="mb-4">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Keep more money</p>
-                  <h2 className="mt-1 text-xl font-semibold">Sell it yourself</h2>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
-                    More effort, but you keep an extra <span className="font-semibold text-foreground">{money(privateDelta)}</span> on average vs. an instant offer.
-                  </p>
-                </div>
-                <div className="overflow-hidden rounded-xl border border-border">
-                  {PRIVATE_CHANNELS.map(({ id, name, tagline, getUrl, con }, i) => (
-                    <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{name}</p>
-                        <p className="text-xs text-muted-foreground">{tagline}</p>
-                        <p className="text-xs text-muted-foreground/60">{con}</p>
-                      </div>
-                      <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5 text-xs" asChild>
-                        <a href={getUrl()} target="_blank" rel="noopener noreferrer">
-                          List <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── Depreciation ── */}
-            <div className="mb-8 rounded-xl border border-border bg-card p-5">
-              <DepreciationChart retail={appraisal.retail} vehicleYear={decoded.ModelYear} />
-            </div>
-
-            {/* ── Worth fixing? ── */}
-            {(() => {
-              const fixes = [
-                warningLights === "Check engine" && {
-                  label: "Fix check engine light", repairLow: 150, repairHigh: 500,
-                  tradeGain: 400, privateGain: 700, verdict: "worth",
-                  note: "Dealers flag lit dash lights immediately — fixing it recovers more than it costs most of the time.",
-                },
-                warningLights === "Multiple" && {
-                  label: "Fix all dashboard lights", repairLow: 500, repairHigh: 1500,
-                  tradeGain: 1500, privateGain: 2200, verdict: "worth",
-                  note: "Multiple lights signal systemic issues. Addressing them adds significant trust value with any buyer.",
-                },
-                mechanicalIssues === "Minor" && {
-                  label: "Fix minor mechanical issues", repairLow: 300, repairHigh: 800,
-                  tradeGain: 600, privateGain: 1000, verdict: "worth",
-                  note: "Minor mechanical fixes almost always net more than they cost, especially for private sales.",
-                },
-                mechanicalIssues === "Major" && {
-                  label: "Fix major mechanical issues", repairLow: 1500, repairHigh: 5000,
-                  tradeGain: 2000, privateGain: 3500, verdict: "depends",
-                  note: "Get a repair quote first. If under $1,500 it's usually worth it. Above that, sell as-is to a specialty buyer like Peddle.",
-                },
-                bodyDamage === "Minor" && {
-                  label: "Fix minor scratches / dings", repairLow: 200, repairHigh: 600,
-                  tradeGain: 300, privateGain: 700, verdict: "worth",
-                  note: "PDR (paintless dent repair) is cheap and has a strong ROI for private party sales.",
-                },
-                bodyDamage === "Moderate" && {
-                  label: "Fix moderate body damage", repairLow: 800, repairHigh: 2500,
-                  tradeGain: 800, privateGain: 1500, verdict: "depends",
-                  note: "Get two body shop quotes. If under $1,000 it's likely worth fixing for private sale.",
-                },
-                bodyDamage === "Major" && {
-                  label: "Fix major collision damage", repairLow: 3000, repairHigh: 10000,
-                  tradeGain: 2000, privateGain: 4000, verdict: "skip",
-                  note: "Repair costs almost always exceed the value recovered. Sell as-is to an instant buyer.",
-                },
-                featuresWorking === "Minor issues" && {
-                  label: "Fix minor electronics / features", repairLow: 100, repairHigh: 400,
-                  tradeGain: 200, privateGain: 450, verdict: "worth",
-                  note: "Small functional issues are cheap fixes with good ROI.",
-                },
-                featuresWorking === "Major issues" && {
-                  label: "Fix major electronics (AC, infotainment)", repairLow: 500, repairHigh: 2000,
-                  tradeGain: 600, privateGain: 1100, verdict: "depends",
-                  note: "AC repair is almost always worth it in warm climates. Infotainment less so.",
-                },
-                keysCount === "One set" && {
-                  label: "Get a replacement key / fob", repairLow: 200, repairHigh: 400,
-                  tradeGain: 150, privateGain: 300, verdict: "marginal",
-                  note: "Marginal for trade-in. Worth doing for private sale where buyers notice the missing set.",
-                },
-                keysCount === "No keys" && {
-                  label: "Get keys made", repairLow: 400, repairHigh: 800,
-                  tradeGain: 350, privateGain: 600, verdict: "worth",
-                  note: "No-key cars are heavily discounted. Getting keys made almost always pays back.",
-                },
-              ].filter(Boolean);
-
-              if (!fixes.length) return null;
-
-              const verdictStyle = {
-                worth:    { label: "Worth it",    color: "text-emerald-400" },
-                depends:  { label: "Case by case", color: "text-amber-400" },
-                skip:     { label: "Skip it",      color: "text-red-400" },
-                marginal: { label: "Marginal",     color: "text-muted-foreground" },
-              };
-
-              return (
-                <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-                  <div className="px-5 py-4 border-b border-border">
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground">Before you sell</p>
-                    <p className="mt-0.5 text-sm font-semibold">Worth fixing?</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">ROI estimate for each issue. Repair costs are real-world ranges.</p>
-                  </div>
-                  <div className="divide-y divide-border">
-                    {fixes.map(({ label, repairLow, repairHigh, tradeGain, privateGain, verdict, note }) => {
-                      const v = verdictStyle[verdict];
-                      return (
-                        <div key={label} className="p-5">
-                          <div className="mb-3 flex items-center justify-between gap-3">
-                            <p className="text-sm font-medium">{label}</p>
-                            <span className={`text-xs font-medium shrink-0 ${v.color}`}>{v.label}</span>
-                          </div>
-                          <div className="mb-2.5 grid grid-cols-3 gap-2 text-xs">
-                            {[
-                              ["Repair", `$${repairLow.toLocaleString()}–${repairHigh.toLocaleString()}`],
-                              ["Trade gain", `+$${tradeGain.toLocaleString()}`],
-                              ["Private gain", `+$${privateGain.toLocaleString()}`],
-                            ].map(([lbl, val]) => (
-                              <div key={lbl} className="rounded-lg bg-muted px-3 py-2.5">
-                                <p className="text-muted-foreground">{lbl}</p>
-                                <p className="mt-0.5 font-semibold">{val}</p>
-                              </div>
-                            ))}
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed">{note}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* ── Reconditioning ── */}
-            <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-              <button
-                onClick={() => setShowRecon((v) => !v)}
-                className="flex w-full items-center justify-between px-5 py-4 hover:bg-muted/20 transition-colors"
-              >
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Reconditioning estimate</p>
-                  <p className="mt-0.5 text-sm font-semibold">
-                    Est. dealer cost to resell: <span className="text-foreground">{money(appraisal.reconditioning)}</span>
-                  </p>
-                </div>
-                {showRecon ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-              </button>
-              {showRecon && (
-                <div className="border-t border-border p-5">
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {[
-                      ["Base reconditioning", appraisal.reconditioningBreakdown.base, "Inspection, detail, minor repairs"],
-                      ["Mileage wear", appraisal.reconditioningBreakdown.mileage, "Extra wear above 50,000 miles"],
-                      ["Accident history", appraisal.reconditioningBreakdown.accident, "Body/paint inspection"],
-                      ["Title status", appraisal.reconditioningBreakdown.title, "Documentation and compliance"],
-                      ["Service history gap", appraisal.reconditioningBreakdown.service, "Unknown maintenance catch-up"],
-                      ["Open recalls", appraisal.reconditioningBreakdown.recalls, "Dealer recall repair liability"],
-                      ["Warning lights", appraisal.reconditioningBreakdown.warningLights, "Diagnostic scan and repairs"],
-                      ["Mechanical issues", appraisal.reconditioningBreakdown.mechanical, "Repairs to make road-ready"],
-                      ["Body damage", appraisal.reconditioningBreakdown.bodyDamage, "Bodywork and paint"],
-                      ["Features / electronics", appraisal.reconditioningBreakdown.features, "AC, infotainment, electrical"],
-                      ["Missing keys", appraisal.reconditioningBreakdown.keys, "Key programming and replacement"],
-                    ].filter(([, value]) => value > 0).map(([label, value, note]) => (
-                      <div key={label} className="rounded-lg bg-muted p-4">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium">{label}</p>
-                          <p className="text-sm font-semibold">{money(value)}</p>
-                        </div>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* ── Adjustments ── */}
-            <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-4 border-b border-border">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">How we adjusted</p>
-                <p className="mt-0.5 text-sm font-semibold">Factors applied to market median</p>
-              </div>
-              <div className="p-5">
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {[
-                    ["Condition", `${appraisal.adjustments.condition >= 0 ? "+" : ""}${appraisal.adjustments.condition}%`, appraisal.adjustments.condition >= 0],
-                    ["Title status", `${appraisal.adjustments.title >= 0 ? "+" : ""}${appraisal.adjustments.title}%`, appraisal.adjustments.title >= 0],
-                    ["Accident history", `${appraisal.adjustments.accident >= 0 ? "+" : ""}${appraisal.adjustments.accident}%`, appraisal.adjustments.accident >= 0],
-                    ["Service history", `${appraisal.adjustments.service >= 0 ? "+" : ""}${appraisal.adjustments.service}%`, appraisal.adjustments.service >= 0],
-                    ["Ownership count", `${appraisal.adjustments.owner >= 0 ? "+" : ""}${appraisal.adjustments.owner}%`, appraisal.adjustments.owner >= 0],
-                    ...(appraisal.adjustments.recalls !== 0 ? [["Open recalls", `−$${Math.abs(appraisal.adjustments.recalls).toLocaleString()}`, false]] : []),
-                    ["Mileage vs comps", `${appraisal.adjustments.mileage >= 0 ? "+" : ""}${money(appraisal.adjustments.mileage)}`, appraisal.adjustments.mileage >= 0],
-                    ...(appraisal.adjustments.supply != null ? [[
-                      appraisal.adjustments.supply >= 0 ? "Low local supply" : "High local supply",
-                      `${appraisal.adjustments.supply >= 0 ? "+" : ""}${appraisal.adjustments.supply}%`,
-                      appraisal.adjustments.supply >= 0,
-                    ]] : []),
-                  ].map(([label, display, positive]) => (
-                    <div key={label} className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className={`text-sm font-semibold ${positive ? "" : "text-red-400"}`}>{display}</p>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Based on {appraisal.comparables} comparable listings · {appraisal.confidence}% confidence
-                </p>
-              </div>
-            </div>
-
-            {/* ── Safety & Recalls ── */}
-            {(safetyRating || recalls.length > 0) && (
-              <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-                <div className="p-5 flex flex-col gap-6 sm:flex-row sm:items-start">
-                  {safetyRating && (
-                    <div className="shrink-0">
-                      <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">NHTSA Safety</p>
-                      <p className="mb-2 max-w-[200px] truncate text-xs text-muted-foreground">{safetyRating.description}</p>
-                      <div className="mb-3 flex items-center gap-1">
-                        {[1,2,3,4,5].map((n) => (
-                          <Star key={n} className={`h-4 w-4 ${Number(safetyRating.overall) >= n ? "fill-foreground text-foreground" : "text-muted-foreground/20"}`} />
-                        ))}
-                        <span className="ml-1.5 text-sm font-semibold">{safetyRating.overall}/5</span>
+                {(() => {
+                  const fixes = [
+                    warningLights === "Check engine" && { label: "Fix check engine light", repairLow: 150, repairHigh: 500, tradeGain: 400, privateGain: 700, verdict: "worth", note: "Dealers flag lit dash lights immediately — fixing it recovers more than it costs most of the time." },
+                    warningLights === "Multiple" && { label: "Fix all dashboard lights", repairLow: 500, repairHigh: 1500, tradeGain: 1500, privateGain: 2200, verdict: "worth", note: "Multiple lights signal systemic issues. Addressing them adds significant trust value with any buyer." },
+                    mechanicalIssues === "Minor" && { label: "Fix minor mechanical issues", repairLow: 300, repairHigh: 800, tradeGain: 600, privateGain: 1000, verdict: "worth", note: "Minor mechanical fixes almost always net more than they cost, especially for private sales." },
+                    mechanicalIssues === "Major" && { label: "Fix major mechanical issues", repairLow: 1500, repairHigh: 5000, tradeGain: 2000, privateGain: 3500, verdict: "depends", note: "Get a repair quote first. If under $1,500 it's usually worth it. Above that, sell as-is to Peddle." },
+                    bodyDamage === "Minor" && { label: "Fix minor scratches / dings", repairLow: 200, repairHigh: 600, tradeGain: 300, privateGain: 700, verdict: "worth", note: "PDR (paintless dent repair) is cheap and has a strong ROI for private party sales." },
+                    bodyDamage === "Moderate" && { label: "Fix moderate body damage", repairLow: 800, repairHigh: 2500, tradeGain: 800, privateGain: 1500, verdict: "depends", note: "Get two body shop quotes. If under $1,000 it's likely worth fixing for private sale." },
+                    bodyDamage === "Major" && { label: "Fix major collision damage", repairLow: 3000, repairHigh: 10000, tradeGain: 2000, privateGain: 4000, verdict: "skip", note: "Repair costs almost always exceed the value recovered. Sell as-is to an instant buyer." },
+                    featuresWorking === "Minor issues" && { label: "Fix minor electronics / features", repairLow: 100, repairHigh: 400, tradeGain: 200, privateGain: 450, verdict: "worth", note: "Small functional issues are cheap fixes with good ROI." },
+                    featuresWorking === "Major issues" && { label: "Fix major electronics (AC, infotainment)", repairLow: 500, repairHigh: 2000, tradeGain: 600, privateGain: 1100, verdict: "depends", note: "AC repair is almost always worth it in warm climates. Infotainment less so." },
+                    keysCount === "One set" && { label: "Get a replacement key / fob", repairLow: 200, repairHigh: 400, tradeGain: 150, privateGain: 300, verdict: "marginal", note: "Marginal for trade-in. Worth doing for private sale where buyers notice the missing set." },
+                    keysCount === "No keys" && { label: "Get keys made", repairLow: 400, repairHigh: 800, tradeGain: 350, privateGain: 600, verdict: "worth", note: "No-key cars are heavily discounted. Getting keys made almost always pays back." },
+                  ].filter(Boolean);
+                  if (!fixes.length) return null;
+                  const vs = { worth: { label: "Worth it", color: "text-emerald-400" }, depends: { label: "Case by case", color: "text-amber-400" }, skip: { label: "Skip it", color: "text-red-400" }, marginal: { label: "Marginal", color: "text-muted-foreground" } };
+                  return (
+                    <div className="overflow-hidden rounded-xl border border-border bg-card">
+                      <div className="px-5 py-4 border-b border-border">
+                        <p className="text-xs uppercase tracking-widest text-muted-foreground">Before you list</p>
+                        <p className="mt-0.5 text-sm font-semibold">Worth fixing?</p>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                        {[["Front", safetyRating.frontCrash], ["Side", safetyRating.sideCrash], ["Rollover", safetyRating.rollover]].map(([l, v]) => (
-                          <div key={l} className="rounded-lg bg-muted p-2">
-                            <p className="text-muted-foreground">{l}</p>
-                            <p className="font-semibold">{v ?? "—"}</p>
+                      <div className="divide-y divide-border">
+                        {fixes.map(({ label, repairLow, repairHigh, tradeGain, privateGain, verdict, note }) => {
+                          const v = vs[verdict];
+                          return (
+                            <div key={label} className="p-5">
+                              <div className="mb-3 flex items-center justify-between gap-3">
+                                <p className="text-sm font-medium">{label}</p>
+                                <span className={`text-xs font-medium shrink-0 ${v.color}`}>{v.label}</span>
+                              </div>
+                              <div className="mb-2.5 grid grid-cols-3 gap-2 text-xs">
+                                {[["Repair", `$${repairLow.toLocaleString()}–${repairHigh.toLocaleString()}`], ["Trade gain", `+$${tradeGain.toLocaleString()}`], ["Private gain", `+$${privateGain.toLocaleString()}`]].map(([lbl, val]) => (
+                                  <div key={lbl} className="rounded-lg bg-muted px-3 py-2.5"><p className="text-muted-foreground">{lbl}</p><p className="mt-0.5 font-semibold">{val}</p></div>
+                                ))}
+                              </div>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{note}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <div className="overflow-hidden rounded-xl border border-border bg-card">
+                  <div className="px-5 py-4 border-b border-border">
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">Strategy</p>
+                    <p className="mt-0.5 text-sm font-semibold">How to get the most money</p>
+                  </div>
+                  <div className="divide-y divide-border">
+                    {TIPS.map(([tip, detail]) => (
+                      <div key={tip} className="px-5 py-4">
+                        <p className="text-sm font-medium">{tip}</p>
+                        <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ══════════════════════ MARKET TAB ══════════════════════ */}
+            {activeTab === "market" && (
+              <div className="space-y-5">
+                {marketStats && (
+                  <div className="grid gap-3 sm:grid-cols-4">
+                    {[
+                      { label: "Active listings", value: marketStats.totalListings?.toLocaleString() ?? "—", note: "within 100 mi" },
+                      { label: "Market median", value: marketStats.medianPrice ? `$${marketStats.medianPrice.toLocaleString()}` : "—", note: "asking price" },
+                      { label: "Avg mileage", value: marketStats.avgMiles ? `${marketStats.avgMiles.toLocaleString()} mi` : "—", note: "comparable cars" },
+                      { label: "Days on market", value: marketStats.avgDaysOnMarket ? `${marketStats.avgDaysOnMarket}d` : "—", note: "before it sells" },
+                    ].map(({ label, value, note }) => (
+                      <div key={label} className="rounded-xl border border-border bg-card px-4 py-3">
+                        <p className="text-xs text-muted-foreground">{label}</p>
+                        <p className="mt-1 text-xl font-bold">{value}</p>
+                        <p className="text-xs text-muted-foreground/60">{note}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <DepreciationChart retail={appraisal.retail} vehicleYear={decoded.ModelYear} />
+                </div>
+
+                {(safetyRating || recalls.length > 0) && (
+                  <div className="overflow-hidden rounded-xl border border-border bg-card">
+                    <div className="p-5 flex flex-col gap-6 sm:flex-row sm:items-start">
+                      {safetyRating && (
+                        <div className="shrink-0">
+                          <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">NHTSA Safety</p>
+                          <div className="mb-3 flex items-center gap-1">
+                            {[1,2,3,4,5].map((n) => (<Star key={n} className={`h-4 w-4 ${Number(safetyRating.overall) >= n ? "fill-foreground text-foreground" : "text-muted-foreground/20"}`} />))}
+                            <span className="ml-1.5 text-sm font-semibold">{safetyRating.overall}/5</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                            {[["Front", safetyRating.frontCrash], ["Side", safetyRating.sideCrash], ["Rollover", safetyRating.rollover]].map(([l, v]) => (
+                              <div key={l} className="rounded-lg bg-muted p-2"><p className="text-muted-foreground">{l}</p><p className="font-semibold">{v ?? "—"}</p></div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <button onClick={() => recalls.length > 0 && setShowRecalls((v) => !v)} className="flex w-full items-start justify-between text-left">
+                          <div>
+                            <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Open Recalls</p>
+                            {recalls.length > 0 ? (
+                              <>
+                                <div className="mb-2 flex items-center gap-2">
+                                  <TriangleAlert className="h-4 w-4 text-amber-400" />
+                                  <span className="text-xl font-bold">{uniqueRecallCount} recall{uniqueRecallCount !== 1 ? "s" : ""}</span>
+                                  <span className="text-sm text-muted-foreground">(−${Math.min(uniqueRecallCount * 300, 1000).toLocaleString()} applied)</span>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {Object.entries(recallGroups).map(([cat, items]) => (
+                                    <span key={cat} className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground">{cat} ×{items.length}</span>
+                                  ))}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400" /><span className="text-lg font-semibold">No open recalls</span></div>
+                            )}
+                          </div>
+                          {recalls.length > 0 && <div className="ml-4 shrink-0 mt-1">{showRecalls ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}</div>}
+                        </button>
+                        {showRecalls && recalls.length > 0 && (
+                          <div className="mt-4 space-y-3">
+                            {Object.entries(recallGroups).map(([cat, items]) => (
+                              <div key={cat} className="rounded-lg border border-border p-4">
+                                <p className="mb-2 text-sm font-semibold">{cat}</p>
+                                {items.map((r) => (
+                                  <div key={r.campaign} className="mb-2 last:mb-0">
+                                    <span className="text-xs text-muted-foreground font-mono">{r.campaign}</span>
+                                    <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">{r.summary}</p>
+                                    {r.remedy && <p className="mt-1 text-xs text-emerald-400"><span className="font-medium">Fix:</span> {r.remedy}</p>}
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="overflow-hidden rounded-xl border border-border bg-card">
+                  <div className="px-5 py-4 border-b border-border">
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">How we calculated</p>
+                    <p className="mt-0.5 text-sm font-semibold">Factors applied to market median</p>
+                  </div>
+                  <div className="p-5">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {[
+                        ["Condition", `${appraisal.adjustments.condition >= 0 ? "+" : ""}${appraisal.adjustments.condition}%`, appraisal.adjustments.condition >= 0],
+                        ["Title status", `${appraisal.adjustments.title >= 0 ? "+" : ""}${appraisal.adjustments.title}%`, appraisal.adjustments.title >= 0],
+                        ["Accident history", `${appraisal.adjustments.accident >= 0 ? "+" : ""}${appraisal.adjustments.accident}%`, appraisal.adjustments.accident >= 0],
+                        ["Service history", `${appraisal.adjustments.service >= 0 ? "+" : ""}${appraisal.adjustments.service}%`, appraisal.adjustments.service >= 0],
+                        ["Ownership count", `${appraisal.adjustments.owner >= 0 ? "+" : ""}${appraisal.adjustments.owner}%`, appraisal.adjustments.owner >= 0],
+                        ...(appraisal.adjustments.recalls !== 0 ? [["Open recalls", `−$${Math.abs(appraisal.adjustments.recalls).toLocaleString()}`, false]] : []),
+                        ["Mileage vs comps", `${appraisal.adjustments.mileage >= 0 ? "+" : ""}${money(appraisal.adjustments.mileage)}`, appraisal.adjustments.mileage >= 0],
+                        ...(appraisal.adjustments.supply != null ? [[appraisal.adjustments.supply >= 0 ? "Low local supply" : "High local supply", `${appraisal.adjustments.supply >= 0 ? "+" : ""}${appraisal.adjustments.supply}%`, appraisal.adjustments.supply >= 0]] : []),
+                      ].map(([label, display, positive]) => (
+                        <div key={label} className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
+                          <p className="text-xs text-muted-foreground">{label}</p>
+                          <p className={`text-sm font-semibold ${positive ? "" : "text-red-400"}`}>{display}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-xs text-muted-foreground">Based on {appraisal.comparables} comparable listings · {appraisal.confidence}% confidence</p>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden rounded-xl border border-border bg-card">
+                  <button onClick={() => setShowRecon((v) => !v)} className="flex w-full items-center justify-between px-5 py-4 hover:bg-muted/20 transition-colors">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground">Reconditioning estimate</p>
+                      <p className="mt-0.5 text-sm font-semibold">Est. dealer cost to resell: <span className="text-foreground">{money(appraisal.reconditioning)}</span></p>
+                    </div>
+                    {showRecon ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  </button>
+                  {showRecon && (
+                    <div className="border-t border-border p-5">
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {[
+                          ["Base reconditioning", appraisal.reconditioningBreakdown.base, "Inspection, detail, minor repairs"],
+                          ["Mileage wear", appraisal.reconditioningBreakdown.mileage, "Extra wear above 50,000 miles"],
+                          ["Accident history", appraisal.reconditioningBreakdown.accident, "Body/paint inspection"],
+                          ["Title status", appraisal.reconditioningBreakdown.title, "Documentation and compliance"],
+                          ["Service history gap", appraisal.reconditioningBreakdown.service, "Unknown maintenance catch-up"],
+                          ["Open recalls", appraisal.reconditioningBreakdown.recalls, "Dealer recall repair liability"],
+                          ["Warning lights", appraisal.reconditioningBreakdown.warningLights, "Diagnostic scan and repairs"],
+                          ["Mechanical issues", appraisal.reconditioningBreakdown.mechanical, "Repairs to make road-ready"],
+                          ["Body damage", appraisal.reconditioningBreakdown.bodyDamage, "Bodywork and paint"],
+                          ["Features / electronics", appraisal.reconditioningBreakdown.features, "AC, infotainment, electrical"],
+                          ["Missing keys", appraisal.reconditioningBreakdown.keys, "Key programming and replacement"],
+                        ].filter(([, v]) => v > 0).map(([label, value, note]) => (
+                          <div key={label} className="rounded-lg bg-muted p-4">
+                            <div className="flex items-center justify-between"><p className="text-sm font-medium">{label}</p><p className="text-sm font-semibold">{money(value)}</p></div>
+                            <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  <div className="flex-1">
-                    <button
-                      onClick={() => recalls.length > 0 && setShowRecalls((v) => !v)}
-                      className="flex w-full items-start justify-between text-left"
-                    >
-                      <div>
-                        <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Open Recalls</p>
-                        {recalls.length > 0 ? (
-                          <>
-                            <div className="mb-2 flex items-center gap-2">
-                              <TriangleAlert className="h-4 w-4 text-amber-400" />
-                              <span className="text-xl font-bold">
-                                {uniqueRecallCount} recall{uniqueRecallCount !== 1 ? "s" : ""}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                (−${Math.min(uniqueRecallCount * 300, 1000).toLocaleString()} applied)
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap gap-1.5">
-                              {Object.entries(recallGroups).map(([cat, items]) => (
-                                <span key={cat} className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground">
-                                  {cat} ×{items.length}
-                                </span>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-400" />
-                            <span className="text-lg font-semibold">No open recalls</span>
-                          </div>
-                        )}
-                      </div>
-                      {recalls.length > 0 && (
-                        <div className="ml-4 shrink-0 mt-1">
-                          {showRecalls ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-                        </div>
-                      )}
-                    </button>
-                    {showRecalls && recalls.length > 0 && (
-                      <div className="mt-4 space-y-3">
-                        {Object.entries(recallGroups).map(([cat, items]) => (
-                          <div key={cat} className="rounded-lg border border-border p-4">
-                            <p className="mb-2 text-sm font-semibold">{cat}</p>
-                            {items.map((r) => (
-                              <div key={r.campaign} className="mb-2 last:mb-0">
-                                <span className="text-xs text-muted-foreground font-mono">{r.campaign}</span>
-                                <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">{r.summary}</p>
-                                {r.remedy && <p className="mt-1 text-xs text-emerald-400"><span className="font-medium">Fix:</span> {r.remedy}</p>}
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* ── Market conditions ── */}
-            {marketStats && (
-              <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-                <div className="px-5 py-4 border-b border-border">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Market conditions</p>
-                  <p className="mt-0.5 text-sm font-semibold">How this car is moving right now</p>
-                </div>
-                <div className="grid gap-px p-5 sm:grid-cols-4">
-                  {[
-                    { label: "Active listings", value: marketStats.totalListings?.toLocaleString() ?? "—", note: "within 100 mi" },
-                    { label: "Market median", value: marketStats.medianPrice ? `$${marketStats.medianPrice.toLocaleString()}` : "—", note: "asking price" },
-                    { label: "Avg mileage", value: marketStats.avgMiles ? `${marketStats.avgMiles.toLocaleString()} mi` : "—", note: "comparable cars" },
-                    { label: "Days on market", value: marketStats.avgDaysOnMarket ? `${marketStats.avgDaysOnMarket}d` : "—", note: "before it sells" },
-                  ].map(({ label, value, note }) => (
-                    <div key={label} className="rounded-lg bg-muted px-4 py-3">
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className="mt-1 text-xl font-bold">{value}</p>
-                      <p className="text-xs text-muted-foreground/60">{note}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── Strategy tips ── */}
-            <div className="mb-8 rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-5 py-4 border-b border-border">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">Strategy</p>
-                <p className="mt-0.5 text-sm font-semibold">How to get the most money</p>
-              </div>
-              <div className="divide-y divide-border">
-                {TIPS.map(([tip, detail]) => (
-                  <div key={tip} className="px-5 py-4">
-                    <p className="text-sm font-medium">{tip}</p>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{detail}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Comparable listings ── */}
-            <div>
-              <button
-                onClick={() => setShowListings((v) => !v)}
-                className="mb-4 flex w-full items-center justify-between text-left"
-              >
                 <div>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Source data</p>
-                  <p className="mt-0.5 text-sm font-semibold">{listings.length} comparable listings used</p>
-                </div>
-                {showListings ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-              </button>
-              {showListings && (
-                <div className="overflow-hidden rounded-xl border border-border">
-                  {listings.map((item, i) => (
-                    <div key={item.id} className={`flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">{item.title}</p>
-                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          {miles(item.mileage)}
-                          {item.location && ` · ${item.location}`}
-                          {item.distance && ` · ${item.distance} mi away`}
-                          {item.source && ` · ${item.source}`}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <p className="text-sm font-semibold">{money(item.price)}</p>
-                        <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1" asChild>
-                          <a href={item.url} target="_blank" rel="noopener noreferrer">
-                            View <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </Button>
-                      </div>
+                  <button onClick={() => setShowListings((v) => !v)} className="mb-4 flex w-full items-center justify-between text-left">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground">Source data</p>
+                      <p className="mt-0.5 text-sm font-semibold">{listings.length} comparable listings used</p>
                     </div>
-                  ))}
+                    {showListings ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  </button>
+                  {showListings && (
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      {listings.map((item, i) => (
+                        <div key={item.id} className={`flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium truncate">{item.title}</p>
+                            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                              {miles(item.mileage)}{item.location && ` · ${item.location}`}{item.distance && ` · ${item.distance} mi away`}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <p className="text-sm font-semibold">{money(item.price)}</p>
+                            <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1" asChild>
+                              <a href={item.url} target="_blank" rel="noopener noreferrer">View <ExternalLink className="h-3 w-3" /></a>
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
           </motion.main>
         )}
