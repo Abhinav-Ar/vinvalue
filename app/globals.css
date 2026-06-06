@@ -84,26 +84,26 @@
 }
 
 .dark {
-  /* Deeper background for a cleaner dark canvas */
-  --background: oklch(0.07 0 0);
+  /* Dark gray canvas — not pure black */
+  --background: oklch(0.14 0 0);
   --foreground: oklch(0.97 0 0);
-  --card: oklch(0.11 0 0);
+  --card: oklch(0.18 0 0);
   --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.11 0 0);
+  --popover: oklch(0.18 0 0);
   --popover-foreground: oklch(0.97 0 0);
-  /* White primary button — clean, no gradient needed */
+  /* White primary button */
   --primary: oklch(0.97 0 0);
-  --primary-foreground: oklch(0.07 0 0);
-  --secondary: oklch(0.16 0 0);
+  --primary-foreground: oklch(0.10 0 0);
+  --secondary: oklch(0.22 0 0);
   --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.14 0 0);
-  --muted-foreground: oklch(0.50 0 0);
-  --accent: oklch(0.16 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.54 0 0);
+  --accent: oklch(0.22 0 0);
   --accent-foreground: oklch(0.97 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.5 0 0);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.55 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
