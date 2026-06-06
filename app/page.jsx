@@ -45,147 +45,215 @@ function Nav({ links = true }) {
   );
 }
 
+function GarageCard({ car }) {
+  return (
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate font-semibold leading-snug">
+              {car.year} {car.make} {car.model}
+            </p>
+            {car.trim && (
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>
+            )}
+          </div>
+          <span className="shrink-0 rounded-md border border-border px-1.5 py-0.5 text-xs text-muted-foreground">
+            {car.condition}
+          </span>
+        </div>
+
+        <p className="mt-2 text-xs text-muted-foreground">
+          {Number(car.mileage).toLocaleString()} miles
+        </p>
+
+        {/* Hero value */}
+        <div className="mt-5">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Est. instant offer</p>
+          <p className="mt-1 text-3xl font-bold tracking-tight">{money(car.trade_in)}</p>
+        </div>
+
+        {/* Secondary values */}
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="rounded-lg bg-muted/60 px-3 py-2.5">
+            <p className="text-[11px] text-muted-foreground">Private party</p>
+            <p className="mt-0.5 text-sm font-semibold">{money(car.private_party)}</p>
+          </div>
+          <div className="rounded-lg bg-muted/60 px-3 py-2.5">
+            <p className="text-[11px] text-muted-foreground">Retail</p>
+            <p className="mt-0.5 text-sm font-semibold">{money(car.retail)}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2 border-t border-border p-3">
+        <Link href={`/appraise?vin=${car.vin}`} className="flex-1">
+          <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
+            Re-appraise
+          </Button>
+        </Link>
+        {car.profile_encoded && (
+          <Link href={`/profile?d=${car.profile_encoded}`} target="_blank">
+            <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1">
+              Report <ExternalLink className="h-3 w-3" />
+            </Button>
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Dashboard({ session, garage, history }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = session.user.name?.split(" ")[0] ?? "there";
+
+  const totalCars = garage.length;
+  const bestOffer = totalCars > 0 ? Math.max(...garage.map((c) => Number(c.trade_in) || 0)) : 0;
+  const totalAppraisals = history.length;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
-        {/* Greeting */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight">{greeting}, {firstName}.</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Your AutoIQ dashboard.</p>
-        </div>
 
-        {/* Quick actions */}
-        <div className="mb-10 flex flex-wrap gap-2">
+        {/* Top bar */}
+        <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-muted-foreground">{greeting}</p>
+            <h1 className="mt-0.5 text-3xl font-bold tracking-tight">{firstName}.</h1>
+          </div>
           <Link href="/appraise">
-            <Button size="sm" className="rounded-lg gap-2">
-              <Plus className="h-3.5 w-3.5" /> New appraisal
-            </Button>
-          </Link>
-          <Link href="/garage">
-            <Button variant="outline" size="sm" className="rounded-lg gap-2">
-              <Car className="h-3.5 w-3.5" /> Garage
-            </Button>
-          </Link>
-          <Link href="/history">
-            <Button variant="outline" size="sm" className="rounded-lg gap-2">
-              <Clock className="h-3.5 w-3.5" /> History
+            <Button className="rounded-lg gap-2">
+              <Plus className="h-4 w-4" /> New appraisal
             </Button>
           </Link>
         </div>
 
-        {/* Garage */}
-        {garage.length > 0 && (
-          <div className="mb-12">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-semibold">Garage</h2>
-              <Link href="/garage" className="text-xs text-muted-foreground hover:text-foreground">View all →</Link>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {garage.slice(0, 4).map((car) => (
-                <div key={car.id} className="overflow-hidden rounded-xl border border-border bg-card">
-                  <div className="p-4 pb-3">
-                    <p className="truncate text-sm font-medium">{car.year} {car.make} {car.model}</p>
-                    {car.trim && <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>}
-                    <p className="mt-1.5 text-xs text-muted-foreground">{Number(car.mileage).toLocaleString()} mi</p>
-                  </div>
-                  <div className="grid grid-cols-3 divide-x divide-border border-t border-border text-center">
-                    <div className="py-2.5">
-                      <p className="text-xs text-muted-foreground">Trade</p>
-                      <p className="text-xs font-semibold">{money(car.trade_in)}</p>
-                    </div>
-                    <div className="py-2.5">
-                      <p className="text-xs text-muted-foreground">Private</p>
-                      <p className="text-xs font-semibold">{money(car.private_party)}</p>
-                    </div>
-                    <div className="py-2.5">
-                      <p className="text-xs text-muted-foreground">Retail</p>
-                      <p className="text-xs font-semibold">{money(car.retail)}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5 border-t border-border p-2">
-                    <Link href={`/appraise?vin=${car.vin}`}>
-                      <Button variant="outline" size="sm" className="w-full rounded-md text-xs h-7">Re-appraise</Button>
-                    </Link>
-                    {car.profile_encoded ? (
-                      <Link href={`/profile?d=${car.profile_encoded}`} target="_blank">
-                        <Button variant="outline" size="sm" className="w-full rounded-md text-xs h-7 gap-1">Report <ExternalLink className="h-2.5 w-2.5" /></Button>
-                      </Link>
-                    ) : <div />}
-                  </div>
-                </div>
-              ))}
-              <Link href="/appraise" className="flex min-h-[140px] items-center justify-center rounded-xl border border-dashed border-border transition-colors hover:border-foreground/20 hover:bg-muted/30">
-                <div className="text-center">
-                  <Plus className="mx-auto mb-1.5 h-6 w-6 text-muted-foreground/40" />
-                  <p className="text-xs text-muted-foreground">Add a car</p>
-                </div>
-              </Link>
-            </div>
+        {/* Stats row */}
+        {totalCars > 0 && (
+          <div className="mb-10 grid gap-3 sm:grid-cols-3">
+            {[
+              { label: "Cars in garage", value: String(totalCars), sub: totalCars === 1 ? "vehicle tracked" : "vehicles tracked" },
+              { label: "Best instant offer", value: money(bestOffer), sub: "estimated trade-in" },
+              { label: "Total appraisals", value: String(totalAppraisals), sub: "searches run" },
+            ].map(({ label, value, sub }) => (
+              <div key={label} className="rounded-xl border border-border bg-card p-5">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</p>
+                <p className="mt-2 text-3xl font-bold tracking-tight">{value}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Recent history */}
-        {history.length > 0 && (
-          <div>
+        {/* Garage */}
+        {totalCars > 0 ? (
+          <section className="mb-12">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-semibold">Recent searches</h2>
-              <Link href="/history" className="text-xs text-muted-foreground hover:text-foreground">View all →</Link>
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Garage</h2>
+              <Link href="/garage" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+                View all →
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {garage.slice(0, 3).map((car) => (
+                <GarageCard key={car.id} car={car} />
+              ))}
+              <Link
+                href="/appraise"
+                className="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-border transition-colors hover:border-foreground/20 hover:bg-muted/20"
+              >
+                <div className="text-center">
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-muted">
+                    <Plus className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Add a car</p>
+                </div>
+              </Link>
+            </div>
+          </section>
+        ) : (
+          /* Empty garage onboarding */
+          <section className="mb-12">
+            <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-muted">
+                <Car className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="font-semibold">Your garage is empty</p>
+              <p className="mt-1.5 text-sm text-muted-foreground max-w-sm mx-auto">
+                Run an appraisal to find out what your car is worth, then save it here to track it over time.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <Link href="/appraise">
+                  <Button className="rounded-lg gap-2">
+                    Appraise a car <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/value">
+                  <Button variant="outline" className="rounded-lg">Quick value check</Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Recent searches */}
+        {history.length > 0 && (
+          <section>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Recent appraisals</h2>
+              <Link href="/history" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+                View all →
+              </Link>
             </div>
             <div className="overflow-hidden rounded-xl border border-border">
               {history.map((s, i) => (
-                <div key={s.id} className={`flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-muted/30 ${i > 0 ? "border-t border-border" : ""}`}>
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Car className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <div
+                  key={s.id}
+                  className={`flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/30 ${i > 0 ? "border-t border-border" : ""}`}
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+                      <Car className="h-4 w-4 text-muted-foreground" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{s.year} {s.make} {s.model}{s.trim ? ` ${s.trim}` : ""}</p>
-                      <p className="text-xs text-muted-foreground">{Number(s.mileage).toLocaleString()} mi · {s.condition} · {timeAgo(s.created_at)}</p>
+                      <p className="truncate text-sm font-medium">
+                        {s.year} {s.make} {s.model}
+                        {s.trim && <span className="ml-1.5 font-normal text-muted-foreground text-xs">{s.trim}</span>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {Number(s.mileage).toLocaleString()} mi · {s.condition} · {timeAgo(s.created_at)}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 shrink-0">
+
+                  <div className="flex shrink-0 items-center gap-5">
                     <div className="hidden text-right sm:block">
-                      <p className="text-xs text-muted-foreground">Trade-in</p>
+                      <p className="text-[11px] text-muted-foreground">Trade-in</p>
                       <p className="text-sm font-semibold">{money(s.trade_in)}</p>
                     </div>
-                    <div className="hidden text-right sm:block">
-                      <p className="text-xs text-muted-foreground">Private</p>
+                    <div className="hidden text-right lg:block">
+                      <p className="text-[11px] text-muted-foreground">Private</p>
                       <p className="text-sm font-semibold">{money(s.private_party)}</p>
                     </div>
                     {s.profile_encoded && (
-                      <Link href={`/profile?d=${s.profile_encoded}`} target="_blank">
-                        <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1">
+                      <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1" asChild>
+                        <Link href={`/profile?d=${s.profile_encoded}`} target="_blank">
                           Report <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Empty state */}
-        {garage.length === 0 && history.length === 0 && (
-          <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card py-20 text-center">
-            <Car className="h-10 w-10 text-muted-foreground/30" />
-            <div>
-              <p className="font-semibold">You're all set up.</p>
-              <p className="mt-1 text-sm text-muted-foreground">Run your first appraisal and your history will appear here.</p>
-            </div>
-            <Link href="/appraise">
-              <Button size="sm" className="rounded-lg gap-2">
-                Appraise a car <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
-          </div>
-        )}
       </main>
     </div>
   );
@@ -225,7 +293,34 @@ export default function Landing() {
     });
   }, [status]);
 
-  if (status === "authenticated" && garage !== null && history !== null) {
+  // Never fall through to the landing page while the session or data is still resolving.
+  // This prevents the flash where authenticated users briefly see the marketing page.
+  if (status === "loading" || (status === "authenticated" && (garage === null || history === null))) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Nav links={false} />
+        <main className="mx-auto max-w-6xl px-6 py-12">
+          <div className="mb-10">
+            <div className="h-3.5 w-24 animate-pulse rounded-md bg-muted" />
+            <div className="mt-2 h-8 w-36 animate-pulse rounded-md bg-muted" />
+          </div>
+          <div className="mb-10 grid gap-3 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-28 animate-pulse rounded-xl border border-border bg-card" />
+            ))}
+          </div>
+          <div className="mb-4 h-3.5 w-16 animate-pulse rounded-md bg-muted" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-56 animate-pulse rounded-xl border border-border bg-card" />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (status === "authenticated") {
     return <Dashboard session={session} garage={garage} history={history} />;
   }
 
