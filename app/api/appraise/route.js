@@ -160,14 +160,22 @@ export async function GET(request) {
 
     // ── Adjustment factors ──
     const avgMileage = listings.reduce((s, l) => s + l.mileage, 0) / listings.length;
-    // Base rate: $0.12/mile vs market average (industry standard for used cars).
-    // Steep buyer-concern surcharges kick in past 75k and 100k miles — beyond those
-    // thresholds buyers price in powertrain risk, battery degradation (EVs), etc.
-    const mileageDelta       = (avgMileage - mileage) * 0.12;
-    const highMileagePenalty = mileage > 100000 ? (mileage - 100000) * 0.10
-                             : mileage > 75000  ? (mileage - 75000)  * 0.05
+    // $0.15/mile vs market average. Buyer-concern surcharges stack past 75k and 100k —
+    // those thresholds price in powertrain risk, battery degradation (EVs), insurance, etc.
+    const mileageDelta       = (avgMileage - mileage) * 0.15;
+    const highMileagePenalty = mileage > 100000 ? (mileage - 100000) * 0.15 + (25000 * 0.08)
+                             : mileage > 75000  ? (mileage - 75000)  * 0.08
                              : 0;
-    const mileageImpact = Math.max(-25000, Math.round(mileageDelta - highMileagePenalty));
+    const mileageImpact = Math.max(-30000, Math.round(mileageDelta - highMileagePenalty));
+
+    // ── Supply / demand factor ──
+    // More listings in the area = buyer's market = lower prices.
+    // Few listings = scarce or enthusiast car = scarcity premium.
+    // Neutral at 20 listings, log-scaled, capped at ±8%.
+    const totalListings = marketStats?.totalListings || listings.length;
+    const supplyFactor  = Math.max(0.92, Math.min(1.08,
+      1 - Math.log(Math.max(totalListings, 1) / 20) * 0.06
+    ));
 
     const conditionFactor = CONDITION_FACTORS[condition]     ?? 1.0;
     const titleFactor     = TITLE_FACTORS[titleStatus]       ?? 1.0;
@@ -197,7 +205,7 @@ export async function GET(request) {
 
     // ── Three-tier valuation ──
     const retailMedian  = medianOf(prices);
-    const retail        = Math.max(0, Math.round(retailMedian * totalFactor + mileageImpact - recallPenalty));
+    const retail        = Math.max(0, Math.round(retailMedian * totalFactor * supplyFactor + mileageImpact - recallPenalty));
     const tradeIn       = Math.max(0, Math.round(retail - reconditioning - retail * 0.17));
     const ppMultiplier  = classification?.privatePartyMultiplier ?? 0.88;
     const privateParty  = Math.max(0, Math.round(retail * ppMultiplier));
@@ -231,6 +239,7 @@ export async function GET(request) {
           owner:     Math.round((ownerFactor     - 1) * 100),
           mileage:   mileageImpact,
           recalls:   -recallPenalty,
+          supply:    Math.round((supplyFactor - 1) * 100),
         },
         comparables: prices.length,
         confidence:  Math.min(96, Math.max(52, 55 + prices.length * 2)),

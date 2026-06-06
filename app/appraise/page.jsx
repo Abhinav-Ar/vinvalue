@@ -1134,6 +1134,11 @@ export default function AppraisePage() {
                     ["Ownership count", `${appraisal.adjustments.owner >= 0 ? "+" : ""}${appraisal.adjustments.owner}%`, appraisal.adjustments.owner >= 0],
                     ...(appraisal.adjustments.recalls !== 0 ? [["Open recalls", `−$${Math.abs(appraisal.adjustments.recalls).toLocaleString()}`, false]] : []),
                     ["Mileage vs comps", `${appraisal.adjustments.mileage >= 0 ? "+" : ""}${money(appraisal.adjustments.mileage)}`, appraisal.adjustments.mileage >= 0],
+                    ...(appraisal.adjustments.supply != null ? [[
+                      appraisal.adjustments.supply >= 0 ? "Low local supply" : "High local supply",
+                      `${appraisal.adjustments.supply >= 0 ? "+" : ""}${appraisal.adjustments.supply}%`,
+                      appraisal.adjustments.supply >= 0,
+                    ]] : []),
                   ].map(([label, display, positive]) => (
                     <div key={label} className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
                       <p className="text-xs text-muted-foreground">{label}</p>
