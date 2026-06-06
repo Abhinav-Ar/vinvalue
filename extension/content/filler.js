@@ -189,12 +189,14 @@ function fillPage(car) {
     }
   }
 
-  // Selects — drive type, transmission, fuel type
+  // Selects — drive type, transmission, fuel type, colors
   const selectTargets = [
     { keys: ["drive", "drivetrain", "drive type"], value: car.driveType },
     { keys: ["transmission"], value: car.transmission },
     { keys: ["fuel", "fuel type"], value: car.fuelType },
     { keys: ["cylinder", "engine"], value: car.cylinders ? car.cylinders + " cylinder" : null },
+    { keys: ["exterior color", "what color", "vehicle color", "color of your vehicle", "car color"], value: car.exteriorColor },
+    { keys: ["interior color"], value: car.interiorColor },
   ];
 
   // Native <select> elements
@@ -215,9 +217,14 @@ function fillPage(car) {
     ...document.querySelectorAll('[aria-haspopup="true"]'),
   ];
   for (const trigger of ariaDropdowns) {
-    const label = getLabelText(trigger) ||
-      trigger.closest("label,div,fieldset")?.querySelector("label,legend,p,span[id]")
+    // Try multiple label sources: aria-label, placeholder, nearby label/heading, parent container text
+    const directLabel = getLabelText(trigger);
+    const nearbyLabel =
+      trigger.closest("label,div,fieldset,section")
+        ?.querySelector("label,legend,p,h1,h2,h3,h4,span[id]")
         ?.textContent?.toLowerCase() || "";
+    const innerText = trigger.textContent?.trim().toLowerCase() || "";
+    const label = directLabel || nearbyLabel || innerText;
     for (const { keys, value } of selectTargets) {
       if (value && keys.some((k) => label.includes(k))) {
         fillAriaDropdown(trigger, value).then((ok) => { if (ok) {} });
@@ -350,12 +357,8 @@ function highlightUnfilled() {
     }
   }
 
-  // Unchecked checkboxes — every feature checkbox on a sell form needs an answer
-  for (const el of document.querySelectorAll("input[type=checkbox]")) {
-    if (!el.checked) {
-      unfilled.push(markNeedsInput(el));
-    }
-  }
+  // Do NOT highlight unchecked checkboxes — on sell forms, unchecked means "no" which IS a valid answer.
+  // Feature lists (Alloy Wheels, Premium Wheels, etc.) should all stay unselected if the car doesn't have them.
 
   // Scroll to first unfilled field
   if (unfilled.length > 0) {
