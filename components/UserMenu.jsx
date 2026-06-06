@@ -11,7 +11,6 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handler(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -21,7 +20,7 @@ export default function UserMenu() {
   }, []);
 
   if (status === "loading") {
-    return <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />;
+    return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
   }
 
   if (!session?.user) {
@@ -30,9 +29,9 @@ export default function UserMenu() {
         variant="outline"
         size="sm"
         onClick={() => signIn("google")}
-        className="gap-2 rounded-xl"
+        className="gap-2 rounded-lg text-sm"
       >
-        <LogIn className="h-4 w-4" />
+        <LogIn className="h-3.5 w-3.5" />
         Sign in
       </Button>
     );
@@ -42,54 +41,54 @@ export default function UserMenu() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:border-indigo-700"
+        className="flex items-center gap-2 rounded-lg border border-border bg-card px-2.5 py-1.5 text-sm transition-colors hover:border-border/60 hover:bg-muted"
       >
         {session.user.image ? (
           <img
             src={session.user.image}
             alt={session.user.name ?? ""}
-            className="h-6 w-6 rounded-full"
+            className="h-5 w-5 rounded-full"
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
             {session.user.name?.[0] ?? "?"}
           </div>
         )}
-        <span className="hidden max-w-[120px] truncate sm:block">{session.user.name}</span>
-        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="hidden max-w-[100px] truncate text-sm sm:block">{session.user.name?.split(" ")[0]}</span>
+        <ChevronDown className="h-3 w-3 text-muted-foreground" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-          <div className="border-b border-border px-4 py-3">
-            <p className="truncate text-sm font-semibold">{session.user.name}</p>
+        <div className="absolute right-0 top-full z-50 mt-1.5 w-48 overflow-hidden rounded-xl border border-border bg-card shadow-xl shadow-black/30">
+          <div className="border-b border-border px-3 py-2.5">
+            <p className="truncate text-sm font-medium">{session.user.name}</p>
             <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
           </div>
-          <div className="p-1.5">
+          <div className="p-1">
             <Link
               href="/garage"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted"
             >
-              <Car className="h-4 w-4 text-indigo-400" />
+              <Car className="h-3.5 w-3.5 text-muted-foreground" />
               My Garage
             </Link>
             <Link
               href="/history"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted"
             >
-              <Clock className="h-4 w-4 text-indigo-400" />
-              Search History
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              History
             </Link>
           </div>
-          <div className="border-t border-border p-1.5">
+          <div className="border-t border-border p-1">
             <button
               onClick={() => { setOpen(false); signOut(); }}
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5" />
               Sign out
             </button>
           </div>
