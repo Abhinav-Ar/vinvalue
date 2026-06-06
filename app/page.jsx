@@ -47,17 +47,21 @@ function Nav({ links = true }) {
 }
 
 function GarageCard({ car }) {
-  const stored = car.profile_encoded ? decodeProfile(car.profile_encoded)?.vehiclePhoto : null;
+  const decoded = car.profile_encoded ? decodeProfile(car.profile_encoded) : null;
+  const stored = decoded?.vehiclePhoto ?? null;
+  const exteriorColor = decoded?.condition?.exteriorColor || "";
   const [vehiclePhoto, setVehiclePhoto] = useState(stored);
 
   useEffect(() => {
-    if (stored || vehiclePhoto) return;
-    fetch(`/api/photo?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`)
+    if (!exteriorColor && stored) { setVehiclePhoto(stored); return; }
+    const params = new URLSearchParams({ make: car.make, model: car.model, year: car.year });
+    if (exteriorColor) params.set("color", exteriorColor);
+    fetch(`/api/photo?${params}`)
       .then((r) => r.json())
-      .then((d) => { if (d.photo) setVehiclePhoto(d.photo); })
-      .catch(() => {});
+      .then((d) => { if (d.photo) setVehiclePhoto(d.photo); else setVehiclePhoto(stored); })
+      .catch(() => { setVehiclePhoto(stored); });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [car.vin]);
+  }, [car.vin, exteriorColor]);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
