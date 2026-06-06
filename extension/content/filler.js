@@ -516,6 +516,54 @@ const CONDITION_ANSWERS = [
       "Rebuilt": ["rebuilt"],
     },
   },
+  {
+    questionKeywords: ["tire", "tires", "wheel condition"],
+    field: "tireCondition",
+    answers: {
+      "All good":                  ["all four", "good condition", "no replacement"],
+      "One needs replacement":     ["one tire", "one needs"],
+      "Multiple need replacement": ["multiple", "two or more", "several"],
+      "Has flat":                  ["flat", "flat tire"],
+    },
+  },
+  {
+    questionKeywords: ["windshield", "glass", "window damage", "chips", "cracks"],
+    field: "glassCondition",
+    answers: {
+      "None":         ["no chips", "no cracks", "no damage", "good"],
+      "Minor chips":  ["chips", "minor", "small chip"],
+      "Cracked":      ["cracked", "crack"],
+    },
+  },
+  {
+    questionKeywords: ["interior condition", "seats", "upholstery", "interior damage"],
+    field: "interiorCleanliness",
+    answers: {
+      "Clean":            ["clean", "no damage", "good condition"],
+      "Light wear":       ["light wear", "minor wear", "minor stain"],
+      "Stains or damage": ["stain", "damage", "torn", "significant"],
+    },
+  },
+  {
+    questionKeywords: ["smoke", "odor", "smell", "pet"],
+    field: "odors",
+    answers: {
+      "None":   ["no smoke", "no odor", "no smell", "none"],
+      "Smoke":  ["smoke", "smoker"],
+      "Pet":    ["pet"],
+      "Slight": ["slight", "faint"],
+    },
+  },
+  {
+    questionKeywords: ["roof", "sunroof", "moonroof", "convertible"],
+    field: "roofType",
+    answers: {
+      "Standard":    ["standard", "no sunroof", "none"],
+      "Sunroof":     ["sunroof"],
+      "Moonroof":    ["moonroof", "panoramic"],
+      "Convertible": ["convertible", "soft top", "hard top"],
+    },
+  },
 ];
 
 function clickByText(text) {

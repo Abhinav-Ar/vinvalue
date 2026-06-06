@@ -7,6 +7,7 @@ import { Zap, Search, BarChart3, Car, ArrowRight, DollarSign, Clock, Plus, Exter
 import { useSession } from "next-auth/react";
 import UserMenu from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
+import SellProfilePrompt from "@/components/SellProfilePrompt";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -131,6 +132,9 @@ function Dashboard({ session, garage, history }) {
             </Button>
           </Link>
         </div>
+
+        {/* Incomplete sell profile prompt */}
+        <SellProfilePrompt cars={garage} />
 
         {/* Stats row */}
         {totalCars > 0 && (

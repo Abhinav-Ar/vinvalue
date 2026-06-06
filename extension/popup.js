@@ -12,15 +12,22 @@ function decodeConditions(encoded) {
   try {
     const d = JSON.parse(decodeURIComponent(escape(atob(encoded))));
     return {
-      bodyDamage:       d.dmg  || null,
-      mechanicalIssues: d.mch  || null,
-      warningLights:    d.wl   || null,
-      accidents:        d.ac   || null,
-      titleStatus:      d.tl   || null,
-      serviceHistory:   d.sv   || null,
-      owners:           d.ow   || null,
-      keysCount:        d.ky   || null,
-      featuresWorking:  d.ft   || null,
+      bodyDamage:          d.dmg  || null,
+      mechanicalIssues:    d.mch  || null,
+      warningLights:       d.wl   || null,
+      accidents:           d.ac   || null,
+      titleStatus:         d.tl   || null,
+      serviceHistory:      d.sv   || null,
+      owners:              d.ow   || null,
+      keysCount:           d.ky   || null,
+      featuresWorking:     d.ft   || null,
+      exteriorColor:       d.ecol || null,
+      interiorColor:       d.icol || null,
+      tireCondition:       d.trc  || null,
+      glassCondition:      d.glc  || null,
+      interiorCleanliness: d.intc || null,
+      odors:               d.odo  || null,
+      roofType:            d.rftp || null,
     };
   } catch (_) { return {}; }
 }
@@ -72,6 +79,13 @@ function renderDetailPanel(car) {
     { label: "Owners",       value: cond.owners },
     { label: "Keys",         value: cond.keysCount },
     { label: "Features",     value: cond.featuresWorking },
+    { label: "Ext color",    value: cond.exteriorColor },
+    { label: "Int color",    value: cond.interiorColor },
+    { label: "Tires",        value: cond.tireCondition },
+    { label: "Glass",        value: cond.glassCondition },
+    { label: "Interior",     value: cond.interiorCleanliness },
+    { label: "Odors",        value: cond.odors },
+    { label: "Roof",         value: cond.roofType },
     { label: "ZIP",          value: car.zip },
   ].filter((f) => f.value != null && f.value !== "");
 
@@ -167,9 +181,20 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     ? decodeConditions(selectedCar.profile_encoded)
     : {};
 
+  // Map extended fields to the keys filler.js expects
+  const extendedFields = {
+    tireCondition:       profileCond.tireCondition       || null,
+    glassCondition:      profileCond.glassCondition      || null,
+    interiorCleanliness: profileCond.interiorCleanliness || null,
+    odors:               profileCond.odors               || null,
+    roofType:            profileCond.roofType            || null,
+    exteriorColor:       profileCond.exteriorColor       || null,
+    interiorColor:       profileCond.interiorColor       || null,
+  };
+
   chrome.storage.local.get("conditions", ({ conditions = {} }) => {
     const storedCond = conditions[car.vin] || {};
-    const carWithCondition = { ...car, ...storedCond, ...profileCond };
+    const carWithCondition = { ...car, ...storedCond, ...profileCond, ...extendedFields };
 
     chrome.scripting.executeScript({
       target: { tabId: tab.id },

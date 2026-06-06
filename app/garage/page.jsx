@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Zap, Car, Trash2, ExternalLink, Plus, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import UserMenu from "@/components/UserMenu";
+import SellProfilePrompt from "@/components/SellProfilePrompt";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -70,6 +71,8 @@ export default function GaragePage() {
             </Button>
           </Link>
         </div>
+
+        {!loading && <SellProfilePrompt cars={cars} />}
 
         {loading && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

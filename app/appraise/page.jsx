@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Search, Gauge, MapPin, ShieldCheck, AlertTriangle, Loader2,
-  ExternalLink, Zap, RotateCcw, Car, Users, Wrench,
+  ExternalLink, Zap, RotateCcw, Car, Users, Wrench, X,
   DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
-  Clock, BarChart2, CheckCircle, FileText, Copy, ClipboardCheck,
+  Clock, BarChart2, CheckCircle, FileText, Copy, ClipboardCheck, Lock,
 } from "lucide-react";
 import { encodeProfile } from "@/lib/profileEncoding";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import UserMenu from "@/components/UserMenu";
 import DepreciationChart from "@/components/DepreciationChart";
 import { Button } from "@/components/ui/button";
@@ -179,6 +179,14 @@ export default function AppraisePage() {
   const [inGarage, setInGarage] = useState(false);
   const [savingGarage, setSavingGarage] = useState(false);
   const [copiedLabel, setCopiedLabel] = useState(null);
+  const [sellProfileOpen, setSellProfileOpen] = useState(false);
+  const [exteriorColor, setExteriorColor] = useState("");
+  const [interiorColor, setInteriorColor] = useState("");
+  const [tireCondition, setTireCondition] = useState("All good");
+  const [glassCondition, setGlassCondition] = useState("None");
+  const [interiorCleanliness, setInteriorCleanliness] = useState("Clean");
+  const [odors, setOdors] = useState("None");
+  const [roofType, setRoofType] = useState("Standard");
   const { data: session } = useSession();
 
   function copyText(text, label) {
@@ -279,6 +287,30 @@ export default function AppraisePage() {
             profileEncoded: encoded,
           }),
         }).catch(() => {});
+
+        // Check if this VIN is already in the garage so sell links unlock immediately
+        fetch("/api/garage")
+          .then((r) => r.json())
+          .then((d) => {
+            const existing = d.cars?.find((c) => c.vin === decoded.VIN);
+            if (existing) {
+              setInGarage(true);
+              // Pre-fill extended sell fields from stored profile if available
+              if (existing.profile_encoded) {
+                try {
+                  const pd = JSON.parse(decodeURIComponent(escape(atob(existing.profile_encoded))));
+                  if (pd.ecol) setExteriorColor(pd.ecol);
+                  if (pd.icol) setInteriorColor(pd.icol);
+                  if (pd.trc)  setTireCondition(pd.trc);
+                  if (pd.glc)  setGlassCondition(pd.glc);
+                  if (pd.intc) setInteriorCleanliness(pd.intc);
+                  if (pd.odo)  setOdors(pd.odo);
+                  if (pd.rftp) setRoofType(pd.rftp);
+                } catch (_) {}
+              }
+            }
+          })
+          .catch(() => {});
       }
     } catch (err) {
       setError(err.message || "Appraisal failed.");
@@ -292,7 +324,36 @@ export default function AppraisePage() {
     setShowRecon(false); setShowListings(false); setShowRecalls(false);
     setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
     setFeaturesWorking("Yes"); setKeysCount("Both sets");
-    setInGarage(false);
+    setInGarage(false); setSellProfileOpen(false);
+    setExteriorColor(""); setInteriorColor(""); setTireCondition("All good");
+    setGlassCondition("None"); setInteriorCleanliness("Clean");
+    setOdors("None"); setRoofType("Standard");
+  }
+
+  async function saveToGarage() {
+    if (!decoded || !appraisal) return;
+    setSavingGarage(true);
+    const encoded = encodeProfile({
+      decoded, mileage, zip, condition, titleStatus, accidents,
+      serviceHistory, owners, warningLights, mechanicalIssues,
+      bodyDamage, featuresWorking, keysCount, appraisal,
+      recalls, safetyRating, marketStats,
+      exteriorColor, interiorColor, tireCondition, glassCondition,
+      interiorCleanliness, odors, roofType,
+    });
+    await fetch("/api/garage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        vin: decoded.VIN, make: decoded.Make, model: decoded.Model,
+        year: decoded.ModelYear, trim: decoded.Trim, mileage, condition,
+        tradeIn: appraisal.tradeIn, privateParty: appraisal.privateParty,
+        retail: appraisal.retail, profileEncoded: encoded,
+      }),
+    }).catch(() => {});
+    setInGarage(true);
+    setSavingGarage(false);
+    setSellProfileOpen(false);
   }
 
   const { appraisal, listings, recalls = [], safetyRating, marketStats } = result || {};
@@ -344,8 +405,144 @@ export default function AppraisePage() {
     );
   }
 
+  const EXTERIOR_COLORS = ["White","Black","Silver","Gray","Red","Blue","Green","Brown","Orange","Yellow","Gold","Other"];
+  const INTERIOR_COLORS = ["Black","Tan / Beige","Gray","Brown","White","Red","Other"];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+
+      {/* ── Sell profile modal ── */}
+      {sellProfileOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-border bg-background shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">Sell profile</p>
+                <p className="mt-0.5 text-sm font-semibold">
+                  {decoded?.ModelYear} {decoded?.Make} {decoded?.Model}
+                </p>
+              </div>
+              <button onClick={() => setSellProfileOpen(false)} className="rounded-md p-1.5 hover:bg-muted text-muted-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Body — scrollable */}
+            <div className="max-h-[70vh] overflow-y-auto p-6">
+              {/* Existing condition summary */}
+              <div className="mb-5">
+                <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Condition from appraisal</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    `Body: ${bodyDamage}`,
+                    `Mechanical: ${mechanicalIssues}`,
+                    warningLights !== "None" ? `Lights: ${warningLights}` : null,
+                    `Accidents: ${accidents}`,
+                    `Title: ${titleStatus}`,
+                    `Service: ${serviceHistory}`,
+                    `Owners: ${owners}`,
+                    `Keys: ${keysCount}`,
+                  ].filter(Boolean).map((s) => (
+                    <span key={s} className="rounded-md border border-border px-2 py-0.5 text-xs text-muted-foreground">{s}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Extended sell fields */}
+              <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Additional details for sell forms</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FieldLabel label="Exterior color">
+                  <Select value={exteriorColor} onValueChange={setExteriorColor}>
+                    <SelectTrigger className="h-10 rounded-lg">
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EXTERIOR_COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Interior color">
+                  <Select value={interiorColor} onValueChange={setInteriorColor}>
+                    <SelectTrigger className="h-10 rounded-lg">
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INTERIOR_COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Tire condition">
+                  <Select value={tireCondition} onValueChange={setTireCondition}>
+                    <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All good">All four good</SelectItem>
+                      <SelectItem value="One needs replacement">One needs replacement</SelectItem>
+                      <SelectItem value="Multiple need replacement">Multiple need replacement</SelectItem>
+                      <SelectItem value="Has flat">Has a flat tire</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Windshield / glass">
+                  <Select value={glassCondition} onValueChange={setGlassCondition}>
+                    <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="None">No chips or cracks</SelectItem>
+                      <SelectItem value="Minor chips">Minor chips</SelectItem>
+                      <SelectItem value="Cracked">Cracked windshield</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Interior cleanliness">
+                  <Select value={interiorCleanliness} onValueChange={setInteriorCleanliness}>
+                    <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Clean">Clean</SelectItem>
+                      <SelectItem value="Light wear">Light wear</SelectItem>
+                      <SelectItem value="Stains or damage">Stains or damage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Odors">
+                  <Select value={odors} onValueChange={setOdors}>
+                    <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="None">None</SelectItem>
+                      <SelectItem value="Slight">Slight / faint</SelectItem>
+                      <SelectItem value="Smoke">Smoke</SelectItem>
+                      <SelectItem value="Pet">Pet</SelectItem>
+                      <SelectItem value="Other">Other odor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Roof type">
+                  <Select value={roofType} onValueChange={setRoofType}>
+                    <SelectTrigger className="h-10 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Standard">Standard</SelectItem>
+                      <SelectItem value="Sunroof">Sunroof</SelectItem>
+                      <SelectItem value="Moonroof">Panoramic / moonroof</SelectItem>
+                      <SelectItem value="Convertible">Convertible</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldLabel>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-2 px-6 py-4 border-t border-border">
+              <Button variant="outline" className="rounded-lg" onClick={() => setSellProfileOpen(false)}>
+                Cancel
+              </Button>
+              <Button disabled={savingGarage} className="flex-1 rounded-lg gap-2" onClick={saveToGarage}>
+                {savingGarage ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {inGarage ? "Update garage" : "Save to garage"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {header}
 
       <AnimatePresence mode="wait">
@@ -607,25 +804,10 @@ export default function AppraisePage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        disabled={savingGarage}
                         className="rounded-lg"
-                        onClick={async () => {
-                          setSavingGarage(true);
-                          await fetch("/api/garage", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              vin: decoded.VIN, make: decoded.Make, model: decoded.Model,
-                              year: decoded.ModelYear, trim: decoded.Trim, mileage, condition,
-                              tradeIn: appraisal.tradeIn, privateParty: appraisal.privateParty,
-                              retail: appraisal.retail, profileEncoded: encoded,
-                            }),
-                          });
-                          setInGarage(true);
-                          setSavingGarage(false);
-                        }}
+                        onClick={() => setSellProfileOpen(true)}
                       >
-                        {inGarage ? "✓ Saved to garage" : "Save to garage"}
+                        {inGarage ? "✓ In garage · Update profile" : "Save to garage"}
                       </Button>
                     )}
                   </div>
@@ -686,64 +868,86 @@ export default function AppraisePage() {
                 <h2 className="mt-1 text-xl font-semibold">Instant cash offers</h2>
                 <p className="mt-0.5 text-sm text-muted-foreground">These companies buy your car outright — no listing, no waiting.</p>
               </div>
-              <div className="overflow-hidden rounded-xl border border-border">
-                {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, speed }, i) => {
-                  const estimate = Math.round(appraisal.tradeIn * multiplier);
-                  const low = Math.round(estimate * (1 - spread / 2));
-                  const high = Math.round(estimate * (1 + spread / 2));
-                  return (
-                    <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{name}</p>
-                        <p className="text-xs text-muted-foreground">{tagline} · {speed}</p>
+              {!session?.user ? (
+                <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
+                  <Lock className="h-6 w-6 text-muted-foreground/40" />
+                  <div>
+                    <p className="text-sm font-medium">Sign in to see buyer offers</p>
+                    <p className="mt-1 text-xs text-muted-foreground max-w-xs">See estimated Carvana, CarMax, and CarGurus prices for this exact car.</p>
+                  </div>
+                  <Button size="sm" className="rounded-lg mt-1" onClick={() => signIn("google")}>Sign in with Google</Button>
+                </div>
+              ) : !inGarage ? (
+                <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-10 text-center">
+                  <Lock className="h-6 w-6 text-muted-foreground/40" />
+                  <div>
+                    <p className="text-sm font-medium">Save this car to unlock buyer offers</p>
+                    <p className="mt-1 text-xs text-muted-foreground max-w-xs">Saving to your garage unlocks estimated offers from Carvana, CarMax, and 4 other buyers with direct links.</p>
+                  </div>
+                  <Button size="sm" className="rounded-lg mt-1" onClick={() => setSellProfileOpen(true)}>Save to garage →</Button>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-xl border border-border">
+                  {INSTANT_BUYERS.map(({ id, name, tagline, multiplier, spread, getUrl, speed }, i) => {
+                    const estimate = Math.round(appraisal.tradeIn * multiplier);
+                    const low = Math.round(estimate * (1 - spread / 2));
+                    const high = Math.round(estimate * (1 + spread / 2));
+                    return (
+                      <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{name}</p>
+                          <p className="text-xs text-muted-foreground">{tagline} · {speed}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-semibold">{money(estimate)}</p>
+                          <p className="text-xs text-muted-foreground">{money(low)}–{money(high)}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg shrink-0 gap-1.5 text-xs"
+                          onClick={() => {
+                            copyText(decoded.VIN, "VIN");
+                            window.open(getUrl(decoded.VIN), "_blank", "noopener,noreferrer");
+                          }}
+                        >
+                          Get offer <ExternalLink className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-semibold">{money(estimate)}</p>
-                        <p className="text-xs text-muted-foreground">{money(low)}–{money(high)}</p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-lg shrink-0 gap-1.5 text-xs"
-                        onClick={() => {
-                          copyText(decoded.VIN, "VIN");
-                          window.open(getUrl(decoded.VIN), "_blank", "noopener,noreferrer");
-                        }}
-                      >
-                        Get offer <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* ── Private sale ── */}
-            <div className="mb-8">
-              <div className="mb-4">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">Keep more money</p>
-                <h2 className="mt-1 text-xl font-semibold">Sell it yourself</h2>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  More effort, but you keep an extra <span className="font-semibold text-foreground">{money(privateDelta)}</span> on average vs. an instant offer.
-                </p>
-              </div>
-              <div className="overflow-hidden rounded-xl border border-border">
-                {PRIVATE_CHANNELS.map(({ id, name, tagline, getUrl, con }, i) => (
-                  <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{name}</p>
-                      <p className="text-xs text-muted-foreground">{tagline}</p>
-                      <p className="text-xs text-muted-foreground/60">{con}</p>
+            {(session?.user && inGarage) && (
+              <div className="mb-8">
+                <div className="mb-4">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Keep more money</p>
+                  <h2 className="mt-1 text-xl font-semibold">Sell it yourself</h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    More effort, but you keep an extra <span className="font-semibold text-foreground">{money(privateDelta)}</span> on average vs. an instant offer.
+                  </p>
+                </div>
+                <div className="overflow-hidden rounded-xl border border-border">
+                  {PRIVATE_CHANNELS.map(({ id, name, tagline, getUrl, con }, i) => (
+                    <div key={id} className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/20 ${i > 0 ? "border-t border-border" : ""}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{name}</p>
+                        <p className="text-xs text-muted-foreground">{tagline}</p>
+                        <p className="text-xs text-muted-foreground/60">{con}</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5 text-xs" asChild>
+                        <a href={getUrl()} target="_blank" rel="noopener noreferrer">
+                          List <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </Button>
                     </div>
-                    <Button variant="outline" size="sm" className="rounded-lg shrink-0 gap-1.5 text-xs" asChild>
-                      <a href={getUrl()} target="_blank" rel="noopener noreferrer">
-                        List <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </Button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Depreciation ── */}
             <div className="mb-8 rounded-xl border border-border bg-card p-5">
