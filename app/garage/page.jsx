@@ -30,8 +30,8 @@ function CarCard({ car, onRemove, removing }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       {vehiclePhoto && (
-        <div className="overflow-hidden border-b border-border bg-muted">
-          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="w-full aspect-video object-cover" loading="lazy" />
+        <div className="overflow-hidden border-b border-border bg-muted relative aspect-video">
+          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
         </div>
       )}
       <div className="flex items-start justify-between gap-2 p-5 pb-4">

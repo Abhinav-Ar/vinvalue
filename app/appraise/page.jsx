@@ -778,11 +778,12 @@ export default function AppraisePage() {
 
             {/* Vehicle photo */}
             {vehiclePhoto && (
-              <div className="mb-8 overflow-hidden rounded-xl border border-border bg-muted">
+              <div className="mb-8 overflow-hidden rounded-xl border border-border bg-muted relative aspect-video">
                 <img
                   src={vehiclePhoto}
                   alt={`${decoded.ModelYear} ${decoded.Make} ${decoded.Model}`}
-                  className="w-full aspect-video object-cover"
+                  className="absolute left-0 w-full object-cover"
+                  style={{ top: "-12%", height: "112%" }}
                   loading="lazy"
                 />
               </div>

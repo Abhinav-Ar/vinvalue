@@ -62,8 +62,8 @@ function GarageCard({ car }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
       {vehiclePhoto && (
-        <div className="overflow-hidden border-b border-border bg-muted">
-          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="w-full aspect-video object-cover" loading="lazy" />
+        <div className="overflow-hidden border-b border-border bg-muted relative aspect-video">
+          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">
