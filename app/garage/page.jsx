@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Zap, Car, Trash2, ExternalLink, Plus, ArrowRight } from "lucide-react";
+import { decodeProfile } from "@/lib/profileEncoding";
 import { Button } from "@/components/ui/button";
 import UserMenu from "@/components/UserMenu";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
@@ -11,6 +12,74 @@ import SellProfilePrompt from "@/components/SellProfilePrompt";
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(v));
+}
+
+function CarCard({ car, onRemove, removing }) {
+  const stored = car.profile_encoded ? decodeProfile(car.profile_encoded)?.vehiclePhoto : null;
+  const [vehiclePhoto, setVehiclePhoto] = useState(stored);
+
+  useEffect(() => {
+    if (stored || vehiclePhoto) return;
+    fetch(`/api/photo?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.photo) setVehiclePhoto(d.photo); })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [car.vin]);
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      {vehiclePhoto && (
+        <div className="overflow-hidden border-b border-border bg-muted">
+          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="w-full aspect-video object-cover" loading="lazy" />
+        </div>
+      )}
+      <div className="flex items-start justify-between gap-2 p-5 pb-4">
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{car.year} {car.make} {car.model}</p>
+          {car.trim && <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>}
+          {car.nickname && <p className="mt-1 text-xs text-muted-foreground">"{car.nickname}"</p>}
+          <p className="mt-2 text-xs text-muted-foreground">
+            {Number(car.mileage).toLocaleString()} mi · {car.condition}
+          </p>
+        </div>
+        <button
+          onClick={() => onRemove(car.vin)}
+          disabled={removing === car.vin}
+          className="shrink-0 rounded-md p-1 text-muted-foreground/40 transition-colors hover:bg-muted hover:text-muted-foreground"
+          title="Remove"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-3 divide-x divide-border border-t border-border">
+        {[
+          { label: "Trade", value: car.trade_in },
+          { label: "Private", value: car.private_party },
+          { label: "Retail", value: car.retail },
+        ].map(({ label, value }) => (
+          <div key={label} className="px-3 py-3 text-center">
+            <p className="text-xs text-muted-foreground">{label}</p>
+            <p className="mt-0.5 text-sm font-semibold">{money(value)}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 border-t border-border p-3">
+        <Link href={`/appraise?vin=${car.vin}`}>
+          <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">Re-appraise</Button>
+        </Link>
+        {car.profile_encoded ? (
+          <Link href={`/profile?d=${car.profile_encoded}`} target="_blank">
+            <Button variant="outline" size="sm" className="w-full rounded-lg text-xs gap-1">
+              Report <ExternalLink className="h-3 w-3" />
+            </Button>
+          </Link>
+        ) : <div />}
+      </div>
+    </div>
+  );
 }
 
 function Nav() {
@@ -100,63 +169,7 @@ export default function GaragePage() {
         {!loading && cars.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {cars.map((car) => (
-              <div key={car.id} className="overflow-hidden rounded-xl border border-border bg-card">
-                {/* Card header */}
-                <div className="flex items-start justify-between gap-2 p-5 pb-4">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">
-                      {car.year} {car.make} {car.model}
-                    </p>
-                    {car.trim && <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>}
-                    {car.nickname && (
-                      <p className="mt-1 text-xs text-muted-foreground">"{car.nickname}"</p>
-                    )}
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {Number(car.mileage).toLocaleString()} mi · {car.condition}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => remove(car.vin)}
-                    disabled={removing === car.vin}
-                    className="shrink-0 rounded-md p-1 text-muted-foreground/40 transition-colors hover:bg-muted hover:text-muted-foreground"
-                    title="Remove"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-
-                {/* Values */}
-                <div className="grid grid-cols-3 divide-x divide-border border-t border-border">
-                  {[
-                    { label: "Trade", value: car.trade_in },
-                    { label: "Private", value: car.private_party },
-                    { label: "Retail", value: car.retail },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="px-3 py-3 text-center">
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className="mt-0.5 text-sm font-semibold">{money(value)}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Actions */}
-                <div className="grid grid-cols-2 gap-2 border-t border-border p-3">
-                  <Link href={`/appraise?vin=${car.vin}`}>
-                    <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
-                      Re-appraise
-                    </Button>
-                  </Link>
-                  {car.profile_encoded ? (
-                    <Link href={`/profile?d=${car.profile_encoded}`} target="_blank">
-                      <Button variant="outline" size="sm" className="w-full rounded-lg text-xs gap-1">
-                        Report <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </Link>
-                  ) : (
-                    <div />
-                  )}
-                </div>
-              </div>
+              <CarCard key={car.id} car={car} onRemove={remove} removing={removing} />
             ))}
           </div>
         )}

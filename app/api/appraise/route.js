@@ -35,6 +35,8 @@ async function fetchListings(make, model, year, zip, apiKey) {
     distance: item.dist ? Math.round(item.dist) : null,
     source: item.dealer?.name || "Listing",
     url: item.vdp_url || "#",
+    // First photo from this listing (used to pick a representative vehicle image)
+    _photo: item.media?.photo_links?.[0] || item.media?.photo_link || null,
   }));
 }
 
@@ -148,7 +150,11 @@ export async function GET(request) {
     const safetyRating   = safetyR.status         === "fulfilled" ? safetyR.value         : null;
     const classification = classificationR.status === "fulfilled" ? classificationR.value : null;
 
-    const prices = listings.map((l) => l.price).filter((p) => p > 1000);
+    // Pick the first usable photo from any listing, then strip _photo from the public response
+    const vehiclePhoto = listings.find((l) => l._photo)?._photo ?? null;
+    const cleanListings = listings.map(({ _photo, ...rest }) => rest);
+
+    const prices = cleanListings.map((l) => l.price).filter((p) => p > 1000);
     if (!prices.length)
       return Response.json({ error: "No listings found for this vehicle in your area." }, { status: 404 });
 
@@ -190,7 +196,8 @@ export async function GET(request) {
     const privateParty  = Math.max(0, Math.round(retail * ppMultiplier));
 
     return Response.json({
-      listings,
+      listings: cleanListings,
+      vehiclePhoto,
       recalls,
       safetyRating,
       marketStats,

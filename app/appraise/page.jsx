@@ -172,6 +172,7 @@ export default function AppraisePage() {
   const [featuresWorking, setFeaturesWorking] = useState("Yes");
   const [keysCount, setKeysCount] = useState("Both sets");
   const [result, setResult] = useState(null);
+  const [vehiclePhoto, setVehiclePhoto] = useState(null);
   const [phase, setPhase] = useState("vin");
   const [showRecon, setShowRecon] = useState(false);
   const [showListings, setShowListings] = useState(false);
@@ -250,6 +251,7 @@ export default function AppraisePage() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
+      setVehiclePhoto(data.vehiclePhoto || null);
       setPhase("results");
 
       window.dispatchEvent(new CustomEvent("autoiq:appraisal", {
@@ -324,7 +326,7 @@ export default function AppraisePage() {
     setShowRecon(false); setShowListings(false); setShowRecalls(false);
     setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
     setFeaturesWorking("Yes"); setKeysCount("Both sets");
-    setInGarage(false); setSellProfileOpen(false);
+    setInGarage(false); setSellProfileOpen(false); setVehiclePhoto(null);
     setExteriorColor(""); setInteriorColor(""); setTireCondition("All good");
     setGlassCondition("None"); setInteriorCleanliness("Clean");
     setOdors("None"); setRoofType("Standard");
@@ -339,7 +341,7 @@ export default function AppraisePage() {
       bodyDamage, featuresWorking, keysCount, appraisal,
       recalls, safetyRating, marketStats,
       exteriorColor, interiorColor, tireCondition, glassCondition,
-      interiorCleanliness, odors, roofType,
+      interiorCleanliness, odors, roofType, vehiclePhoto,
     });
     await fetch("/api/garage", {
       method: "POST",
@@ -774,13 +776,25 @@ export default function AppraisePage() {
               </p>
             </div>
 
+            {/* Vehicle photo */}
+            {vehiclePhoto && (
+              <div className="mb-8 overflow-hidden rounded-xl border border-border bg-muted">
+                <img
+                  src={vehiclePhoto}
+                  alt={`${decoded.ModelYear} ${decoded.Make} ${decoded.Model}`}
+                  className="w-full aspect-video object-cover"
+                  loading="lazy"
+                />
+              </div>
+            )}
+
             {/* Report CTA */}
             {(() => {
               const encoded = encodeProfile({
                 decoded, mileage, zip, condition, titleStatus, accidents,
                 serviceHistory, owners, warningLights, mechanicalIssues,
                 bodyDamage, featuresWorking, keysCount, appraisal,
-                recalls, safetyRating, marketStats,
+                recalls, safetyRating, marketStats, vehiclePhoto,
               });
               if (!encoded) return null;
               const profileUrl = `/profile?d=${encoded}`;

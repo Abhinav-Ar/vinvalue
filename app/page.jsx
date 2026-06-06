@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import UserMenu from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
+import { decodeProfile } from "@/lib/profileEncoding";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -46,8 +47,25 @@ function Nav({ links = true }) {
 }
 
 function GarageCard({ car }) {
+  const stored = car.profile_encoded ? decodeProfile(car.profile_encoded)?.vehiclePhoto : null;
+  const [vehiclePhoto, setVehiclePhoto] = useState(stored);
+
+  useEffect(() => {
+    if (stored || vehiclePhoto) return;
+    fetch(`/api/photo?make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${encodeURIComponent(car.year)}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.photo) setVehiclePhoto(d.photo); })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [car.vin]);
+
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
+      {vehiclePhoto && (
+        <div className="overflow-hidden border-b border-border bg-muted">
+          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="w-full aspect-video object-cover" loading="lazy" />
+        </div>
+      )}
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
