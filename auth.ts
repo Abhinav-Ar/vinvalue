@@ -13,6 +13,7 @@ const pool = new Pool({
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
+  secret: process.env.AUTH_SECRET || (process.env.NODE_ENV === "development" ? "autoiq-local-development-only-secret" : undefined),
   adapter: PostgresAdapter(pool),
   providers: [
     Google({

@@ -5,7 +5,7 @@
   "description": "Autofills Carvana, CarMax, CarGurus and more with your car details from AutoIQ.",
   "permissions": ["storage", "scripting", "tabs"],
   "host_permissions": [
-    "https://vinvalue-ebon.vercel.app/*",
+    "https://autoiq-vinvalue.vercel.app/*",
     "https://www.carvana.com/*",
     "https://www.carmax.com/*",
     "https://www.cargurus.com/*",
@@ -15,7 +15,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://vinvalue-ebon.vercel.app/*"],
+      "matches": ["https://autoiq-vinvalue.vercel.app/*"],
       "js": ["content/autoiq.js"],
       "run_at": "document_idle"
     },

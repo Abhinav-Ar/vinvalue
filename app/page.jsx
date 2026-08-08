@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Zap, Search, BarChart3, Car, ArrowRight, DollarSign, Clock, Plus, ExternalLink } from "lucide-react";
+import { Zap, Car, ArrowRight, Plus, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
-import UserMenu from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
 import { decodeProfile } from "@/lib/profileEncoding";
+import SiteHeader from "@/components/SiteHeader";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -25,25 +25,7 @@ function timeAgo(dateStr) {
 }
 
 function Nav({ links = true }) {
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-            <Zap className="h-3.5 w-3.5 text-background" />
-          </div>
-          <span className="text-sm font-semibold">AutoIQ</span>
-        </Link>
-        {links && (
-          <nav className="hidden items-center gap-1 sm:flex">
-            <Link href="/appraise" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Appraise</Link>
-            <Link href="/garage" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Garage</Link>
-          </nav>
-        )}
-        <UserMenu />
-      </div>
-    </header>
-  );
+  return <SiteHeader compact={!links} />;
 }
 
 function GarageCard({ car }) {
@@ -53,7 +35,7 @@ function GarageCard({ car }) {
   const [vehiclePhoto, setVehiclePhoto] = useState(stored);
 
   useEffect(() => {
-    if (!exteriorColor && stored) { setVehiclePhoto(stored); return; }
+    if (!exteriorColor && stored) return;
     const params = new URLSearchParams({ make: car.make, model: car.model, year: car.year });
     if (exteriorColor) params.set("color", exteriorColor);
     fetch(`/api/photo?${params}`)
@@ -130,7 +112,7 @@ function GarageCard({ car }) {
 function Dashboard({ session, garage, history }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const firstName = session.user.name?.split(" ")[0] ?? "there";
+  const firstName = session?.user?.name?.split(" ")[0] ?? "there";
 
   const totalCars = garage.length;
   const bestOffer = totalCars > 0 ? Math.max(...garage.map((c) => Number(c.trade_in) || 0)) : 0;
@@ -304,11 +286,12 @@ const STEPS = [
 
 export default function Landing() {
   const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && Boolean(session?.user);
   const [garage, setGarage] = useState(null);
   const [history, setHistory] = useState(null);
 
   useEffect(() => {
-    if (status !== "authenticated") return;
+    if (!isAuthenticated) return;
     Promise.all([
       fetch("/api/garage").then((r) => r.json()),
       fetch("/api/history").then((r) => r.json()),
@@ -316,11 +299,11 @@ export default function Landing() {
       setGarage(g.cars ?? []);
       setHistory((h.searches ?? []).slice(0, 5));
     });
-  }, [status]);
+  }, [isAuthenticated]);
 
   // Never fall through to the landing page while the session or data is still resolving.
   // This prevents the flash where authenticated users briefly see the marketing page.
-  if (status === "loading" || (status === "authenticated" && (garage === null || history === null))) {
+  if (status === "loading" || (isAuthenticated && (garage === null || history === null))) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <Nav links={false} />
@@ -345,7 +328,7 @@ export default function Landing() {
     );
   }
 
-  if (status === "authenticated") {
+  if (isAuthenticated) {
     return <Dashboard session={session} garage={garage} history={history} />;
   }
 
@@ -354,28 +337,38 @@ export default function Landing() {
       <Nav />
 
       {/* Hero */}
-      <section className="flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 py-20 text-center">
+      <section className="mx-auto grid min-h-[calc(100vh-64px)] max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mx-auto max-w-3xl"
+          className="max-w-3xl"
         >
-          <p className="mb-6 text-sm text-muted-foreground">Free · No account needed · Results in seconds</p>
-          <h1 className="text-6xl font-bold leading-[1.08] tracking-tight sm:text-7xl">
-            Know what your
-            <br />
-            car is worth.
-          </h1>
-          <p className="mx-auto mt-6 max-w-lg text-lg text-muted-foreground">
-            Real-time valuation from live market listings — adjusted for your car's exact mileage, condition, and history.
+          <p className="eyebrow mb-7">Market evidence, made useful</p>
+          <h1 className="display-title">Know the number before you negotiate.</h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            A transparent value range built from current comparable listings, then adjusted for the facts that make your vehicle different.
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link href="/appraise">
               <Button size="lg" className="h-11 rounded-xl px-7 text-sm gap-2">
-                Appraise your car <ArrowRight className="h-4 w-4" />
+                Start with your VIN <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
+            <span className="self-center text-xs text-muted-foreground">Free · No account required</span>
+          </div>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, scale: .97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .5, delay: .08 }} className="surface overflow-hidden p-3">
+          <div className="rounded-xl border border-border bg-background/70 p-6 sm:p-8">
+            <div className="flex items-start justify-between border-b border-border pb-6">
+              <div><p className="data-label">Example market-backed value</p><p className="mt-2 text-xl font-semibold">2024 Tesla Model 3</p><p className="mt-1 text-xs text-muted-foreground">12,450 mi · Clean title · Good condition</p></div>
+              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">High evidence</span>
+            </div>
+            <div className="grid gap-3 py-6 sm:grid-cols-3">
+              {[['Trade-in','$23,100'],['Private sale','$27,450'],['Dealer retail','$31,900']].map(([label,value], i) => <div key={label} className={`rounded-xl border p-4 ${i === 1 ? 'border-primary/60 bg-primary/5' : 'border-border bg-card'}`}><p className="text-xs text-muted-foreground">{label}</p><p className={`mt-2 text-2xl font-semibold ${i === 1 ? 'text-primary' : ''}`}>{value}</p></div>)}
+            </div>
+            <div><div className="flex justify-between text-[10px] text-muted-foreground"><span>$25,400</span><span>Most likely</span><span>$29,600</span></div><div className="relative mt-2 h-1 rounded-full bg-muted"><span className="absolute left-[12%] right-[10%] h-full rounded-full bg-primary"/><span className="absolute left-[52%] top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-background bg-primary"/></div></div>
+            <div className="mt-7 grid grid-cols-3 gap-3 border-t border-border pt-5 text-xs text-muted-foreground"><span>Live comparables</span><span>Outliers removed</span><span>Method shown</span></div>
           </div>
         </motion.div>
       </section>

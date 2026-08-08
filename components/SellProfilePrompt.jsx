@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { encodeProfile, decodeProfile } from "@/lib/profileEncoding";
+import { encodeProfile, decodeProfile, signProfile } from "@/lib/profileEncoding";
 import { Button } from "@/components/ui/button";
 import { X, Loader2, ClipboardList } from "lucide-react";
 import {
@@ -98,7 +98,7 @@ export default function SellProfilePrompt({ cars }) {
       FuelTypePrimary: p.vehicle.fuel || "",
     };
 
-    const encoded = encodeProfile({
+    const encoded = await signProfile(encodeProfile({
       decoded,
       mileage: p.condition.mileage,
       zip: p.condition.zip,
@@ -127,7 +127,7 @@ export default function SellProfilePrompt({ cars }) {
       marketStats: p.avgDaysOnMarket ? { avgDaysOnMarket: p.avgDaysOnMarket } : null,
       exteriorColor, interiorColor, tireCondition, glassCondition,
       interiorCleanliness, odors, roofType,
-    });
+    }));
 
     await fetch("/api/garage", {
       method: "POST",

@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Zap, Clock, ExternalLink, Car, ArrowRight } from "lucide-react";
+import { Clock, ExternalLink, Car, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import UserMenu from "@/components/UserMenu";
+import SiteHeader from "@/components/SiteHeader";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -24,27 +24,11 @@ function timeAgo(dateStr) {
 }
 
 function Nav() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-            <Zap className="h-3.5 w-3.5 text-background" />
-          </div>
-          <span className="text-sm font-semibold">AutoIQ</span>
-        </Link>
-        <nav className="hidden items-center gap-1 sm:flex">
-          <Link href="/appraise" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Appraise</Link>
-          <Link href="/garage" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Garage</Link>
-        </nav>
-        <UserMenu />
-      </div>
-    </header>
-  );
+  return <SiteHeader />;
 }
 
 export default function HistoryPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [searches, setSearches] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,9 +47,9 @@ export default function HistoryPage() {
       <main className="mx-auto max-w-4xl px-6 py-14">
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Account</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">Search history</h1>
-            <p className="mt-1.5 text-sm text-muted-foreground">Every appraisal you've run, saved automatically.</p>
+            <p className="eyebrow">Reports</p>
+            <h1 className="mt-2 text-4xl font-semibold tracking-tight">Appraisal history</h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">Every appraisal you&apos;ve run, saved automatically.</p>
           </div>
           <Link href="/appraise">
             <Button size="sm" className="rounded-lg gap-2">
@@ -87,7 +71,7 @@ export default function HistoryPage() {
             <Clock className="h-10 w-10 text-muted-foreground/30" />
             <div>
               <p className="font-semibold">No searches yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">Run an appraisal and it'll appear here automatically.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Run an appraisal and it&apos;ll appear here automatically.</p>
             </div>
             <Link href="/appraise">
               <Button size="sm" className="rounded-lg">

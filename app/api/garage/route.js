@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { Pool } from "pg";
+import { jsonError, rateLimit } from "@/lib/requestSafety";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 1, idleTimeoutMillis: 10000, connectionTimeoutMillis: 10000 });
 
@@ -20,11 +21,15 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  if (!rateLimit(request, { key: "garage-write", limit: 20 })) return jsonError("Too many updates.", 429);
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
   const { vin, make, model, year, trim, nickname, mileage, condition, tradeIn, privateParty, retail, profileEncoded } = body;
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(String(vin || "").toUpperCase())) return jsonError("Invalid VIN.");
+  if (!make || !model || !Number.isFinite(Number(mileage)) || Number(mileage) < 0) return jsonError("Invalid vehicle data.");
+  if (String(profileEncoded || "").length > 20_000) return jsonError("Report data is too large.", 413);
 
   await pool.query(
     `INSERT INTO garage (user_id, vin, make, model, year, trim, nickname, mileage, condition,
@@ -50,6 +55,7 @@ export async function DELETE(request) {
   if (!session?.user?.id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { vin } = await request.json();
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(String(vin || "").toUpperCase())) return jsonError("Invalid VIN.");
 
   await pool.query(
     "DELETE FROM garage WHERE user_id = $1 AND vin = $2",

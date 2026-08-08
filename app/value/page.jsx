@@ -2,8 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import UserMenu from "@/components/UserMenu";
+import SiteHeader from "@/components/SiteHeader";
 import {
   Car,
   Search,
@@ -14,8 +13,6 @@ import {
   TrendingUp,
   Loader2,
   ExternalLink,
-  Zap,
-  ArrowLeft,
   BarChart3,
   RotateCcw,
 } from "lucide-react";
@@ -246,41 +243,11 @@ export default function ValuePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-900/40">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight group-hover:text-indigo-400 transition-colors">AutoIQ</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            {phase !== "vin" && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={reset}
-                className="rounded-xl text-muted-foreground hover:text-foreground gap-2"
-              >
-                <RotateCcw className="h-4 w-4" /> New search
-              </Button>
-            )}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {["vin", "details", "results"].map((p, i) => (
-                <React.Fragment key={p}>
-                  <span className={phase === p ? "font-semibold text-indigo-400" : ""}>
-                    {i + 1}
-                  </span>
-                  {i < 2 && <span className="text-border">—</span>}
-                </React.Fragment>
-              ))}
-            </div>
-            <UserMenu />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
+      <div className="mx-auto flex max-w-7xl items-center justify-end gap-3 px-6 pt-5 text-xs text-muted-foreground">
+        {phase !== "vin" && <Button variant="ghost" size="sm" onClick={reset}><RotateCcw />New search</Button>}
+        {["vin", "details", "results"].map((p, i) => <span key={p} className={phase === p ? "text-primary" : ""}>{i + 1} {p}</span>)}
+      </div>
 
       <AnimatePresence mode="wait">
         {/* Phase 1: VIN Entry */}
@@ -404,7 +371,7 @@ export default function ValuePage() {
               {/* Details form */}
               <div>
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Your car's details
+                  Your car&apos;s details
                 </p>
                 <Card className="rounded-3xl border-border">
                   <CardContent className="p-6 grid gap-5">

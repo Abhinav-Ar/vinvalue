@@ -2,17 +2,16 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import {
-  Search, Gauge, MapPin, ShieldCheck, AlertTriangle, Loader2,
-  ExternalLink, Zap, RotateCcw, Car, Users, Wrench, X,
+  AlertTriangle, Loader2,
+  ExternalLink, RotateCcw, X,
   DollarSign, ChevronDown, ChevronUp, Star, TriangleAlert,
-  Clock, BarChart2, CheckCircle, FileText, Copy, ClipboardCheck, Lock,
+  CheckCircle, Copy, ClipboardCheck, Lock,
 } from "lucide-react";
-import { encodeProfile } from "@/lib/profileEncoding";
+import { encodeProfile, signProfile } from "@/lib/profileEncoding";
 import { useSession, signIn } from "next-auth/react";
-import UserMenu from "@/components/UserMenu";
 import DepreciationChart from "@/components/DepreciationChart";
+import SiteHeader from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -155,7 +154,7 @@ const TIPS = [
 ];
 
 export default function AppraisePage() {
-  const [vin, setVin] = useState("");
+  const [vin, setVin] = useState(() => typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("vin") || "").toUpperCase());
   const [decoded, setDecoded] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -197,12 +196,6 @@ export default function AppraisePage() {
     setTimeout(() => setCopiedLabel(null), 2000);
   }
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get("vin");
-    if (v) setVin(v.toUpperCase());
-  }, []);
-
   const cleanVin = vin.trim().toUpperCase();
 
   async function decodeVin() {
@@ -241,7 +234,7 @@ export default function AppraisePage() {
     setError("");
     try {
       const params = new URLSearchParams({
-        year: decoded.ModelYear, make: decoded.Make, model: decoded.Model,
+        vin: decoded.VIN, year: decoded.ModelYear, make: decoded.Make, model: decoded.Model,
         trim: decoded.Trim || "", body: decoded.BodyClass || "",
         engine: decoded.EngineCylinders || "", drive: decoded.DriveType || "",
         fuel: decoded.FuelTypePrimary || "",
@@ -271,13 +264,13 @@ export default function AppraisePage() {
       }));
 
       if (session?.user) {
-        const encoded = encodeProfile({
+        const encoded = await signProfile(encodeProfile({
           decoded, mileage, zip, condition, titleStatus, accidents,
           serviceHistory, owners, warningLights, mechanicalIssues,
           bodyDamage, featuresWorking, keysCount,
           appraisal: data.appraisal, recalls: data.recalls ?? [],
           safetyRating: data.safetyRating, marketStats: data.marketStats,
-        });
+        }));
         fetch("/api/history", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -337,14 +330,14 @@ export default function AppraisePage() {
   async function saveToGarage() {
     if (!decoded || !appraisal) return;
     setSavingGarage(true);
-    const encoded = encodeProfile({
+    const encoded = await signProfile(encodeProfile({
       decoded, mileage, zip, condition, titleStatus, accidents,
       serviceHistory, owners, warningLights, mechanicalIssues,
       bodyDamage, featuresWorking, keysCount, appraisal,
       recalls, safetyRating, marketStats,
       exteriorColor, interiorColor, tireCondition, glassCondition,
       interiorCleanliness, odors, roofType, vehiclePhoto,
-    });
+    }));
     await fetch("/api/garage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -367,47 +360,8 @@ export default function AppraisePage() {
 
   /* ─── shared header ─── */
   const header = (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-            <Zap className="h-3.5 w-3.5 text-background" />
-          </div>
-          <span className="text-sm font-semibold">AutoIQ</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          {phase !== "vin" && (
-            <Button variant="ghost" size="sm" onClick={reset} className="gap-1.5 rounded-lg text-muted-foreground text-sm">
-              <RotateCcw className="h-3.5 w-3.5" /> New
-            </Button>
-          )}
-          <UserMenu />
-        </div>
-      </div>
-    </header>
+    <><SiteHeader />{phase !== "vin" && <button onClick={reset} className="fixed right-6 top-[4.6rem] z-40 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground shadow-xl hover:text-foreground"><RotateCcw className="mr-1 inline h-3 w-3" />New appraisal</button>}</>
   );
-
-  /* ─── section wrapper ─── */
-  function Section({ title, label, children, toggle, open, onToggle }) {
-    return (
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        {(title || toggle) && (
-          <button
-            onClick={onToggle}
-            disabled={!toggle}
-            className={`flex w-full items-center justify-between px-5 py-4 text-left ${toggle ? "hover:bg-muted/30 transition-colors" : "cursor-default"}`}
-          >
-            <div>
-              {label && <p className="mb-0.5 text-xs uppercase tracking-widest text-muted-foreground">{label}</p>}
-              {title && <p className="text-sm font-semibold">{title}</p>}
-            </div>
-            {toggle && (open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />)}
-          </button>
-        )}
-        <div className={title || toggle ? "border-t border-border" : ""}>{children}</div>
-      </div>
-    );
-  }
 
   const EXTERIOR_COLORS = ["White","Black","Silver","Gray","Red","Blue","Green","Brown","Orange","Yellow","Gold","Other"];
   const INTERIOR_COLORS = ["Black","Tan / Beige","Gray","Brown","White","Red","Other"];
@@ -556,7 +510,7 @@ export default function AppraisePage() {
           <motion.main key="vin" {...fadeUp} className="flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 py-20">
             <div className="w-full max-w-lg">
               <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Full appraisal</p>
-              <h1 className="mb-1.5 text-4xl font-bold tracking-tight">What's your car worth?</h1>
+              <h1 className="mb-1.5 text-4xl font-bold tracking-tight">What&apos;s your car worth?</h1>
               <p className="mb-8 text-sm text-muted-foreground">
                 Enter your VIN for a live valuation — trade-in, private party, retail, plus estimated buyer offers.
               </p>
@@ -707,7 +661,7 @@ export default function AppraisePage() {
                     <SelectContent>
                       <SelectItem value="None">None — runs great</SelectItem>
                       <SelectItem value="Minor">Minor — runs but has issues</SelectItem>
-                      <SelectItem value="Major">Major — unreliable or won't start</SelectItem>
+                      <SelectItem value="Major">Major — unreliable or won&apos;t start</SelectItem>
                     </SelectContent>
                   </Select>
                 </FieldLabel>
@@ -1051,8 +1005,8 @@ export default function AppraisePage() {
                               <>
                                 <div className="mb-2 flex items-center gap-2">
                                   <TriangleAlert className="h-4 w-4 text-amber-400" />
-                                  <span className="text-xl font-bold">{uniqueRecallCount} recall{uniqueRecallCount !== 1 ? "s" : ""}</span>
-                                  <span className="text-sm text-muted-foreground">(−${Math.min(uniqueRecallCount * 300, 1000).toLocaleString()} applied)</span>
+                                  <span className="text-xl font-bold">{uniqueRecallCount} campaign{uniqueRecallCount !== 1 ? "s" : ""}</span>
+                                  <span className="text-sm text-muted-foreground">may apply to this model</span>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {Object.entries(recallGroups).map(([cat, items]) => (
@@ -1061,7 +1015,7 @@ export default function AppraisePage() {
                                 </div>
                               </>
                             ) : (
-                              <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400" /><span className="text-lg font-semibold">No open recalls</span></div>
+                              <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400" /><span className="text-lg font-semibold">No model campaigns found</span></div>
                             )}
                           </div>
                           {recalls.length > 0 && <div className="ml-4 shrink-0 mt-1">{showRecalls ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}</div>}
@@ -1131,7 +1085,7 @@ export default function AppraisePage() {
                           ["Accident history", appraisal.reconditioningBreakdown.accident, "Body/paint inspection"],
                           ["Title status", appraisal.reconditioningBreakdown.title, "Documentation and compliance"],
                           ["Service history gap", appraisal.reconditioningBreakdown.service, "Unknown maintenance catch-up"],
-                          ["Open recalls", appraisal.reconditioningBreakdown.recalls, "Dealer recall repair liability"],
+                        ["Recall campaigns", appraisal.reconditioningBreakdown.recalls, "No penalty without VIN-level remedy status"],
                           ["Warning lights", appraisal.reconditioningBreakdown.warningLights, "Diagnostic scan and repairs"],
                           ["Mechanical issues", appraisal.reconditioningBreakdown.mechanical, "Repairs to make road-ready"],
                           ["Body damage", appraisal.reconditioningBreakdown.bodyDamage, "Bodywork and paint"],

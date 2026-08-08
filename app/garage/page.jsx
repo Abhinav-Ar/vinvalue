@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Zap, Car, Trash2, ExternalLink, Plus, ArrowRight, Pencil, X, Loader2 } from "lucide-react";
-import { decodeProfile, encodeProfile } from "@/lib/profileEncoding";
+import { Car, Trash2, ExternalLink, Plus, ArrowRight, Pencil, X, Loader2 } from "lucide-react";
+import { decodeProfile, encodeProfile, signProfile } from "@/lib/profileEncoding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import UserMenu from "@/components/UserMenu";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
+import SiteHeader from "@/components/SiteHeader";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -31,23 +31,7 @@ const EXTERIOR_COLORS = ["White","Black","Silver","Gray","Red","Blue","Green","B
 const INTERIOR_COLORS = ["Black","Tan / Beige","Gray","Brown","White","Red","Other"];
 
 function Nav() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-            <Zap className="h-3.5 w-3.5 text-background" />
-          </div>
-          <span className="text-sm font-semibold">AutoIQ</span>
-        </Link>
-        <nav className="hidden items-center gap-1 sm:flex">
-          <Link href="/appraise" className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">Appraise</Link>
-          <Link href="/garage" className="rounded-md px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted">Garage</Link>
-        </nav>
-        <UserMenu />
-      </div>
-    </header>
-  );
+  return <SiteHeader />;
 }
 
 function CarCard({ car, onRemove, onUpdate, removing }) {
@@ -60,7 +44,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
   const exteriorColorStored = cond.exteriorColor || "";
 
   useEffect(() => {
-    if (!exteriorColorStored && stored) { setVehiclePhoto(stored); return; }
+    if (!exteriorColorStored && stored) return;
     const params = new URLSearchParams({ make: car.make, model: car.model, year: car.year });
     if (exteriorColorStored) params.set("color", exteriorColorStored);
     fetch(`/api/photo?${params}`)
@@ -102,7 +86,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
     setSaveError("");
     try {
       const params = new URLSearchParams({
-        year: car.year, make: car.make, model: car.model,
+        vin: car.vin, year: car.year, make: car.make, model: car.model,
         trim: profileData.vehicle.trim || "", body: profileData.vehicle.body || "",
         engine: profileData.vehicle.engine || "", drive: profileData.vehicle.drive || "",
         fuel: profileData.vehicle.fuel || "",
@@ -122,7 +106,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
         FuelTypePrimary: profileData.vehicle.fuel,
       };
 
-      const encoded = encodeProfile({
+      const encoded = await signProfile(encodeProfile({
         decoded: decodedVehicle, mileage, zip, condition, titleStatus, accidents,
         serviceHistory, owners, warningLights, mechanicalIssues,
         bodyDamage, featuresWorking, keysCount,
@@ -131,7 +115,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
         exteriorColor, interiorColor, tireCondition, glassCondition,
         interiorCleanliness, odors, roofType,
         vehiclePhoto: data.vehiclePhoto || stored || null,
-      });
+      }));
 
       await fetch("/api/garage", {
         method: "POST",
@@ -395,7 +379,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
           <div className="min-w-0">
             <p className="truncate font-semibold">{car.year} {car.make} {car.model}</p>
             {car.trim && <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>}
-            {car.nickname && <p className="mt-1 text-xs text-muted-foreground">"{car.nickname}"</p>}
+            {car.nickname && <p className="mt-1 text-xs text-muted-foreground">{`“${car.nickname}”`}</p>}
             <p className="mt-2 text-xs text-muted-foreground">
               {Number(car.mileage).toLocaleString()} mi · {car.condition}
             </p>
@@ -450,7 +434,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
 }
 
 export default function GaragePage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(null);
@@ -478,12 +462,12 @@ export default function GaragePage() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
 
-      <main className="mx-auto max-w-6xl px-6 py-14">
+      <main className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Garage</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">My cars</h1>
-            <p className="mt-1.5 text-sm text-muted-foreground">Cars you've saved and their latest valuations.</p>
+            <p className="eyebrow">Garage</p>
+            <h1 className="mt-2 text-4xl font-semibold tracking-tight">My vehicles</h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">Cars you&apos;ve saved and their latest valuations.</p>
           </div>
           <Link href="/appraise">
             <Button size="sm" className="rounded-lg gap-2">

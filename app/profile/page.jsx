@@ -1,15 +1,14 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   Zap, Copy, Check, AlertTriangle, ShieldCheck,
   Star, Clock, BarChart2, ExternalLink, Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { decodeProfile } from "@/lib/profileEncoding";
+import { decodeProfile, verifyProfile } from "@/lib/profileEncoding";
 
 function money(v) {
   if (!Number.isFinite(v)) return "$0";
@@ -82,8 +81,25 @@ function CopyButton({ url }) {
 function ProfileContent() {
   const searchParams = useSearchParams();
   const encoded = searchParams.get("d");
-  const profile = encoded ? decodeProfile(encoded) : null;
-  const { data: session } = useSession();
+  const profile = useMemo(() => encoded ? decodeProfile(encoded) : null, [encoded]);
+  const [displayPhoto, setDisplayPhoto] = useState(profile?.vehiclePhoto ?? null);
+  const [verified, setVerified] = useState(null);
+
+  useEffect(() => {
+    if (!encoded) return;
+    verifyProfile(encoded).then(setVerified).catch(() => setVerified(false));
+  }, [encoded]);
+
+  useEffect(() => {
+    if (!profile || profile.vehiclePhoto || !profile.vehicle?.make) return;
+    const { vehicle, condition } = profile;
+    const params = new URLSearchParams({ make: vehicle.make, model: vehicle.model, year: vehicle.year });
+    if (condition.exteriorColor) params.set("color", condition.exteriorColor);
+    fetch(`/api/photo?${params}`)
+      .then((r) => r.json())
+      .then((d) => d.photo && setDisplayPhoto(d.photo))
+      .catch(() => {});
+  }, [profile]);
 
   if (!profile) {
     return (
@@ -94,48 +110,11 @@ function ProfileContent() {
     );
   }
 
-  const { vehicle, condition, appraisal, recallCount, safetyOverall, avgDaysOnMarket, generatedAt, vin, vehiclePhoto } = profile;
+  const { vehicle, condition, appraisal, recallCount, safetyOverall, avgDaysOnMarket, generatedAt, vin } = profile;
   const guide  = buildBuyerGuide(condition);
   const status = issueLevel(condition);
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
   const hasExtended = condition.exteriorColor || condition.tireCondition;
-
-  const [displayPhoto, setDisplayPhoto] = useState(vehiclePhoto);
-
-  useEffect(() => {
-    if (vehiclePhoto || !vehicle?.make) return;
-    const params = new URLSearchParams({ make: vehicle.make, model: vehicle.model, year: vehicle.year });
-    if (condition.exteriorColor) params.set("color", condition.exteriorColor);
-    fetch(`/api/photo?${params}`)
-      .then((r) => r.json())
-      .then(async (d) => {
-        if (!d.photo) return;
-        setDisplayPhoto(d.photo);
-        // Patch the photo into the garage entry if this VIN belongs to the signed-in user
-        if (!session?.user || !encoded) return;
-        try {
-          const garageRes = await fetch("/api/garage");
-          const garageData = await garageRes.json();
-          if (!garageData.cars?.find((c) => c.vin === vin)) return;
-          // Inject ph into the existing compact JSON without re-encoding everything
-          const compact = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-          compact.ph = d.photo;
-          const newEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-          fetch("/api/garage", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              vin, make: vehicle.make, model: vehicle.model, year: vehicle.year,
-              trim: vehicle.trim, mileage: condition.mileage, condition: condition.condition,
-              tradeIn: appraisal.tradeIn, privateParty: appraisal.privateParty,
-              retail: appraisal.retail, profileEncoded: newEncoded,
-            }),
-          }).catch(() => {});
-        } catch {}
-      })
-      .catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vin]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -173,7 +152,7 @@ function ProfileContent() {
               {/* bottom gradient for text legibility */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 p-6">
-                <p className="mb-1 text-xs uppercase tracking-widest text-white/60">Seller's report</p>
+                <p className="mb-1 text-xs uppercase tracking-widest text-white/60">Seller&apos;s report</p>
                 <h1 className="text-3xl font-bold text-white tracking-tight">
                   {vehicle.year} {vehicle.make} {vehicle.model}
                   {vehicle.trim && <span className="ml-2 text-xl font-normal text-white/70">{vehicle.trim}</span>}
@@ -192,7 +171,7 @@ function ProfileContent() {
           </div>
         ) : (
           <div className="mb-10">
-            <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Seller's report</p>
+            <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Seller&apos;s report</p>
             <h1 className="text-4xl font-bold tracking-tight">
               {vehicle.year} {vehicle.make} {vehicle.model}
               {vehicle.trim && <span className="ml-3 text-2xl font-normal text-muted-foreground">{vehicle.trim}</span>}
@@ -208,14 +187,18 @@ function ProfileContent() {
         {/* VIN + meta row */}
         <div className="mb-8 flex flex-wrap items-center gap-3">
           <span className="rounded-md border border-border bg-muted px-3 py-1.5 font-mono text-xs">{vin}</span>
+          <span className={`rounded-md border px-3 py-1.5 text-xs font-medium ${verified ? "border-primary/30 bg-primary/10 text-primary" : "border-amber-500/30 bg-amber-500/10 text-amber-300"}`}>
+            {verified ? "Integrity checked" : verified === false ? "Legacy / unsigned report" : "Checking integrity…"}
+          </span>
           <span className={`rounded-md border border-border px-3 py-1.5 text-xs font-medium ${status.cls}`}>{status.label}</span>
           {recallCount > 0 && (
             <span className="rounded-md border border-amber-800/40 bg-amber-950/20 px-3 py-1.5 text-xs font-medium text-amber-400">
-              {recallCount} open recall{recallCount !== 1 ? "s" : ""}
+              {recallCount} model campaign{recallCount !== 1 ? "s" : ""} to verify by VIN
             </span>
           )}
           <span className="ml-auto text-xs text-muted-foreground print:ml-0">Generated {generatedAt}</span>
         </div>
+        <p className="-mt-5 mb-8 text-xs text-muted-foreground">Condition details are seller-provided. Integrity checking detects changes to signed reports; it does not independently verify the vehicle.</p>
 
         {/* ── Values ── */}
         <div className="mb-10 overflow-hidden rounded-xl border border-border">
