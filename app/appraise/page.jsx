@@ -12,6 +12,7 @@ import { encodeProfile, signProfile } from "@/lib/profileEncoding";
 import { useSession, signIn } from "next-auth/react";
 import DepreciationChart from "@/components/DepreciationChart";
 import SiteHeader from "@/components/SiteHeader";
+import VehiclePhoto from "@/components/VehiclePhoto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -177,6 +178,7 @@ export default function AppraisePage() {
   const [showRecon, setShowRecon] = useState(false);
   const [showListings, setShowListings] = useState(false);
   const [showRecalls, setShowRecalls] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [inGarage, setInGarage] = useState(false);
   const [savingGarage, setSavingGarage] = useState(false);
   const [copiedLabel, setCopiedLabel] = useState(null);
@@ -318,6 +320,7 @@ export default function AppraisePage() {
   function reset() {
     setVin(""); setDecoded(null); setError(""); setResult(null); setPhase("vin");
     setShowRecon(false); setShowListings(false); setShowRecalls(false);
+    setShowDetails(false);
     setWarningLights("None"); setMechanicalIssues("None"); setBodyDamage("None");
     setFeaturesWorking("Yes"); setKeysCount("Both sets");
     setInGarage(false); setSellProfileOpen(false); setVehiclePhoto(null);
@@ -353,7 +356,7 @@ export default function AppraisePage() {
     setSellProfileOpen(false);
   }
 
-  const { appraisal, listings, recalls = [], safetyRating, marketStats } = result || {};
+  const { appraisal, listings, recalls = [], safetyRating, marketStats, comparisonBasis } = result || {};
   const recallGroups = recalls.length > 0 ? groupRecalls(recalls) : {};
   const uniqueRecallCount = Object.values(recallGroups).flat().length;
   const privateDelta = appraisal ? appraisal.privateParty - appraisal.tradeIn : 0;
@@ -720,53 +723,62 @@ export default function AppraisePage() {
         {phase === "results" && appraisal && (
           <motion.main key="results" {...fadeUp} className="mx-auto max-w-4xl px-6 py-10">
 
-            {/* Photo */}
-            {vehiclePhoto && (
-              <div className="mb-6 overflow-hidden rounded-xl border border-border bg-muted relative aspect-video">
-                <img src={vehiclePhoto} alt={`${decoded.ModelYear} ${decoded.Make} ${decoded.Model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
+            <div className="mb-6 grid overflow-hidden rounded-2xl border border-border bg-card md:grid-cols-[1.05fr_.95fr]">
+              <VehiclePhoto
+                car={{ year: decoded.ModelYear, make: decoded.Make, model: decoded.Model, trim: decoded.Trim, color: exteriorColor }}
+                storedPhoto={vehiclePhoto}
+                className="vehicle-photo-curated min-h-60 border-b border-border md:h-full md:[aspect-ratio:auto] md:border-b-0 md:border-r"
+                priority
+              />
+              <div className="flex flex-col justify-center p-6 sm:p-8">
+                <p className="text-xs uppercase tracking-[.18em] text-muted-foreground">Estimated instant offer</p>
+                <p className="mt-3 text-5xl font-bold tracking-[-.04em] sm:text-6xl">{money(appraisal.tradeIn)}</p>
+                <p className="mt-2 text-sm text-muted-foreground">Likely range {money(appraisal.tradeInRange.low)}–{money(appraisal.tradeInRange.high)}</p>
+                <div className="my-6 h-px bg-border" />
+                <h1 className="text-xl font-semibold tracking-tight">
+                  {decoded.ModelYear} {decoded.Make} {decoded.Model}{decoded.Trim ? ` ${decoded.Trim}` : ""}
+                </h1>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  {miles(Number(mileage))} · {condition} · {titleStatus} title
+                </p>
+              </div>
+            </div>
+
+            {comparisonBasis && comparisonBasis !== "exact-local" && (
+              <div className="mb-6 rounded-xl border border-amber-500/25 bg-amber-500/8 px-4 py-3 text-sm text-amber-100">
+                {comparisonBasis === "exact-regional" && "Local inventory was thin, so this estimate uses exact-year regional listings within 300 miles."}
+                {comparisonBasis === "adjacent-model-years" && "Exact-year inventory was thin, so this estimate also uses the prior model year and a wider market. The range is intentionally wider."}
+                {comparisonBasis === "new-inventory" && "This vehicle is too new for a meaningful used market. The estimate uses current new inventory and VIN pricing data, with first-owner resale costs reflected in the offer ranges."}
+                {comparisonBasis === "prediction-only" && "No comparable listings were available yet. This preliminary estimate uses VIN pricing data only and should be revisited as inventory appears."}
               </div>
             )}
 
-            {/* Title */}
-            <div className="mb-8">
-              <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Appraisal complete</p>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {decoded.ModelYear} {decoded.Make} {decoded.Model}
-                {decoded.Trim && <span className="ml-2 text-xl font-normal text-muted-foreground">{decoded.Trim}</span>}
-              </h1>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {miles(Number(mileage))} · {condition} · {titleStatus} title · {owners} owner{owners !== "1" ? "s" : ""}
-                {accidents === "Yes" ? " · Accident reported" : ""}
-              </p>
-            </div>
-
-            {/* ── Three clickable value tabs ── */}
-            <div className="mb-4 grid gap-3 sm:grid-cols-3">
+            <div className="mb-6 rounded-2xl border border-border bg-card p-2">
+              <div className="grid gap-1 sm:grid-cols-3">
               {[
-                { id: "offers",  label: "Instant offer",   sub: "Carvana, CarMax & more",   value: appraisal.tradeIn,      range: appraisal.tradeInRange },
-                { id: "private", label: "Private sale",    sub: "Sell it yourself",          value: appraisal.privateParty, range: appraisal.privatePartyRange },
-                { id: "market",  label: "Market / retail", sub: "What dealers pay & charge", value: appraisal.retail,       range: appraisal.retailRange },
-              ].map(({ id, label, sub, value, range }) => (
+                { id: "offers",  label: "Instant offer",   sub: "Fastest", value: appraisal.tradeIn },
+                { id: "private", label: "Private sale",    sub: `+${money(privateDelta)}`, value: appraisal.privateParty },
+                { id: "market",  label: "Dealer retail",   sub: "Reference", value: appraisal.retail },
+              ].map(({ id, label, sub, value }) => (
                 <button
                   key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`rounded-xl border p-5 text-left transition-all ${
+                  onClick={() => { setActiveTab(id); setShowDetails(true); }}
+                  className={`rounded-xl px-4 py-3 text-left transition-colors ${
                     activeTab === id
-                      ? "border-foreground bg-card"
-                      : "border-border bg-card/50 hover:border-foreground/30 hover:bg-card/80"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-                  <p className="mt-2 text-3xl font-bold tracking-tight">{money(value)}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{money(range.low)} – {money(range.high)}</p>
-                  <p className="mt-1 text-xs text-muted-foreground/50">{sub}</p>
-                  {activeTab === id && <div className="mt-3 h-0.5 w-6 rounded-full bg-foreground" />}
+                  <div className="flex items-center justify-between gap-3"><span className="text-sm font-medium">{label}</span><span className="text-[11px]">{sub}</span></div>
+                  <p className="mt-1 text-xl font-semibold tracking-tight">{money(value)}</p>
                 </button>
               ))}
+              </div>
             </div>
 
             {/* Action strip */}
-            <div className="mb-8 flex flex-wrap gap-2">
+            <div className="mb-8 flex flex-wrap items-center gap-2">
+              <Button className="rounded-lg" onClick={() => { setActiveTab("offers"); setShowDetails(true); }}>Compare real offers</Button>
               {session?.user ? (
                 <button className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm hover:border-foreground/30 transition-colors" onClick={() => setSellProfileOpen(true)}>
                   {inGarage ? "✓ In garage · Update" : "Save to garage"}
@@ -796,6 +808,20 @@ export default function AppraisePage() {
                 );
               })()}
             </div>
+
+            <button
+              onClick={() => setShowDetails((value) => !value)}
+              className="mb-5 flex w-full items-center justify-between rounded-xl border border-border bg-card px-5 py-4 text-left transition-colors hover:bg-muted/30"
+              aria-expanded={showDetails}
+            >
+              <div>
+                <p className="text-sm font-medium">{showDetails ? "Hide valuation details" : "Explore selling options and valuation details"}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Offers, private-sale guidance, comparables, safety, and methodology</p>
+              </div>
+              {showDetails ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+            </button>
+
+            {showDetails && <div className="space-y-5">
 
             {/* ══════════════════════ OFFERS TAB ══════════════════════ */}
             {activeTab === "offers" && (
@@ -1133,6 +1159,8 @@ export default function AppraisePage() {
                 </div>
               </div>
             )}
+
+            </div>}
 
           </motion.main>
         )}

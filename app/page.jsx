@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
 import { decodeProfile } from "@/lib/profileEncoding";
 import SiteHeader from "@/components/SiteHeader";
+import VehiclePhoto from "@/components/VehiclePhoto";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -32,26 +33,10 @@ function GarageCard({ car }) {
   const decoded = car.profile_encoded ? decodeProfile(car.profile_encoded) : null;
   const stored = decoded?.vehiclePhoto ?? null;
   const exteriorColor = decoded?.condition?.exteriorColor || "";
-  const [vehiclePhoto, setVehiclePhoto] = useState(stored);
-
-  useEffect(() => {
-    if (!exteriorColor && stored) return;
-    const params = new URLSearchParams({ make: car.make, model: car.model, year: car.year });
-    if (exteriorColor) params.set("color", exteriorColor);
-    fetch(`/api/photo?${params}`)
-      .then((r) => r.json())
-      .then((d) => { if (d.photo) setVehiclePhoto(d.photo); else setVehiclePhoto(stored); })
-      .catch(() => { setVehiclePhoto(stored); });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [car.vin, exteriorColor]);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
-      {vehiclePhoto && (
-        <div className="overflow-hidden border-b border-border bg-muted relative aspect-video">
-          <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
-        </div>
-      )}
+      <VehiclePhoto car={{ ...car, color: exteriorColor }} storedPhoto={stored} className="vehicle-photo-curated border-b border-border" />
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">

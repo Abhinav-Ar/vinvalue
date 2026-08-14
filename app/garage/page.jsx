@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import SellProfilePrompt from "@/components/SellProfilePrompt";
 import SiteHeader from "@/components/SiteHeader";
+import VehiclePhoto from "@/components/VehiclePhoto";
 
 function money(v) {
   if (!Number.isFinite(Number(v))) return "—";
@@ -39,20 +40,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
   const stored = profileData?.vehiclePhoto ?? null;
   const cond = profileData?.condition ?? {};
 
-  // Photo
-  const [vehiclePhoto, setVehiclePhoto] = useState(stored);
   const exteriorColorStored = cond.exteriorColor || "";
-
-  useEffect(() => {
-    if (!exteriorColorStored && stored) return;
-    const params = new URLSearchParams({ make: car.make, model: car.model, year: car.year });
-    if (exteriorColorStored) params.set("color", exteriorColorStored);
-    fetch(`/api/photo?${params}`)
-      .then((r) => r.json())
-      .then((d) => { setVehiclePhoto(d.photo || stored); })
-      .catch(() => { setVehiclePhoto(stored); });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [car.vin, exteriorColorStored]);
 
   // Edit modal
   const [editOpen, setEditOpen]   = useState(false);
@@ -369,11 +357,7 @@ function CarCard({ car, onRemove, onUpdate, removing }) {
 
       {/* ── Card ── */}
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        {vehiclePhoto && (
-          <div className="overflow-hidden border-b border-border bg-muted relative aspect-video">
-            <img src={vehiclePhoto} alt={`${car.year} ${car.make} ${car.model}`} className="absolute left-0 w-full object-cover" style={{ top: "-12%", height: "112%" }} loading="lazy" />
-          </div>
-        )}
+        <VehiclePhoto car={{ ...car, color: exteriorColorStored }} storedPhoto={stored} className="vehicle-photo-curated border-b border-border" />
 
         <div className="flex items-start justify-between gap-2 p-5 pb-4">
           <div className="min-w-0">

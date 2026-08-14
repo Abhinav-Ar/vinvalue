@@ -157,6 +157,7 @@
   .value-accent { @apply text-primary; }
   .vehicle-photo { @apply relative overflow-hidden bg-muted; aspect-ratio: 16/9; }
   .vehicle-photo img { @apply h-full w-full object-cover; }
+  .vehicle-photo-curated img { transform: scale(1.1); object-position: center 42%; }
   .vehicle-photo::after { content: ""; @apply pointer-events-none absolute inset-0; background: linear-gradient(to top, rgba(5,8,6,.42), transparent 45%); }
   .vehicle-photo-fallback { @apply flex flex-col items-center justify-center gap-3 text-muted-foreground; background: radial-gradient(circle at 50% 35%, oklch(0.28 0.025 145), oklch(0.15 0.012 145)); }
   .vehicle-photo-fallback svg { @apply h-12 w-12 opacity-40; }

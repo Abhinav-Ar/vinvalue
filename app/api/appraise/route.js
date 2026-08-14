@@ -54,29 +54,44 @@ function weightedPrice(comps, targetMileage) {
 // ── Data fetchers (each returns a clean result or null/[] on any failure) ──
 
 async function fetchListings(make, model, year, zip, apiKey, trim) {
-  const params = new URLSearchParams({
-    api_key: apiKey,
-    year, make, model,
-    zip, radius: "100", rows: "25",
-    sort_by: "price", sort_order: "asc",
-  });
-  if (trim) params.set("trim", trim);
-  const res = await fetch(`https://api.marketcheck.com/v2/search/car/active?${params}`);
-  const text = await res.text();
-  if (!res.ok) throw new Error(`MarketCheck ${res.status}: ${text}`);
-  const data = JSON.parse(text);
-  return (data.listings || []).map((item, i) => ({
-    id: item.id || i + 1,
-    title: item.heading || `${year} ${make} ${model}`,
-    price: item.price || 0,
-    mileage: item.miles || 0,
-    location: [item.dealer?.city, item.dealer?.state].filter(Boolean).join(", "),
-    distance: item.dist ? Math.round(item.dist) : null,
-    source: item.dealer?.name || "Listing",
-    url: item.vdp_url || "#",
-    // First photo from this listing (used to pick a representative vehicle image)
-    _photo: item.media?.photo_links?.[0] || item.media?.photo_link || null,
-  }));
+  const currentYear = new Date().getFullYear();
+  const attempts = [
+    { basis: "exact-local", year, trim, radius: "100", rows: "25", car_type: "used" },
+    { basis: "exact-regional", year, radius: "300", rows: "50", car_type: "used" },
+    { basis: "adjacent-model-years", year_range: `${Math.max(1981, Number(year) - 1)}-${year}`, radius: "500", rows: "50", car_type: "used" },
+    ...(Number(year) >= currentYear - 1 ? [{ basis: "new-inventory", year, radius: "500", rows: "50", car_type: "new" }] : []),
+  ];
+
+  let lastError = null;
+  for (const attempt of attempts) {
+    const { basis, ...filters } = attempt;
+    const params = new URLSearchParams({ api_key: apiKey, make, model, zip, sort_by: "price", sort_order: "asc", ...filters });
+    if (!filters.trim) params.delete("trim");
+    if (filters.year_range) params.delete("year");
+    const res = await fetch(`https://api.marketcheck.com/v2/search/car/active?${params}`);
+    const text = await res.text();
+    if (!res.ok) { lastError = new Error(`MarketCheck ${res.status}: ${text}`); continue; }
+    const data = JSON.parse(text);
+    const items = (data.listings || []).map((item, i) => ({
+      id: item.id || i + 1,
+      title: item.heading || `${year} ${make} ${model}`,
+      price: item.price || 0,
+      mileage: item.miles || 0,
+      location: [item.dealer?.city, item.dealer?.state].filter(Boolean).join(", "),
+      distance: item.dist ? Math.round(item.dist) : null,
+      source: item.dealer?.name || "Listing",
+      url: item.vdp_url || "#",
+      _photo: item.media?.photo_links_cached?.[0] || item.media?.photo_links?.[0] || item.media?.photo_link || null,
+    }));
+    if (items.some((item) => Number(item.price) >= 2_000)) {
+      items.comparisonBasis = basis;
+      return items;
+    }
+  }
+  if (lastError) throw lastError;
+  const empty = [];
+  empty.comparisonBasis = "prediction-only";
+  return empty;
 }
 
 async function fetchMarketStats(make, model, year, zip, apiKey) {
@@ -194,18 +209,25 @@ export async function GET(request) {
     const safetyRating   = safetyR.status         === "fulfilled" ? safetyR.value         : null;
     const classification = classificationR.status === "fulfilled" ? classificationR.value : null;
     const marketPrediction = predictionR.status === "fulfilled" ? predictionR.value : null;
+    const comparisonBasis = listings.comparisonBasis || "exact-local";
 
-    // Pick the first usable photo from any listing, then strip _photo from the public response
-    const vehiclePhoto = listings.find((l) => l._photo)?._photo ?? null;
-    const cleanListings = listings.map(({ _photo, ...rest }) => rest);
+    // Return several representative candidates so the browser can recover from a
+    // removed or blocked dealer image without showing a broken card.
+    const vehiclePhotos = [...new Set(listings.map((l) => l._photo).filter(Boolean))].slice(0, 10);
+    const vehiclePhoto = vehiclePhotos[0] ?? null;
+    const cleanListings = listings.map((listing) => {
+      const clean = { ...listing };
+      delete clean._photo;
+      return clean;
+    });
 
     const comps = buildCompSet(cleanListings, mileage);
     const prices = comps.map((l) => l.price);
-    if (!prices.length)
-      return Response.json({ error: "No listings found for this vehicle in your area." }, { status: 404 });
+    if (!prices.length && !marketPrediction)
+      return Response.json({ error: "We couldn't build a reliable value yet. This model is too new or has too little market data. Try again as inventory appears." }, { status: 404 });
 
     // ── Adjustment factors ──
-    const avgMileage = comps.reduce((s, l) => s + Number(l.mileage), 0) / comps.length;
+    const avgMileage = comps.length ? comps.reduce((s, l) => s + Number(l.mileage), 0) / comps.length : mileage;
     // Most mileage sensitivity is already captured by proximity weighting. This residual
     // adjustment is deliberately capped so high-mileage vehicles cannot be double-penalized.
     const mileageImpact = Math.max(-3_000, Math.min(3_000, Math.round((avgMileage - mileage) * 0.02)));
@@ -215,9 +237,9 @@ export async function GET(request) {
     // Few listings = scarce or enthusiast car = scarcity premium.
     // Neutral at 20 listings, log-scaled, capped at ±8%.
     const totalListings = marketStats?.totalListings || listings.length;
-    const supplyFactor  = Math.max(0.92, Math.min(1.08,
+    const supplyFactor  = comps.length ? Math.max(0.92, Math.min(1.08,
       1 - Math.log(Math.max(totalListings, 1) / 20) * 0.06
-    ));
+    )) : 1;
 
     const conditionFactor = CONDITION_FACTORS[condition]     ?? 1.0;
     const titleFactor     = TITLE_FACTORS[titleStatus]       ?? 1.0;
@@ -247,8 +269,8 @@ export async function GET(request) {
       + reconWarningLights + reconMechanical + reconBodyDamage + reconFeatures + reconKeys;
 
     // ── Three-tier valuation ──
-    const compEstimate = weightedPrice(comps, mileage);
-    const retailMedian = marketPrediction ? compEstimate * .55 + marketPrediction * .45 : compEstimate;
+    const compEstimate = comps.length ? weightedPrice(comps, mileage) : null;
+    const retailMedian = marketPrediction && compEstimate ? compEstimate * .55 + marketPrediction * .45 : marketPrediction || compEstimate;
     const retail        = Math.max(0, Math.round(retailMedian * totalFactor * supplyFactor + mileageImpact - recallPenalty));
     const tradeIn       = Math.max(0, Math.round(retail - reconditioning - retail * 0.17));
     const ppMultiplier  = classification?.privatePartyMultiplier ?? 0.88;
@@ -256,9 +278,9 @@ export async function GET(request) {
 
     // Scarce cars have wider ranges — less market data means more price uncertainty.
     // High-supply cars get tighter ranges because the market is well-defined.
-    const rawMedian = medianOf(prices);
-    const medianDeviation = medianOf(prices.map((price) => Math.abs(price - rawMedian)));
-    const observedSpread = rawMedian ? medianDeviation / rawMedian : .12;
+    const rawMedian = prices.length ? medianOf(prices) : marketPrediction;
+    const medianDeviation = prices.length ? medianOf(prices.map((price) => Math.abs(price - rawMedian))) : rawMedian * .14;
+    const observedSpread = rawMedian ? medianDeviation / rawMedian : .14;
     const samplePenalty = comps.length < 8 ? .04 : comps.length < 15 ? .02 : 0;
     const rangeSpread = Math.max(.06, Math.min(.18, observedSpread * 1.5 + samplePenalty));
     const confidence = Math.round(Math.max(45, Math.min(92, 92 - rangeSpread * 180 - samplePenalty * 100)));
@@ -266,11 +288,13 @@ export async function GET(request) {
     return Response.json({
       listings: cleanListings,
       vehiclePhoto,
+      vehiclePhotos,
       recalls,
       recallStatus: "campaigns-for-model",
       safetyRating,
       marketStats,
       marketPrediction,
+      comparisonBasis,
       classification,
       appraisal: {
         retail,
