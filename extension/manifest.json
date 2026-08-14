@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AutoIQ — Car Form Filler",
-  "version": "1.0.0",
-  "description": "Autofills Carvana, CarMax, CarGurus and more with your car details from AutoIQ.",
+  "version": "1.1.0",
+  "description": "Use saved AutoIQ vehicle details to complete supported valuation forms faster.",
   "permissions": ["storage", "scripting", "tabs"],
   "host_permissions": [
     "https://autoiq-vinvalue.vercel.app/*",

@@ -17,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AutoIQ — Smart Car Valuations",
-  description: "Know exactly what your car is worth. VIN decode + live market comps.",
+  title: "AutoIQ — Evidence-backed car values",
+  description: "A clear vehicle value range built from live comparable listings and your car's actual condition.",
 };
 
 export default async function RootLayout({
@@ -31,7 +31,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SessionProvider session={session}>

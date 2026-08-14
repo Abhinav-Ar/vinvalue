@@ -1,428 +1,98 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { Zap, Car, ArrowRight, Plus, ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-import SellProfilePrompt from "@/components/SellProfilePrompt";
-import { decodeProfile } from "@/lib/profileEncoding";
+import { ArrowRight, BarChart3, CarFront, Check, Search, ShieldCheck } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import VehiclePhoto from "@/components/VehiclePhoto";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-function money(v) {
-  if (!Number.isFinite(Number(v))) return "—";
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(v));
+function money(value) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value) || 0);
 }
 
-function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-}
-
-function Nav({ links = true }) {
-  return <SiteHeader compact={!links} />;
-}
-
-function GarageCard({ car }) {
-  const decoded = car.profile_encoded ? decodeProfile(car.profile_encoded) : null;
-  const stored = decoded?.vehiclePhoto ?? null;
-  const exteriorColor = decoded?.condition?.exteriorColor || "";
-
-  return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
-      <VehiclePhoto car={{ ...car, color: exteriorColor }} storedPhoto={stored} className="vehicle-photo-curated border-b border-border" />
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="truncate font-semibold leading-snug">
-              {car.year} {car.make} {car.model}
-            </p>
-            {car.trim && (
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">{car.trim}</p>
-            )}
-          </div>
-          <span className="shrink-0 rounded-md border border-border px-1.5 py-0.5 text-xs text-muted-foreground">
-            {car.condition}
-          </span>
-        </div>
-
-        <p className="mt-2 text-xs text-muted-foreground">
-          {Number(car.mileage).toLocaleString()} miles
-        </p>
-
-        {/* Hero value */}
-        <div className="mt-5">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Est. instant offer</p>
-          <p className="mt-1 text-3xl font-bold tracking-tight">{money(car.trade_in)}</p>
-        </div>
-
-        {/* Secondary values */}
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-lg bg-muted/60 px-3 py-2.5">
-            <p className="text-[11px] text-muted-foreground">Private party</p>
-            <p className="mt-0.5 text-sm font-semibold">{money(car.private_party)}</p>
-          </div>
-          <div className="rounded-lg bg-muted/60 px-3 py-2.5">
-            <p className="text-[11px] text-muted-foreground">Retail</p>
-            <p className="mt-0.5 text-sm font-semibold">{money(car.retail)}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-2 border-t border-border p-3">
-        <Link href={`/appraise?vin=${car.vin}`} className="flex-1">
-          <Button variant="outline" size="sm" className="w-full rounded-lg text-xs">
-            Re-appraise
-          </Button>
-        </Link>
-        {car.profile_encoded && (
-          <Link href={`/profile?d=${car.profile_encoded}`} target="_blank">
-            <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1">
-              Report <ExternalLink className="h-3 w-3" />
-            </Button>
-          </Link>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Dashboard({ session, garage, history }) {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const firstName = session?.user?.name?.split(" ")[0] ?? "there";
-
-  const totalCars = garage.length;
-  const bestOffer = totalCars > 0 ? Math.max(...garage.map((c) => Number(c.trade_in) || 0)) : 0;
-  const totalAppraisals = history.length;
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Nav />
-
-      <main className="mx-auto max-w-6xl px-6 py-12">
-
-        {/* Top bar */}
-        <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-sm text-muted-foreground">{greeting}</p>
-            <h1 className="mt-0.5 text-3xl font-bold tracking-tight">{firstName}.</h1>
-          </div>
-          <Link href="/appraise">
-            <Button className="rounded-lg gap-2">
-              <Plus className="h-4 w-4" /> New appraisal
-            </Button>
-          </Link>
-        </div>
-
-        {/* Incomplete sell profile prompt */}
-        <SellProfilePrompt cars={garage} />
-
-        {/* Stats row */}
-        {totalCars > 0 && (
-          <div className="mb-10 grid gap-3 sm:grid-cols-3">
-            {[
-              { label: "Cars in garage", value: String(totalCars), sub: totalCars === 1 ? "vehicle tracked" : "vehicles tracked" },
-              { label: "Best instant offer", value: money(bestOffer), sub: "estimated trade-in" },
-              { label: "Total appraisals", value: String(totalAppraisals), sub: "searches run" },
-            ].map(({ label, value, sub }) => (
-              <div key={label} className="rounded-xl border border-border bg-card p-5">
-                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</p>
-                <p className="mt-2 text-3xl font-bold tracking-tight">{value}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Garage */}
-        {totalCars > 0 ? (
-          <section className="mb-12">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Garage</h2>
-              <Link href="/garage" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-                View all →
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {garage.slice(0, 3).map((car) => (
-                <GarageCard key={car.id} car={car} />
-              ))}
-              <Link
-                href="/appraise"
-                className="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-border transition-colors hover:border-foreground/20 hover:bg-muted/20"
-              >
-                <div className="text-center">
-                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-muted">
-                    <Plus className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">Add a car</p>
-                </div>
-              </Link>
-            </div>
-          </section>
-        ) : (
-          /* Empty garage onboarding */
-          <section className="mb-12">
-            <div className="rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-muted">
-                <Car className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <p className="font-semibold">Your garage is empty</p>
-              <p className="mt-1.5 text-sm text-muted-foreground max-w-sm mx-auto">
-                Run an appraisal to find out what your car is worth, then save it here to track it over time.
-              </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <Link href="/appraise">
-                  <Button className="rounded-lg gap-2">
-                    Appraise a car <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/value">
-                  <Button variant="outline" className="rounded-lg">Quick value check</Button>
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Recent searches */}
-        {history.length > 0 && (
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Recent appraisals</h2>
-              <Link href="/history" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-                View all →
-              </Link>
-            </div>
-            <div className="overflow-hidden rounded-xl border border-border">
-              {history.map((s, i) => (
-                <div
-                  key={s.id}
-                  className={`flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/30 ${i > 0 ? "border-t border-border" : ""}`}
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-                      <Car className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {s.year} {s.make} {s.model}
-                        {s.trim && <span className="ml-1.5 font-normal text-muted-foreground text-xs">{s.trim}</span>}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {Number(s.mileage).toLocaleString()} mi · {s.condition} · {timeAgo(s.created_at)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-5">
-                    <div className="hidden text-right sm:block">
-                      <p className="text-[11px] text-muted-foreground">Trade-in</p>
-                      <p className="text-sm font-semibold">{money(s.trade_in)}</p>
-                    </div>
-                    <div className="hidden text-right lg:block">
-                      <p className="text-[11px] text-muted-foreground">Private</p>
-                      <p className="text-sm font-semibold">{money(s.private_party)}</p>
-                    </div>
-                    {s.profile_encoded && (
-                      <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1" asChild>
-                        <Link href={`/profile?d=${s.profile_encoded}`} target="_blank">
-                          Report <ExternalLink className="h-3 w-3" />
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-      </main>
-    </div>
-  );
-}
-
-const STEPS = [
-  {
-    step: "01",
-    title: "Decode your VIN",
-    desc: "Enter your 17-character VIN. We pull the exact make, model, trim, engine, and drivetrain from the NHTSA database instantly.",
-  },
-  {
-    step: "02",
-    title: "Add your details",
-    desc: "Mileage, ZIP code, condition, title status, accident history — everything that changes what your car is actually worth.",
-  },
-  {
-    step: "03",
-    title: "Get your valuation",
-    desc: "We compare live market listings and calculate a fair price range adjusted to your car's exact circumstances — in seconds.",
-  },
-];
-
-export default function Landing() {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated" && Boolean(session?.user);
-  const [garage, setGarage] = useState(null);
-  const [history, setHistory] = useState(null);
+function Dashboard() {
+  const [garage, setGarage] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-    Promise.all([
-      fetch("/api/garage").then((r) => r.json()),
-      fetch("/api/history").then((r) => r.json()),
-    ]).then(([g, h]) => {
-      setGarage(g.cars ?? []);
-      setHistory((h.searches ?? []).slice(0, 5));
-    });
-  }, [isAuthenticated]);
+    Promise.all([fetch("/api/garage").then((r) => r.json()), fetch("/api/history").then((r) => r.json())])
+      .then(([garageData, historyData]) => { setGarage(garageData.cars || []); setActivity(historyData.searches || []); })
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Never fall through to the landing page while the session or data is still resolving.
-  // This prevents the flash where authenticated users briefly see the marketing page.
-  if (status === "loading" || (isAuthenticated && (garage === null || history === null))) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <Nav links={false} />
-        <main className="mx-auto max-w-6xl px-6 py-12">
-          <div className="mb-10">
-            <div className="h-3.5 w-24 animate-pulse rounded-md bg-muted" />
-            <div className="mt-2 h-8 w-36 animate-pulse rounded-md bg-muted" />
-          </div>
-          <div className="mb-10 grid gap-3 sm:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-28 animate-pulse rounded-xl border border-border bg-card" />
-            ))}
-          </div>
-          <div className="mb-4 h-3.5 w-16 animate-pulse rounded-md bg-muted" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-56 animate-pulse rounded-xl border border-border bg-card" />
-            ))}
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (isAuthenticated) {
-    return <Dashboard session={session} garage={garage} history={history} />;
-  }
-
+  const portfolio = garage.reduce((sum, car) => sum + Number(car.trade_in || 0), 0);
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Nav />
+    <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+        <div><p className="eyebrow">Your workspace</p><h1 className="mt-2 text-4xl font-semibold tracking-[-.04em]">Know where every car stands.</h1></div>
+        <Button asChild className="h-11 rounded-xl"><Link href="/appraise">New appraisal <ArrowRight /></Link></Button>
+      </div>
 
-      {/* Hero */}
-      <section className="mx-auto grid min-h-[calc(100vh-64px)] max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:text-left">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="max-w-3xl"
-        >
-          <p className="eyebrow mb-7">Market evidence, made useful</p>
-          <h1 className="display-title">Know the number before you negotiate.</h1>
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            A transparent value range built from current comparable listings, then adjusted for the facts that make your vehicle different.
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link href="/appraise">
-              <Button size="lg" className="h-11 rounded-xl px-7 text-sm gap-2">
-                Start with your VIN <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <span className="self-center text-xs text-muted-foreground">Free · No account required</span>
-          </div>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, scale: .97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .5, delay: .08 }} className="surface overflow-hidden p-3">
-          <div className="rounded-xl border border-border bg-background/70 p-6 sm:p-8">
-            <div className="flex items-start justify-between border-b border-border pb-6">
-              <div><p className="data-label">Example market-backed value</p><p className="mt-2 text-xl font-semibold">2024 Tesla Model 3</p><p className="mt-1 text-xs text-muted-foreground">12,450 mi · Clean title · Good condition</p></div>
-              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">High evidence</span>
-            </div>
-            <div className="grid gap-3 py-6 sm:grid-cols-3">
-              {[['Trade-in','$23,100'],['Private sale','$27,450'],['Dealer retail','$31,900']].map(([label,value], i) => <div key={label} className={`rounded-xl border p-4 ${i === 1 ? 'border-primary/60 bg-primary/5' : 'border-border bg-card'}`}><p className="text-xs text-muted-foreground">{label}</p><p className={`mt-2 text-2xl font-semibold ${i === 1 ? 'text-primary' : ''}`}>{value}</p></div>)}
-            </div>
-            <div><div className="flex justify-between text-[10px] text-muted-foreground"><span>$25,400</span><span>Most likely</span><span>$29,600</span></div><div className="relative mt-2 h-1 rounded-full bg-muted"><span className="absolute left-[12%] right-[10%] h-full rounded-full bg-primary"/><span className="absolute left-[52%] top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-background bg-primary"/></div></div>
-            <div className="mt-7 grid grid-cols-3 gap-3 border-t border-border pt-5 text-xs text-muted-foreground"><span>Live comparables</span><span>Outliers removed</span><span>Method shown</span></div>
-          </div>
-        </motion.div>
+      <div className="mt-9 grid gap-4 sm:grid-cols-3">
+        {[
+          ["Garage value", loading ? "—" : money(portfolio), "Estimated instant-sale total"],
+          ["Vehicles", loading ? "—" : garage.length, "Saved and ready to revisit"],
+          ["Recent appraisals", loading ? "—" : activity.length, "Latest report per VIN"],
+        ].map(([label, value, note]) => <div key={label} className="rounded-2xl border border-border bg-card p-5"><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p><p className="mt-1 text-xs text-muted-foreground">{note}</p></div>)}
+      </div>
+
+      <section className="mt-12">
+        <div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-semibold">Garage</h2><p className="mt-1 text-sm text-muted-foreground">The latest value for each saved vehicle.</p></div><Link href="/garage" className="text-sm font-medium">View all</Link></div>
+        {!loading && garage.length === 0 ? <div className="rounded-3xl border border-dashed border-border bg-card/50 p-10 text-center"><CarFront className="mx-auto h-8 w-8 text-muted-foreground" /><p className="mt-4 font-medium">No vehicles saved yet</p><p className="mt-1 text-sm text-muted-foreground">Your first appraisal can be saved here.</p></div> : <div className="grid gap-4 lg:grid-cols-3">{garage.slice(0, 3).map((car) => <Link href="/garage" key={car.id} className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-lg"><VehiclePhoto car={car} className="vehicle-photo-curated" /><div className="p-5"><p className="font-semibold">{car.year} {car.make} {car.model}</p><p className="mt-1 text-xs text-muted-foreground">{Number(car.mileage).toLocaleString()} mi · {car.condition}</p><div className="mt-5 flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Instant-sale estimate</p><p className="mt-1 text-2xl font-semibold">{money(car.trade_in)}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-1" /></div></div></Link>)}</div>}
       </section>
-
-
-      {/* How it works */}
-      <section className="border-t border-border px-6 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-3">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">How it works</p>
-          </div>
-          <h2 className="mb-16 text-3xl font-bold tracking-tight">Three steps to a fair price</h2>
-          <div className="grid gap-10 md:grid-cols-3">
-            {STEPS.map(({ step, title, desc }, i) => (
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: i * 0.08 }}
-              >
-                <span className="text-5xl font-bold text-muted-foreground/15">{step}</span>
-                <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="border-t border-border px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.35 }}
-          className="mx-auto max-w-2xl text-center"
-        >
-          <h2 className="text-5xl font-bold tracking-tight">
-            Your VIN.
-            <br />
-            Your number.
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-            No subscription. No signup required. Just your VIN and the truth.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/appraise">
-              <Button size="lg" className="h-11 rounded-xl px-7 text-sm gap-2">
-                Get started <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border px-6 py-6">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-foreground">
-              <Zap className="h-3 w-3 text-background" />
-            </div>
-            <span className="text-sm font-semibold">AutoIQ</span>
-          </div>
-          <p className="text-xs text-muted-foreground">VIN data via NHTSA · Listings via MarketCheck</p>
-        </div>
-      </footer>
-    </div>
+    </main>
   );
+}
+
+function Landing() {
+  const router = useRouter();
+  const [vin, setVin] = useState("");
+  const go = () => router.push(vin.length === 17 ? `/appraise?vin=${vin}` : "/appraise");
+  return (
+    <main>
+      <section className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-14 px-5 py-16 sm:px-8 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
+        <div>
+          <p className="eyebrow">Evidence-backed vehicle values</p>
+          <h1 className="display-title mt-5 max-w-3xl">Know what your car is worth—and why.</h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">AutoIQ turns live comparable listings and your vehicle’s condition into a clear value range you can actually negotiate with.</p>
+          <div className="surface mt-9 max-w-xl p-2 sm:flex">
+            <Input value={vin} onChange={(event) => setVin(event.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17))} onKeyDown={(event) => event.key === "Enter" && go()} placeholder="Enter your VIN" aria-label="Enter your VIN" className="h-13 flex-1 border-0 bg-transparent px-4 font-mono shadow-none focus-visible:ring-0" />
+            <Button onClick={go} className="h-13 w-full rounded-2xl px-6 sm:w-auto">Check my car <ArrowRight /></Button>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">{["No account required", "Live market evidence", "Method shown"].map((item) => <span key={item} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" />{item}</span>)}</div>
+        </div>
+
+        <div className="relative">
+          <div className="surface overflow-hidden">
+            <div className="border-b border-border bg-foreground p-7 text-background">
+              <div className="flex items-center justify-between"><span className="text-xs uppercase tracking-[.16em] text-background/60">Example appraisal</span><span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs text-emerald-300">Strong evidence</span></div>
+              <p className="mt-8 text-sm text-background/60">Likely instant-sale value</p><p className="mt-2 text-5xl font-semibold tracking-[-.05em]">$23,100</p><p className="mt-2 text-sm text-background/60">$21,500–$24,800</p>
+            </div>
+            <div className="grid grid-cols-2 gap-px bg-border"><div className="bg-card p-6"><p className="text-xs text-muted-foreground">Private sale</p><p className="mt-2 text-2xl font-semibold">$27,450</p></div><div className="bg-card p-6"><p className="text-xs text-muted-foreground">Dealer retail</p><p className="mt-2 text-2xl font-semibold">$31,900</p></div></div>
+            <div className="flex items-center gap-3 border-t border-border p-5 text-sm text-muted-foreground"><Search className="h-4 w-4" /> Built from 18 comparable listings near 94538</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-border bg-card">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 md:grid-cols-3">
+          {[
+            [Search, "Current market", "Active listings are filtered for mileage proximity and pricing outliers."],
+            [BarChart3, "Honest ranges", "We show uncertainty instead of pretending a single number is guaranteed."],
+            [ShieldCheck, "Visible methodology", "Every material adjustment stays available in the report."],
+          ].map(([Icon, title, copy]) => <article key={title}><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-primary"><Icon className="h-5 w-5" /></span><h2 className="mt-5 font-semibold">{title}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p></article>)}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default function HomePage() {
+  const { status } = useSession();
+  return <div className="min-h-screen"><SiteHeader />{status === "authenticated" ? <Dashboard /> : <Landing />}<footer className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>AutoIQ</span><span>VIN data via NHTSA · Market evidence via MarketCheck</span></footer></div>;
 }

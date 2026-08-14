@@ -155,7 +155,7 @@ function fillPage(car) {
 
     for (const { keys, fill } of FIELD_MAP) {
       if (keys.some((k) => label.includes(k))) {
-        try { if (fill(el, car)) filled++; } catch (_) {}
+        try { if (fill(el, car)) filled++; } catch {}
         break;
       }
     }

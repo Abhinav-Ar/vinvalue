@@ -8,6 +8,13 @@ function show(id) {
   });
 }
 
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text != null) node.textContent = text;
+  return node;
+}
+
 function decodeConditions(encoded) {
   try {
     const d = JSON.parse(decodeURIComponent(escape(atob(encoded))));
@@ -28,8 +35,13 @@ function decodeConditions(encoded) {
       interiorCleanliness: d.intc || null,
       odors:               d.odo  || null,
       roofType:            d.rftp || null,
+      zip:                 d.zp   || null,
+      bodyClass:           d.bd   || null,
+      driveType:           d.drv  || null,
+      fuelType:            d.fue  || null,
+      cylinders:           d.eng  || null,
     };
-  } catch (_) { return {}; }
+  } catch { return {}; }
 }
 
 // Classify a value as good / warn / bad for color coding
@@ -86,20 +98,20 @@ function renderDetailPanel(car) {
     { label: "Interior",     value: cond.interiorCleanliness },
     { label: "Odors",        value: cond.odors },
     { label: "Roof",         value: cond.roofType },
-    { label: "ZIP",          value: car.zip },
+    { label: "ZIP",          value: car.zip || cond.zip },
   ].filter((f) => f.value != null && f.value !== "");
 
   // VIN always gets full width
-  fields.forEach((f, i) => {
+  fields.forEach((f) => {
     const cell = document.createElement("div");
     cell.className = "detail-cell" + (f.label === "VIN" ? " full-width" : "");
 
     const colorClass = f.mono ? "mono" : classify(f.label, f.value);
-    cell.innerHTML = `
-      <div class="detail-cell-label">${f.label}</div>
-      <div class="detail-cell-value ${colorClass}">${f.value}</div>
-      <span class="copy-hint">Copy</span>
-    `;
+    cell.append(
+      element("div", "detail-cell-label", f.label),
+      element("div", `detail-cell-value ${colorClass}`, String(f.value)),
+      element("span", "copy-hint", "Copy"),
+    );
 
     cell.addEventListener("click", () => copyText(String(f.value), cell));
     grid.appendChild(cell);
@@ -122,14 +134,11 @@ chrome.storage.local.get("garage", ({ garage }) => {
     item.className = "car-item";
 
     const name = [car.year, car.make, car.model, car.trim].filter(Boolean).join(" ");
-    item.innerHTML = `
-      <div class="car-item-name">${name}</div>
-      <div class="car-item-meta">
-        ${car.mileage ? `<span class="chip">${fmt(car.mileage)} mi</span>` : ""}
-        ${car.condition ? `<span class="chip">${car.condition}</span>` : ""}
-        ${car.trade_in ? `<span class="chip">~$${fmt(car.trade_in)}</span>` : ""}
-      </div>
-    `;
+    const meta = element("div", "car-item-meta");
+    if (car.mileage) meta.append(element("span", "chip", `${fmt(car.mileage)} mi`));
+    if (car.condition) meta.append(element("span", "chip", car.condition));
+    if (car.trade_in) meta.append(element("span", "chip", `~$${fmt(car.trade_in)}`));
+    item.append(element("div", "car-item-name", name), meta);
 
     item.addEventListener("click", () => {
       document.querySelectorAll(".car-item").forEach((el) => el.classList.remove("selected"));
@@ -161,25 +170,25 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     return;
   }
 
+  const profileCond = selectedCar.profile_encoded
+    ? decodeConditions(selectedCar.profile_encoded)
+    : {};
+
   const car = {
     vin:          selectedCar.vin,
     year:         selectedCar.year,
     make:         selectedCar.make,
     model:        selectedCar.model,
     trim:         selectedCar.trim || "",
-    bodyClass:    selectedCar.body_class || "",
-    driveType:    selectedCar.drive_type || "",
+    bodyClass:    selectedCar.body_class || profileCond.bodyClass || "",
+    driveType:    selectedCar.drive_type || profileCond.driveType || "",
     transmission: selectedCar.transmission || "",
-    fuelType:     selectedCar.fuel_type || "",
-    cylinders:    selectedCar.cylinders || "",
+    fuelType:     selectedCar.fuel_type || profileCond.fuelType || "",
+    cylinders:    selectedCar.cylinders || profileCond.cylinders || "",
     mileage:      String(selectedCar.mileage || ""),
     condition:    selectedCar.condition || "",
-    zip:          selectedCar.zip || "",
+    zip:          selectedCar.zip || profileCond.zip || "",
   };
-
-  const profileCond = selectedCar.profile_encoded
-    ? decodeConditions(selectedCar.profile_encoded)
-    : {};
 
   // Map extended fields to the keys filler.js expects
   const extendedFields = {

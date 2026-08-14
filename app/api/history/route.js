@@ -1,20 +1,12 @@
 import { auth } from "@/auth";
-import { Pool } from "pg";
+import { query } from "@/lib/db";
 import { jsonError, rateLimit } from "@/lib/requestSafety";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 1, idleTimeoutMillis: 10000, connectionTimeoutMillis: 10000 });
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Prune stale entries first — fire-and-forget, don't block the response
-  pool.query(
-    `DELETE FROM searches WHERE user_id = $1 AND created_at < NOW() - INTERVAL '7 days'`,
-    [session.user.id]
-  ).catch(() => {});
-
-  const { rows } = await pool.query(
+  const { rows } = await query(
     `SELECT id, vin, make, model, year, trim, mileage, condition, zip,
             trade_in, private_party, retail, profile_encoded, created_at
      FROM searches
@@ -39,11 +31,11 @@ export async function POST(request) {
   if (String(profileEncoded || "").length > 20_000) return jsonError("Report data is too large.", 413);
 
   // Delete any previous entry for this VIN so we only keep the latest appraisal per car
-  await pool.query(
+  await query(
     `DELETE FROM searches WHERE user_id = $1 AND vin = $2`,
     [session.user.id, vin]
   );
-  await pool.query(
+  await query(
     `INSERT INTO searches (user_id, vin, make, model, year, trim, mileage, condition, zip,
                            trade_in, private_party, retail, profile_encoded)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,

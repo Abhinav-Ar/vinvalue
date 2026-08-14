@@ -1,4 +1,3 @@
-import { classifyVehicle } from "@/lib/classifyVehicle";
 import { cleanVehicleQuery, jsonError, rateLimit } from "@/lib/requestSafety";
 
 const CONDITION_FACTORS = { Excellent: 1.03, Good: 1.0, Fair: 0.94, Poor: 0.84 };
@@ -183,19 +182,11 @@ export async function GET(request) {
     const apiKey = process.env.MARKETCHECK_API_KEY;
 
     // Fire all network calls in parallel — nothing blocks anything
-    const [listingsR, statsR, recallsR, safetyR, classificationR, predictionR] = await Promise.allSettled([
+    const [listingsR, statsR, recallsR, safetyR, predictionR] = await Promise.allSettled([
       fetchListings(make, model, year, zip, apiKey, searchParams.get("trim") || ""),
       fetchMarketStats(make, model, year, zip, apiKey),
       fetchRecalls(make, model, year),
       fetchSafetyRating(year, make, model),
-      classifyVehicle({
-        year, make, model,
-        trim:   searchParams.get("trim")   || "",
-        body:   searchParams.get("body")   || "",
-        engine: searchParams.get("engine") || "",
-        drive:  searchParams.get("drive")  || "",
-        fuel:   searchParams.get("fuel")   || "",
-      }),
       fetchMarketPrediction((searchParams.get("vin") || "").toUpperCase(), mileage, zip, apiKey),
     ]);
 
@@ -207,7 +198,6 @@ export async function GET(request) {
     const marketStats    = statsR.status          === "fulfilled" ? statsR.value          : null;
     const recalls        = recallsR.status        === "fulfilled" ? recallsR.value        : [];
     const safetyRating   = safetyR.status         === "fulfilled" ? safetyR.value         : null;
-    const classification = classificationR.status === "fulfilled" ? classificationR.value : null;
     const marketPrediction = predictionR.status === "fulfilled" ? predictionR.value : null;
     const comparisonBasis = listings.comparisonBasis || "exact-local";
 
@@ -273,8 +263,9 @@ export async function GET(request) {
     const retailMedian = marketPrediction && compEstimate ? compEstimate * .55 + marketPrediction * .45 : marketPrediction || compEstimate;
     const retail        = Math.max(0, Math.round(retailMedian * totalFactor * supplyFactor + mileageImpact - recallPenalty));
     const tradeIn       = Math.max(0, Math.round(retail - reconditioning - retail * 0.17));
-    const ppMultiplier  = classification?.privatePartyMultiplier ?? 0.88;
-    const privateParty  = Math.max(0, Math.round(retail * ppMultiplier));
+    // Private-party prices typically clear below dealer asking prices because they
+    // do not include dealer overhead, financing convenience, or warranty exposure.
+    const privateParty  = Math.max(0, Math.round(retail * 0.88));
 
     // Scarce cars have wider ranges — less market data means more price uncertainty.
     // High-supply cars get tighter ranges because the market is well-defined.
@@ -295,7 +286,6 @@ export async function GET(request) {
       marketStats,
       marketPrediction,
       comparisonBasis,
-      classification,
       appraisal: {
         retail,
         retailRange:       { low: Math.round(retail       * (1 - rangeSpread)),       high: Math.round(retail       * (1 + rangeSpread))       },

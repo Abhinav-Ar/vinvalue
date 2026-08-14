@@ -40,6 +40,8 @@ export default function VehiclePhoto({ car, storedPhoto = null, className = "", 
 
   return (
     <div className={`vehicle-photo ${className}`}>
+      {/* Listing image hosts are dynamic; the ranked fallback set handles broken sources. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={photo} alt={`Representative ${car.year} ${car.make} ${car.model}`} loading={priority ? "eager" : "lazy"} onError={() => setPhotoIndex((index) => index + 1)} referrerPolicy="no-referrer" />
       <span className="photo-provenance">Representative vehicle</span>
     </div>

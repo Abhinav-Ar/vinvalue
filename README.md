@@ -1,6 +1,6 @@
 # AutoIQ
 
-AutoIQ estimates trade-in, private-sale, and dealer-retail value from current comparable listings. It decodes VINs with NHTSA data and explains the evidence and adjustments behind each range.
+AutoIQ estimates instant-sale, private-sale, and dealer-retail value from current comparable listings. It decodes VINs with NHTSA data, removes pricing outliers, weights comparable vehicles by mileage proximity, and shows the evidence behind every range.
 
 ## Local setup
 
@@ -45,7 +45,8 @@ npm run build
 
 - Prices are estimates based on active asking-price comparables, not guaranteed offers or completed-sale prices.
 - NHTSA model-level recall campaigns are shown as campaigns to verify. They are not represented as VIN-specific open recalls.
-- Market listing photos are representative unless explicitly supplied by the owner.
+- Market listing photos are representative, ranked by vehicle match and gallery quality, and labeled as such throughout the product.
 - Shared seller reports contain seller-provided condition information and should not be described as independently verified.
+- Named buyer values are never simulated. Users compare the AutoIQ instant-sale range with real third-party quotes.
 
 The schema required by Auth.js and AutoIQ is in `supabase/schema.sql`. Any PostgreSQL provider can be used; Supabase is not required by the application code.

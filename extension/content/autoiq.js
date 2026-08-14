@@ -8,12 +8,14 @@ async function syncGarage() {
     if (Array.isArray(cars)) {
       chrome.storage.local.set({ garage: cars });
     }
-  } catch (_) {
+  } catch {
     // Not logged in, network error, or extension context invalidated — silent fail
   }
 }
 
 syncGarage();
+
+window.addEventListener("autoiq:garage-saved", () => setTimeout(syncGarage, 300));
 
 // Store detailed condition data keyed by VIN so filler can use it
 window.addEventListener("autoiq:appraisal", (e) => {
@@ -36,7 +38,7 @@ window.addEventListener("autoiq:appraisal", (e) => {
       chrome.storage.local.set({ conditions });
     });
     setTimeout(syncGarage, 1500);
-  } catch (_) {
+  } catch {
     // Extension was reloaded — refresh this tab to reconnect
   }
 });

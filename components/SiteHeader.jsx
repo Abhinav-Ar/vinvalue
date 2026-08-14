@@ -8,7 +8,7 @@ import UserMenu from "@/components/UserMenu";
 const links = [
   ["/appraise", "Appraise"],
   ["/garage", "Garage"],
-  ["/history", "Reports"],
+  ["/history", "Activity"],
 ];
 
 export default function SiteHeader({ compact = false }) {
@@ -23,7 +23,7 @@ export default function SiteHeader({ compact = false }) {
         {!compact && (
           <nav className="site-nav" aria-label="Primary navigation">
             {links.map(([href, label]) => (
-              <Link key={href} href={href} data-active={pathname === href}>{label}</Link>
+              <Link key={href} href={href} data-active={pathname.startsWith(href)}>{label}</Link>
             ))}
           </nav>
         )}

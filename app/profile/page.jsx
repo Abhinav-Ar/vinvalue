@@ -53,16 +53,16 @@ function issueLevel(condition) {
     condition.featuresWorking !== "Yes",
     condition.accidents === "Yes",
   ].filter(Boolean).length;
-  if (count === 0) return { label: "Clean", cls: "text-emerald-400" };
-  if (count <= 1) return { label: "Minor issues", cls: "text-amber-400" };
-  return { label: "Multiple issues", cls: "text-red-400" };
+  if (count === 0) return { label: "Clean", cls: "text-emerald-700" };
+  if (count <= 1) return { label: "Minor issues", cls: "text-amber-700" };
+  return { label: "Multiple issues", cls: "text-red-700" };
 }
 
 function conditionDisplay(val) {
   const good = ["None", "Clean", "Yes", "No", "Both sets", "Full dealer", "Full independent"];
   const bad  = ["Major", "Salvage", "Multiple", "No keys", "Major issues"];
-  if (good.includes(val)) return { text: val, cls: "text-emerald-400" };
-  if (bad.some((b) => val?.includes?.(b))) return { text: val, cls: "text-red-400" };
+  if (good.includes(val)) return { text: val, cls: "text-emerald-700" };
+  if (bad.some((b) => val?.includes?.(b))) return { text: val, cls: "text-red-700" };
   return { text: val, cls: "text-foreground" };
 }
 
@@ -72,7 +72,7 @@ function CopyButton({ url }) {
     <Button variant="outline" size="sm" onClick={async () => {
       try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
     }} className="gap-2 rounded-lg print:hidden">
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5 text-emerald-700" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? "Copied" : "Copy link"}
     </Button>
   );
@@ -143,6 +143,8 @@ function ProfileContent() {
         {displayPhoto ? (
           <div className="mb-10 overflow-hidden rounded-xl border border-border relative">
             <div className="relative aspect-[21/9] overflow-hidden bg-muted">
+              {/* Remote dealer imagery is dynamic and cannot be safely allowlisted for next/image. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={displayPhoto}
                 alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
@@ -192,7 +194,7 @@ function ProfileContent() {
           </span>
           <span className={`rounded-md border border-border px-3 py-1.5 text-xs font-medium ${status.cls}`}>{status.label}</span>
           {recallCount > 0 && (
-            <span className="rounded-md border border-amber-800/40 bg-amber-950/20 px-3 py-1.5 text-xs font-medium text-amber-400">
+            <span className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
               {recallCount} model campaign{recallCount !== 1 ? "s" : ""} to verify by VIN
             </span>
           )}
@@ -321,13 +323,13 @@ function ProfileContent() {
               </div>
             </div>
           )}
-          <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${recallCount > 0 ? "border-amber-800/40 bg-amber-950/10" : "border-emerald-800/40 bg-emerald-950/10"}`}>
+          <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${recallCount > 0 ? "border-amber-300 bg-amber-50" : "border-emerald-300 bg-emerald-50"}`}>
             {recallCount > 0
-              ? <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
-              : <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400" />
+              ? <AlertTriangle className="h-4 w-4 shrink-0 text-amber-700" />
+              : <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-700" />
             }
             <div className="min-w-0">
-              <p className={`text-sm font-semibold ${recallCount > 0 ? "text-amber-300" : "text-emerald-400"}`}>
+              <p className={`text-sm font-semibold ${recallCount > 0 ? "text-amber-700" : "text-emerald-700"}`}>
                 {recallCount > 0 ? `${recallCount} open recall${recallCount !== 1 ? "s" : ""}` : "No open recalls"}
               </p>
               <p className="text-xs text-muted-foreground">NHTSA check</p>
