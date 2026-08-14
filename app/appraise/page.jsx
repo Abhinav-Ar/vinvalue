@@ -45,7 +45,7 @@ function Confidence({ value, comps }) {
   const label = value >= 80 ? "Strong evidence" : value >= 65 ? "Good evidence" : "Limited evidence";
   return (
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><ShieldCheck className="h-4 w-4" /></span>
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300"><ShieldCheck className="h-4 w-4" /></span>
       <span><strong className="font-medium text-foreground">{label}</strong> · {comps} comparable{comps === 1 ? "" : "s"}</span>
     </div>
   );
@@ -175,14 +175,14 @@ export default function AppraisePage() {
               <Button onClick={decode} disabled={busy} className="h-14 w-full rounded-2xl px-7 sm:w-auto">{busy ? <Loader2 className="animate-spin" /> : <>Identify vehicle <ArrowRight /></>}</Button>
             </div>
             <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground"><span>VINs never contain I, O, or Q</span><span>{vin.length}/17</span></div>
-            {error && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+            {error && <p className="mt-5 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
           </section>
         )}
 
         {step === "details" && vehicle && (
           <section className="mx-auto max-w-4xl">
             <div className="mb-8 flex items-start gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-foreground text-background"><CarFront /></span>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground"><CarFront /></span>
               <div><p className="eyebrow">Vehicle identified</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{title}</h1><p className="mt-1 text-sm text-muted-foreground">{[vehicle.BodyClass, vehicle.DriveType, vehicle.FuelTypePrimary].filter(Boolean).join(" · ")}</p></div>
             </div>
 
@@ -198,7 +198,7 @@ export default function AppraisePage() {
                 <div className="mt-6 grid gap-6 sm:grid-cols-2">{advancedFields.map(([name, label, options]) => <Field key={name} label={label}><Select value={form[name]} onValueChange={(value) => setField(name, value)}><SelectTrigger className="h-12 w-full rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{options.map((option) => <SelectItem value={option} key={option}>{option}</SelectItem>)}</SelectContent></Select></Field>)}</div>
               </details>
 
-              {error && <p className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+              {error && <p className="mt-6 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
               <div className="mt-8 flex items-center justify-between gap-4 border-t border-border pt-6"><p className="hidden max-w-md text-xs leading-relaxed text-muted-foreground sm:block">Estimate based on active asking prices, not guaranteed sale proceeds.</p><Button onClick={appraise} disabled={busy} className="h-12 w-full rounded-xl px-7 sm:w-auto">{busy ? <><Loader2 className="animate-spin" /> Analyzing market</> : <>Calculate value <ArrowRight /></>}</Button></div>
             </div>
           </section>
@@ -224,7 +224,7 @@ export default function AppraisePage() {
                 ["Instant sale", result.appraisal.tradeIn, result.appraisal.tradeInRange, "Fastest, least work"],
                 ["Private sale", result.appraisal.privateParty, result.appraisal.privatePartyRange, `${money(result.appraisal.privateParty - result.appraisal.tradeIn)} more potential`],
                 ["Dealer retail", result.appraisal.retail, result.appraisal.retailRange, "What similar cars are advertised for"],
-              ].map(([label, value, range, note], index) => <article key={label} className={`rounded-2xl border p-5 ${index === 0 ? "border-primary/40 bg-orange-50" : "border-border bg-card"}`}><p className="text-sm font-medium">{label}</p><p className="mt-3 text-3xl font-semibold tracking-tight">{money(value)}</p><p className="mt-1 text-xs text-muted-foreground">{money(range.low)}–{money(range.high)}</p><p className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground">{note}</p></article>)}
+              ].map(([label, value, range, note], index) => <article key={label} className={`rounded-2xl border p-5 ${index === 0 ? "border-primary/40 bg-primary/10" : "border-border bg-card"}`}><p className="text-sm font-medium">{label}</p><p className="mt-3 text-3xl font-semibold tracking-tight">{money(value)}</p><p className="mt-1 text-xs text-muted-foreground">{money(range.low)}–{money(range.high)}</p><p className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground">{note}</p></article>)}
             </div>
 
             <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -244,18 +244,18 @@ export default function AppraisePage() {
                 </details>
               </div>
 
-              <aside className="h-fit rounded-2xl bg-foreground p-6 text-background">
-                <Sparkles className="h-5 w-5 text-orange-300" />
+              <aside className="h-fit rounded-2xl border border-primary/20 bg-card p-6 text-foreground shadow-[0_18px_50px_rgba(0,0,0,.2)]">
+                <Sparkles className="h-5 w-5 text-primary" />
                 <h2 className="mt-4 text-xl font-semibold">Your next move</h2>
-                <p className="mt-2 text-sm leading-relaxed text-background/70">Get two real purchase offers and compare them with the instant-sale range. If both are low, private sale may justify the extra work.</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Get two real purchase offers and compare them with the instant-sale range. If both are low, private sale may justify the extra work.</p>
                 <div className="mt-6 space-y-2">
-                  <Button onClick={saveVehicle} disabled={busy || saved} className="h-11 w-full rounded-xl bg-background text-foreground hover:bg-background/90">{saved ? <><Check /> Saved to Garage</> : session?.user ? "Save to Garage" : "Sign in to save"}</Button>
-                  <Button onClick={openReport} variant="ghost" className="h-11 w-full rounded-xl text-background hover:bg-white/10 hover:text-background">Open full report <ExternalLink /></Button>
+                  <Button onClick={saveVehicle} disabled={busy || saved} className="h-11 w-full rounded-xl">{saved ? <><Check /> Saved to Garage</> : session?.user ? "Save to Garage" : "Sign in to save"}</Button>
+                  <Button onClick={openReport} variant="ghost" className="h-11 w-full rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground">Open full report <ExternalLink /></Button>
                 </div>
-                <p className="mt-5 text-[11px] leading-relaxed text-background/50">AutoIQ does not buy vehicles or guarantee third-party offers.</p>
+                <p className="mt-5 text-[11px] leading-relaxed text-muted-foreground/70">AutoIQ does not buy vehicles or guarantee third-party offers.</p>
               </aside>
             </div>
-            {error && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+            {error && <p className="mt-5 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
             <div className="mt-10 text-center"><Link href="/appraise" className="text-sm text-muted-foreground hover:text-foreground">Appraise another vehicle</Link></div>
           </section>
         )}

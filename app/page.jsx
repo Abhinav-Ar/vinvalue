@@ -69,9 +69,9 @@ function Landing() {
 
         <div className="relative">
           <div className="surface overflow-hidden">
-            <div className="border-b border-border bg-foreground p-7 text-background">
-              <div className="flex items-center justify-between"><span className="text-xs uppercase tracking-[.16em] text-background/60">Example appraisal</span><span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs text-emerald-300">Strong evidence</span></div>
-              <p className="mt-8 text-sm text-background/60">Likely instant-sale value</p><p className="mt-2 text-5xl font-semibold tracking-[-.05em]">$23,100</p><p className="mt-2 text-sm text-background/60">$21,500–$24,800</p>
+            <div className="border-b border-border bg-muted/70 p-7 text-foreground">
+              <div className="flex items-center justify-between"><span className="text-xs uppercase tracking-[.16em] text-muted-foreground">Example appraisal</span><span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs text-emerald-300">Strong evidence</span></div>
+              <p className="mt-8 text-sm text-muted-foreground">Likely instant-sale value</p><p className="mt-2 text-5xl font-semibold tracking-[-.05em]">$23,100</p><p className="mt-2 text-sm text-muted-foreground">$21,500–$24,800</p>
             </div>
             <div className="grid grid-cols-2 gap-px bg-border"><div className="bg-card p-6"><p className="text-xs text-muted-foreground">Private sale</p><p className="mt-2 text-2xl font-semibold">$27,450</p></div><div className="bg-card p-6"><p className="text-xs text-muted-foreground">Dealer retail</p><p className="mt-2 text-2xl font-semibold">$31,900</p></div></div>
             <div className="flex items-center gap-3 border-t border-border p-5 text-sm text-muted-foreground"><Search className="h-4 w-4" /> Built from 18 comparable listings near 94538</div>
@@ -85,7 +85,7 @@ function Landing() {
             [Search, "Current market", "Active listings are filtered for mileage proximity and pricing outliers."],
             [BarChart3, "Honest ranges", "We show uncertainty instead of pretending a single number is guaranteed."],
             [ShieldCheck, "Visible methodology", "Every material adjustment stays available in the report."],
-          ].map(([Icon, title, copy]) => <article key={title}><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-primary"><Icon className="h-5 w-5" /></span><h2 className="mt-5 font-semibold">{title}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p></article>)}
+          ].map(([Icon, title, copy]) => <article key={title}><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary"><Icon className="h-5 w-5" /></span><h2 className="mt-5 font-semibold">{title}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p></article>)}
         </div>
       </section>
     </main>

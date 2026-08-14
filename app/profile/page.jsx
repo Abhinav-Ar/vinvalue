@@ -54,16 +54,16 @@ function issueLevel(condition) {
     condition.featuresWorking !== "Yes",
     condition.accidents === "Yes",
   ].filter(Boolean).length;
-  if (count === 0) return { label: "Clean", cls: "text-emerald-700" };
-  if (count <= 1) return { label: "Minor issues", cls: "text-amber-700" };
-  return { label: "Multiple issues", cls: "text-red-700" };
+  if (count === 0) return { label: "Clean", cls: "text-emerald-300" };
+  if (count <= 1) return { label: "Minor issues", cls: "text-amber-300" };
+  return { label: "Multiple issues", cls: "text-red-300" };
 }
 
 function conditionDisplay(val) {
   const good = ["None", "Clean", "Yes", "No", "Both sets", "Full dealer", "Full independent"];
   const bad  = ["Major", "Salvage", "Multiple", "No keys", "Major issues"];
-  if (good.includes(val)) return { text: val, cls: "text-emerald-700" };
-  if (bad.some((b) => val?.includes?.(b))) return { text: val, cls: "text-red-700" };
+  if (good.includes(val)) return { text: val, cls: "text-emerald-300" };
+  if (bad.some((b) => val?.includes?.(b))) return { text: val, cls: "text-red-300" };
   return { text: val, cls: "text-foreground" };
 }
 
@@ -73,7 +73,7 @@ function CopyButton({ url }) {
     <Button variant="outline" size="sm" onClick={async () => {
       try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
     }} className="gap-2 rounded-lg print:hidden">
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-700" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? "Copied" : "Copy link"}
     </Button>
   );
@@ -124,8 +124,8 @@ function ProfileContent() {
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm print:static">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-              <Zap className="h-3.5 w-3.5 text-background" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
+              <Zap className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
             <span className="text-sm font-semibold">AutoIQ</span>
           </Link>
@@ -195,7 +195,7 @@ function ProfileContent() {
           </span>
           <span className={`rounded-md border border-border px-3 py-1.5 text-xs font-medium ${status.cls}`}>{status.label}</span>
           {recallCount > 0 && (
-            <span className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
+            <span className="rounded-md border border-amber-300/30 bg-amber-400/10 px-3 py-1.5 text-xs font-medium text-amber-300">
               {recallCount} model campaign{recallCount !== 1 ? "s" : ""} to verify by VIN
             </span>
           )}
@@ -326,11 +326,11 @@ function ProfileContent() {
           )}
           <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${recallCount > 0 ? "border-amber-300 bg-amber-50" : "border-emerald-300 bg-emerald-50"}`}>
             {recallCount > 0
-              ? <AlertTriangle className="h-4 w-4 shrink-0 text-amber-700" />
-              : <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-700" />
+              ? <AlertTriangle className="h-4 w-4 shrink-0 text-amber-300" />
+              : <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-300" />
             }
             <div className="min-w-0">
-              <p className={`text-sm font-semibold ${recallCount > 0 ? "text-amber-700" : "text-emerald-700"}`}>
+              <p className={`text-sm font-semibold ${recallCount > 0 ? "text-amber-300" : "text-emerald-300"}`}>
                 {recallCount > 0 ? `${recallCount} open recall${recallCount !== 1 ? "s" : ""}` : "No open recalls"}
               </p>
               <p className="text-xs text-muted-foreground">NHTSA check</p>

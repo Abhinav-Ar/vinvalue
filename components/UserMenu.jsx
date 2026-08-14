@@ -52,7 +52,7 @@ export default function UserMenu() {
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
             {session.user.name?.[0] ?? "?"}
           </div>
         )}

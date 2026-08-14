@@ -67,7 +67,7 @@ export default function GaragePage() {
 
       {status === "unauthenticated" && <section className="surface mx-auto mt-14 max-w-xl p-10 text-center"><CarFront className="mx-auto h-10 w-10 text-primary" /><h2 className="mt-5 text-2xl font-semibold">Keep your vehicles in one place</h2><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Sign in to save appraisal snapshots and reopen their reports from any device.</p><Button onClick={() => signIn("google")} className="mt-7 rounded-xl">Sign in with Google</Button></section>}
       {(status === "loading" || (status === "authenticated" && loading)) && <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{[1,2,3].map((item) => <div key={item} className="h-96 animate-pulse rounded-3xl bg-muted" />)}</div>}
-      {error && <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      {error && <p className="mt-8 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
       {!loading && status === "authenticated" && cars.length === 0 && <section className="mt-10 rounded-3xl border border-dashed border-border bg-card/60 py-20 text-center"><CarFront className="mx-auto h-9 w-9 text-muted-foreground" /><h2 className="mt-5 font-semibold">Your Garage is empty</h2><p className="mt-2 text-sm text-muted-foreground">Run an appraisal, then save the vehicle here.</p><Button asChild className="mt-6 rounded-xl"><Link href="/appraise">Appraise a vehicle <ArrowRight /></Link></Button></section>}
       {!loading && cars.length > 0 && <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{cars.map((car) => <CarCard key={car.id} car={car} onRemove={remove} removing={removing} />)}</div>}
     </main></div>
