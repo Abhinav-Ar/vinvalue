@@ -11,6 +11,20 @@ const MARKET_TIMEOUT_MS = 3_500;
 const ENRICHMENT_TIMEOUT_MS = 1_800;
 const LISTING_SEARCH_BUDGET_MS = 7_000;
 
+async function fetchZipState(zip) {
+  try {
+    const response = await fetch(`https://api.zippopotam.us/us/${zip.slice(0, 5)}`, {
+      next: { revalidate: 86400 * 30 },
+      signal: AbortSignal.timeout(1_500),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.places?.[0]?.["state abbreviation"] || null;
+  } catch {
+    return null;
+  }
+}
+
 function medianOf(values) {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -58,12 +72,16 @@ function weightedPrice(comps, targetMileage) {
 
 async function fetchListings(make, model, year, zip, apiKey, trim) {
   const currentYear = new Date().getFullYear();
+  const state = await fetchZipState(zip);
   const attempts = [
     { basis: "exact-local", year, trim, radius: "75", rows: "25", car_type: "used" },
-    { basis: "exact-regional", year, radius: "250", rows: "50", car_type: "used" },
-    { basis: "exact-expanded", year, radius: "500", rows: "50", car_type: "used" },
-    { basis: "adjacent-model-years", year_range: `${Math.max(1981, Number(year) - 1)}-${Math.min(currentYear + 1, Number(year) + 1)}`, radius: "500", rows: "50", car_type: "used" },
-    ...(Number(year) >= currentYear - 1 ? [{ basis: "new-inventory", year, radius: "500", rows: "50", car_type: "new" }] : []),
+    { basis: "exact-local", year, radius: "100", rows: "50", car_type: "used" },
+    { basis: "adjacent-model-years-local", year_range: `${Math.max(1981, Number(year) - 1)}-${Math.min(currentYear + 1, Number(year) + 1)}`, radius: "100", rows: "50", car_type: "used" },
+    ...(state ? [
+      { basis: "exact-state", year, state, rows: "50", car_type: "used" },
+      { basis: "adjacent-model-years-state", year_range: `${Math.max(1981, Number(year) - 1)}-${Math.min(currentYear + 1, Number(year) + 1)}`, state, rows: "50", car_type: "used" },
+    ] : []),
+    ...(Number(year) >= currentYear - 1 ? [{ basis: state ? "new-inventory-state" : "new-inventory-local", year, ...(state ? { state } : { radius: "100" }), rows: "50", car_type: "new" }] : []),
   ];
 
   const collected = new Map();
@@ -76,6 +94,10 @@ async function fetchListings(make, model, year, zip, apiKey, trim) {
     const params = new URLSearchParams({ api_key: apiKey, make, model, zip, sort_by: "price", sort_order: "asc", ...filters });
     if (!filters.trim) params.delete("trim");
     if (filters.year_range) params.delete("year");
+    if (filters.state) {
+      params.delete("zip");
+      params.delete("radius");
+    }
     let res;
     try {
       res = await fetch(`https://api.marketcheck.com/v2/search/car/active?${params}`, {
@@ -118,21 +140,22 @@ async function fetchListings(make, model, year, zip, apiKey, trim) {
 }
 
 async function fetchMarketStats(make, model, year, zip, apiKey) {
-  // Aggregate stats remain useful when individual listing records are unavailable,
-  // so use the same broad ceiling as the progressive comparable search.
-  const params = new URLSearchParams({ api_key: apiKey, make, model, year, zip, radius: "500" });
-  const res = await fetch(`https://api.marketcheck.com/v2/stats/car/active?${params}`, {
+  const params = new URLSearchParams({
+    api_key: apiKey, make, model, year, zip, radius: "100",
+    car_type: "used", stats: "price,miles,dom", rows: "0",
+  });
+  const res = await fetch(`https://api.marketcheck.com/v2/search/car/active?${params}`, {
     signal: AbortSignal.timeout(MARKET_TIMEOUT_MS),
   });
   if (!res.ok) return null;
   const data = await res.json();
-  if (!data?.price) return null;
+  if (!data.stats?.price) return null;
   return {
-    avgPrice: Math.round(data.price.mean ?? 0),
-    medianPrice: Math.round(data.price.median ?? 0),
-    avgMiles: Math.round(data.miles?.mean ?? 0),
-    avgDaysOnMarket: Math.round(data.dom?.mean ?? 0),
-    totalListings: data.listings_count ?? 0,
+    avgPrice: Math.round(data.stats.price.mean ?? 0),
+    medianPrice: Math.round(data.stats.price.median ?? 0),
+    avgMiles: Math.round(data.stats.miles?.mean ?? 0),
+    avgDaysOnMarket: Math.round(data.stats.dom?.mean ?? 0),
+    totalListings: data.num_found ?? data.stats.price.count ?? 0,
   };
 }
 

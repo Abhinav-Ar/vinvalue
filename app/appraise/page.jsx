@@ -145,13 +145,13 @@ export default function AppraisePage() {
     const basis = result.comparisonBasis;
     const searched = result.searchStages || [];
     if (basis === "exact-local") return "Exact-year listings near your ZIP";
-    if (basis === "exact-regional") return "Exact-year regional listings";
-    if (basis === "exact-expanded") return "Exact-year listings from an expanded 500-mile search";
-    if (basis === "adjacent-model-years") return "Expanded listings including adjacent model years";
-    if (basis === "new-inventory") return "Current new inventory and VIN pricing data";
-    if (searched.includes("adjacent-model-years")) return "No active matches after expanding to 500 miles and adjacent model years; VIN and aggregate market data used";
-    if (searched.includes("exact-expanded")) return "No active matches within 500 miles; VIN and aggregate market data used";
-    if (searched.includes("exact-regional")) return "No active regional matches; VIN and aggregate market data used";
+    if (basis === "adjacent-model-years-local") return "Nearby listings including adjacent model years";
+    if (basis === "exact-state") return "Exact-year listings expanded across your state";
+    if (basis === "adjacent-model-years-state") return "Statewide listings including adjacent model years";
+    if (basis.startsWith("new-inventory")) return "Current new inventory and VIN pricing data";
+    if (searched.includes("adjacent-model-years-state")) return "No active statewide matches after including adjacent model years; VIN and aggregate market data used";
+    if (searched.includes("exact-state")) return "No active exact-year matches statewide; VIN and aggregate market data used";
+    if (searched.includes("adjacent-model-years-local")) return "No nearby matches after including adjacent model years; VIN and aggregate market data used";
     return "VIN pricing data; inventory evidence is limited";
   }, [result]);
 
