@@ -1,4 +1,5 @@
 import { cleanVehicleQuery, jsonError, rateLimit } from "@/lib/requestSafety";
+import { marketPhotoProxyUrl } from "@/lib/marketPhoto";
 
 const CONDITION_FACTORS = { Excellent: 1.03, Good: 1.0, Fair: 0.94, Poor: 0.84 };
 const TITLE_FACTORS    = { Clean: 1.0, Lien: 0.97, Rebuilt: 0.82, Salvage: 0.65 };
@@ -258,7 +259,7 @@ export async function GET(request) {
 
     // Return several representative candidates so the browser can recover from a
     // removed or blocked dealer image without showing a broken card.
-    const vehiclePhotos = [...new Set(listings.map((l) => l._photo).filter(Boolean))].slice(0, 10);
+    const vehiclePhotos = [...new Set(listings.map((l) => marketPhotoProxyUrl(l._photo)).filter(Boolean))].slice(0, 10);
     const vehiclePhoto = vehiclePhotos[0] ?? null;
     const cleanListings = listings.map((listing) => {
       const clean = { ...listing };

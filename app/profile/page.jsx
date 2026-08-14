@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { decodeProfile, verifyProfile } from "@/lib/profileEncoding";
+import { marketPhotoProxyUrl } from "@/lib/marketPhoto";
 
 function money(v) {
   if (!Number.isFinite(v)) return "$0";
@@ -82,7 +83,7 @@ function ProfileContent() {
   const searchParams = useSearchParams();
   const encoded = searchParams.get("d");
   const profile = useMemo(() => encoded ? decodeProfile(encoded) : null, [encoded]);
-  const [displayPhoto, setDisplayPhoto] = useState(profile?.vehiclePhoto ?? null);
+  const [displayPhoto, setDisplayPhoto] = useState(() => marketPhotoProxyUrl(profile?.vehiclePhoto));
   const [verified, setVerified] = useState(null);
 
   useEffect(() => {
@@ -91,7 +92,7 @@ function ProfileContent() {
   }, [encoded]);
 
   useEffect(() => {
-    if (!profile || profile.vehiclePhoto || !profile.vehicle?.make) return;
+    if (!profile?.vehicle?.make) return;
     const { vehicle, condition } = profile;
     const params = new URLSearchParams({ make: vehicle.make, model: vehicle.model, year: vehicle.year });
     if (condition.exteriorColor) params.set("color", condition.exteriorColor);

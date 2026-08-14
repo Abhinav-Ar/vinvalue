@@ -5,6 +5,7 @@ const COLOR_MAP = {
 };
 
 import { jsonError, rateLimit } from "@/lib/requestSafety";
+import { marketPhotoProxyUrl } from "@/lib/marketPhoto";
 
 function safeText(value, max = 60) {
   return String(value || "").trim().slice(0, max);
@@ -52,9 +53,14 @@ async function fetchPhoto(make, model, year, color, trim) {
     .filter((l) => l.links.length > 0 && l.score > -50)
     .sort((a, b) => b.score - a.score);
 
-  // Take the lead exterior frame from several strong listings instead of trusting
-  // one dealer gallery. The client advances through these when a URL is broken.
-  return [...new Set(withPhotos.slice(0, 10).map((listing) => listing.links[0]).filter(Boolean))];
+  // Dealers frequently put promotions or detail shots first. Prefer the second
+  // gallery frame from several strong listings, then third frames, and retain the
+  // lead frame only as a last fallback. This also prevents one bad gallery from
+  // dominating every candidate.
+  const preferred = [1, 2, 0].flatMap((index) =>
+    withPhotos.slice(0, 8).map((listing) => listing.links[index]).filter(Boolean)
+  );
+  return [...new Set(preferred.map(marketPhotoProxyUrl).filter(Boolean))].slice(0, 16);
 }
 
 export async function GET(request) {

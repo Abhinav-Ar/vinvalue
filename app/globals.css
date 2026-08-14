@@ -158,6 +158,8 @@
   .vehicle-photo-fallback { @apply flex flex-col items-center justify-center gap-3 text-muted-foreground; background: linear-gradient(145deg, oklch(0.94 0.016 75), oklch(0.88 0.018 70)); }
   .vehicle-photo-fallback svg { @apply h-12 w-12 opacity-40; }
   .vehicle-photo-fallback span { @apply text-xs uppercase tracking-[.16em]; }
+  .photo-next { @apply absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-black/65 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm transition hover:bg-black/80; }
+  .photo-next svg { @apply h-3 w-3; }
   .photo-provenance { @apply absolute bottom-3 left-3 z-10 rounded-full border border-white/15 bg-black/60 px-2.5 py-1 text-[10px] text-white/70 backdrop-blur; }
 }
 

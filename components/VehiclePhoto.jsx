@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CarFront } from "lucide-react";
+import { CarFront, RefreshCw } from "lucide-react";
+import { marketPhotoProxyUrl } from "@/lib/marketPhoto";
 
 export default function VehiclePhoto({ car, storedPhoto = null, className = "", priority = false }) {
-  const [photos, setPhotos] = useState(storedPhoto ? [storedPhoto] : []);
+  const safeStoredPhoto = marketPhotoProxyUrl(storedPhoto);
+  const [photos, setPhotos] = useState(safeStoredPhoto ? [safeStoredPhoto] : []);
   const [photoIndex, setPhotoIndex] = useState(0);
   const year = car?.year;
   const make = car?.make;
@@ -21,12 +23,12 @@ export default function VehiclePhoto({ car, storedPhoto = null, className = "", 
     fetch(`/api/photo?${params}`)
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((data) => {
-        const candidates = [...new Set([...(data.photos || []), storedPhoto].filter(Boolean))];
+        const candidates = [...new Set([...(data.photos || []), safeStoredPhoto].filter(Boolean))];
         setPhotos(candidates);
         setPhotoIndex(0);
       })
       .catch(() => {});
-  }, [query, storedPhoto, year, make, model, trim, color]);
+  }, [query, safeStoredPhoto, year, make, model, trim, color]);
 
   const photo = photos[photoIndex];
   if (!photo) {
@@ -44,6 +46,7 @@ export default function VehiclePhoto({ car, storedPhoto = null, className = "", 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={photo} alt={`Representative ${car.year} ${car.make} ${car.model}`} loading={priority ? "eager" : "lazy"} onError={() => setPhotoIndex((index) => index + 1)} referrerPolicy="no-referrer" />
       <span className="photo-provenance">Representative vehicle</span>
+      {photos.length > 1 && <button type="button" className="photo-next" onClick={() => setPhotoIndex((index) => (index + 1) % photos.length)} aria-label="Show another representative photo"><RefreshCw aria-hidden="true" /> Another photo</button>}
     </div>
   );
 }
