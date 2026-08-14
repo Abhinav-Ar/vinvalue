@@ -7,10 +7,31 @@ export async function GET() {
   if (!session?.user?.id) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { rows } = await query(
-    `SELECT id, vin, make, model, year, trim, mileage, condition, zip,
-            trade_in, private_party, retail, profile_encoded, created_at
-     FROM searches
-     WHERE user_id = $1
+    `WITH latest_searches AS (
+       SELECT DISTINCT ON (UPPER(vin))
+              id, vin, make, model, year, trim, mileage, condition, zip,
+              trade_in, private_party, retail, profile_encoded, created_at
+       FROM searches
+       WHERE user_id = $1
+       ORDER BY UPPER(vin), created_at DESC
+     ), activity AS (
+       SELECT 'appraisal-' || id AS activity_id, id, vin, make, model, year, trim,
+              mileage, condition, zip, trade_in, private_party, retail,
+              profile_encoded, created_at, 'appraisal' AS source
+       FROM latest_searches
+       UNION ALL
+       SELECT 'garage-' || garage.id AS activity_id, garage.id, garage.vin,
+              garage.make, garage.model, garage.year, garage.trim, garage.mileage,
+              garage.condition, NULL::TEXT AS zip, garage.trade_in,
+              garage.private_party, garage.retail, garage.profile_encoded,
+              garage.added_at AS created_at, 'garage' AS source
+       FROM garage
+       WHERE garage.user_id = $1
+         AND NOT EXISTS (
+           SELECT 1 FROM latest_searches WHERE UPPER(latest_searches.vin) = UPPER(garage.vin)
+         )
+     )
+     SELECT * FROM activity
      ORDER BY created_at DESC
      LIMIT 50`,
     [session.user.id]

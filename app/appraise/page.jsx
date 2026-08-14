@@ -143,10 +143,15 @@ export default function AppraisePage() {
   const evidenceNote = useMemo(() => {
     if (!result) return "";
     const basis = result.comparisonBasis;
+    const searched = result.searchStages || [];
     if (basis === "exact-local") return "Exact-year listings near your ZIP";
     if (basis === "exact-regional") return "Exact-year regional listings";
-    if (basis === "adjacent-model-years") return "Regional listings including the prior model year";
+    if (basis === "exact-expanded") return "Exact-year listings from an expanded 500-mile search";
+    if (basis === "adjacent-model-years") return "Expanded listings including adjacent model years";
     if (basis === "new-inventory") return "Current new inventory and VIN pricing data";
+    if (searched.includes("adjacent-model-years")) return "No active matches after expanding to 500 miles and adjacent model years; VIN and aggregate market data used";
+    if (searched.includes("exact-expanded")) return "No active matches within 500 miles; VIN and aggregate market data used";
+    if (searched.includes("exact-regional")) return "No active regional matches; VIN and aggregate market data used";
     return "VIN pricing data; inventory evidence is limited";
   }, [result]);
 
