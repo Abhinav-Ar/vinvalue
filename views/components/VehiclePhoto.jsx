@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CarFront, RefreshCw } from "lucide-react";
-import { marketPhotoProxyUrl } from "@/lib/marketPhoto";
+import { marketPhotoProxyUrl } from "@/models/marketPhoto";
 
 export default function VehiclePhoto({ car, storedPhoto = null, className = "", priority = false }) {
   const safeStoredPhoto = marketPhotoProxyUrl(storedPhoto);

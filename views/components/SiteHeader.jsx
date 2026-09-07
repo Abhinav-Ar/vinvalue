@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Zap } from "lucide-react";
-import UserMenu from "@/components/UserMenu";
+import UserMenu from "@/views/components/UserMenu";
 
 const links = [
   ["/appraise", "Appraise"],

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:architecture": "node scripts/check-architecture.mjs",
+    "verify": "npm run check:architecture && npm run lint && npm run build"
   },
   "dependencies": {
     "@auth/pg-adapter": "^1.11.3",

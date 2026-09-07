@@ -38,8 +38,24 @@ npm run dev
 
 ```bash
 npm run lint
+npm run check:architecture
 npm run build
 ```
+
+## MVC architecture
+
+The application uses an MVC-style structure while preserving the file conventions required by the Next.js App Router:
+
+```text
+app/          Next.js route and page adapters only
+controllers/  HTTP, authentication, validation, and request orchestration
+models/       Valuation rules, database access, reports, VINs, and provider integrations
+views/        Page views, shared presentation components, and UI primitives
+shared/       Framework-neutral presentation utilities
+extension/    Browser-extension controllers and views
+```
+
+Dependencies flow inward: adapters call controllers or views; controllers coordinate models; models never import views or controllers. The one-line files under `app/` exist only because Next.js requires `page` and `route` entry points there.
 
 ## Data semantics
 

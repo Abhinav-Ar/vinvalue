@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { LogIn, LogOut, Car, Clock, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/views/components/ui/button";
 
 export default function UserMenu() {
   const { data: session, status } = useSession();

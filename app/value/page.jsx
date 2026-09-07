@@ -1,5 +1,1 @@
-import { redirect } from "next/navigation";
-
-export default function LegacyValuePage() {
-  redirect("/appraise");
-}
+export { redirectToAppraisal as default } from "@/controllers/navigationController";
