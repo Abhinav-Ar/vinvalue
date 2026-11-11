@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { ArrowLeft, ArrowRight, CarFront, Check, ChevronDown, ExternalLink, Loader2, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import SiteHeader from "@/views/components/SiteHeader";
+import Reveal from "@/views/components/Reveal";
 import VehiclePhoto from "@/views/components/VehiclePhoto";
 import { Button } from "@/views/components/ui/button";
 import { Input } from "@/views/components/ui/input";
@@ -158,7 +159,8 @@ export default function AppraisePage() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
+      <main id="main-content" className="workspace mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
+        <div className="appraisal-progress" aria-label="Appraisal progress">{[["vin", "The vehicle"], ["details", "The details"], ["results", "The perspective"]].map(([key, label], index) => <span key={key} data-active={step === key} aria-current={step === key ? "step" : undefined}><b>{String(index + 1).padStart(2, "0")}</b>{label}</span>)}</div>
         {step !== "vin" && (
           <button onClick={() => { setStep(step === "results" ? "details" : "vin"); setError(""); }} className="mb-7 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> {step === "results" ? "Adjust vehicle details" : "Use a different VIN"}
@@ -166,21 +168,22 @@ export default function AppraisePage() {
         )}
 
         {step === "vin" && (
-          <section className="mx-auto max-w-2xl py-10 sm:py-20">
-            <p className="eyebrow">Vehicle appraisal</p>
-            <h1 className="mt-4 text-5xl font-semibold tracking-[-.055em] sm:text-6xl">Start with the car.</h1>
+          <Reveal key="vin"><section className="appraisal-intro mx-auto max-w-2xl py-10 sm:py-12">
+            <p className="eyebrow">01 / Get acquainted</p>
+            <h1 className="editorial-title mt-4">Every car has a story.<br /><em>Let’s start with yours.</em></h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">Enter the VIN. We’ll identify the exact vehicle before asking only for the details that materially change its value.</p>
             <div className="surface mt-10 p-3 sm:flex">
-              <Input value={vin} onChange={(event) => setVin(event.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17))} onKeyDown={(event) => event.key === "Enter" && decode()} placeholder="17-character VIN" aria-label="17-character VIN" className="h-14 flex-1 border-0 bg-transparent px-4 font-mono text-base shadow-none focus-visible:ring-0" />
+              <Input value={vin} onChange={(event) => setVin(event.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17))} onKeyDown={(event) => event.key === "Enter" && !busy && decode()} placeholder="17-character VIN" aria-label="17-character VIN" className="h-14 flex-1 border-0 bg-transparent px-4 font-mono text-base shadow-none focus-visible:ring-0" />
               <Button onClick={decode} disabled={busy} className="h-14 w-full rounded-2xl px-7 sm:w-auto">{busy ? <Loader2 className="animate-spin" /> : <>Identify vehicle <ArrowRight /></>}</Button>
             </div>
             <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground"><span>VINs never contain I, O, or Q</span><span>{vin.length}/17</span></div>
             {error && <p className="mt-5 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
-          </section>
+            <details className="vin-location"><summary>Where can I find my VIN?</summary><p>Check the driver’s side dashboard through the windshield, the driver’s door jamb, or your registration and insurance documents. Look for a 17-character identifier.</p></details>
+          </section></Reveal>
         )}
 
         {step === "details" && vehicle && (
-          <section className="mx-auto max-w-4xl">
+          <section className="appraisal-step mx-auto max-w-4xl">
             <div className="mb-8 flex items-start gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground"><CarFront /></span>
               <div><p className="eyebrow">Vehicle identified</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{title}</h1><p className="mt-1 text-sm text-muted-foreground">{[vehicle.BodyClass, vehicle.DriveType, vehicle.FuelTypePrimary].filter(Boolean).join(" · ")}</p></div>
@@ -205,7 +208,7 @@ export default function AppraisePage() {
         )}
 
         {step === "results" && result && (
-          <section>
+          <section className="appraisal-step">
             <div className="grid overflow-hidden rounded-3xl border border-border bg-card shadow-[0_24px_70px_rgba(50,35,20,.08)] lg:grid-cols-[1.08fr_.92fr]">
               <VehiclePhoto car={{ year: vehicle.ModelYear, make: vehicle.Make, model: vehicle.Model, trim: vehicle.Trim }} storedPhoto={result.vehiclePhoto} className="vehicle-photo-curated min-h-72 border-b border-border lg:h-full lg:[aspect-ratio:auto] lg:border-b-0 lg:border-r" priority />
               <div className="p-7 sm:p-10">

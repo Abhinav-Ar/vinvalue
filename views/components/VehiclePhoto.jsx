@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CarFront, RefreshCw } from "lucide-react";
 import { marketPhotoProxyUrl } from "@/models/marketPhoto";
 
-export default function VehiclePhoto({ car, storedPhoto = null, className = "", priority = false }) {
+export default function VehiclePhoto({ car, storedPhoto = null, className = "", priority = false, interactive = true }) {
   const safeStoredPhoto = marketPhotoProxyUrl(storedPhoto);
   const [photos, setPhotos] = useState(safeStoredPhoto ? [safeStoredPhoto] : []);
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -46,7 +46,7 @@ export default function VehiclePhoto({ car, storedPhoto = null, className = "", 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={photo} alt={`Representative ${car.year} ${car.make} ${car.model}`} loading={priority ? "eager" : "lazy"} onError={() => setPhotoIndex((index) => index + 1)} referrerPolicy="no-referrer" />
       <span className="photo-provenance">Representative vehicle</span>
-      {photos.length > 1 && <button type="button" className="photo-next" onClick={() => setPhotoIndex((index) => (index + 1) % photos.length)} aria-label="Show another representative photo"><RefreshCw aria-hidden="true" /> Another photo</button>}
+      {interactive && photos.length > 1 && <button type="button" className="photo-next" onClick={() => setPhotoIndex((index) => (index + 1) % photos.length)} aria-label="Show another representative photo"><RefreshCw aria-hidden="true" /> Another photo</button>}
     </div>
   );
 }

@@ -2,6 +2,12 @@
 
 AutoIQ estimates instant-sale, private-sale, and dealer-retail value from current comparable listings. It decodes VINs with NHTSA data, removes pricing outliers, weights comparable vehicles by mileage proximity, and shows the evidence behind every range.
 
+## Interface direction
+
+The interface follows the charcoal-and-lime garage reference in `design/autoiq-ui-direction.png`. Manrope handles the workspace, Cormorant Garamond provides editorial headlines, and JetBrains Mono labels the technical details. Shared color tokens and responsive layouts live in `views/styles/globals.css`.
+
+Motion includes staggered entrances, one-time intersection-based reveals, sticky process copy, and progressive-enhancement scroll-linked effects. All motion respects `prefers-reduced-motion`; content remains available without scroll-animation support. The garage supports vehicle search and list/grid views. Landing-page appraisal figures are explicitly illustrative, not live market quotes.
+
 ## Local setup
 
 Use Node.js 20.9 or newer, then install dependencies and create `.env.local`:
