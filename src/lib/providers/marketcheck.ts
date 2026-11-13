@@ -37,6 +37,8 @@ export function mapListing(raw: Record<string, any>): Listing | null {
   const st = typeof raw.seller_type === 'string' ? raw.seller_type.toLowerCase() : null;
   return {
     id: String(raw.id ?? ''),
+    vin: typeof raw.vin === 'string' && raw.vin.length === 17 ? raw.vin.toUpperCase() : null,
+    inventoryType: typeof raw.inventory_type === 'string' ? raw.inventory_type.toLowerCase() : null,
     price: Math.round(price),
     miles: Math.round(miles),
     distance: num(raw.dist),

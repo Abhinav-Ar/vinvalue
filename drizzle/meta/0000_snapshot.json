@@ -1,5 +1,5 @@
 {
-  "id": "6158d28a-3d53-4530-92b0-ab5862c8fd4f",
+  "id": "fdc3df16-4fa4-4ffe-b6c9-dd805db0c814",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -441,11 +441,17 @@
           "notNull": true,
           "default": "'private'"
         },
-        "engine_version": {
-          "name": "engine_version",
+        "method_version": {
+          "name": "method_version",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
         },
         "expires_at": {
           "name": "expires_at",
@@ -734,6 +740,26 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "trim_match": {
+          "name": "trim_match",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'exact'"
+        },
+        "adjusted_price": {
+          "name": "adjusted_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "search_tier": {
+          "name": "search_tier",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
         }
       },
       "indexes": {
@@ -1588,6 +1614,125 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.sale_outcomes": {
+      "name": "sale_outcomes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicle_id": {
+          "name": "vehicle_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "appraisal_id": {
+          "name": "appraisal_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sold_price": {
+          "name": "sold_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "route": {
+          "name": "route",
+          "type": "sale_route",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sold_on": {
+          "name": "sold_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "sale_outcome_vehicle_uq": {
+          "name": "sale_outcome_vehicle_uq",
+          "columns": [
+            {
+              "expression": "vehicle_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "sale_outcomes_user_id_users_id_fk": {
+          "name": "sale_outcomes_user_id_users_id_fk",
+          "tableFrom": "sale_outcomes",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sale_outcomes_vehicle_id_vehicles_id_fk": {
+          "name": "sale_outcomes_vehicle_id_vehicles_id_fk",
+          "tableFrom": "sale_outcomes",
+          "tableTo": "vehicles",
+          "columnsFrom": [
+            "vehicle_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "sale_outcomes_appraisal_id_appraisals_id_fk": {
+          "name": "sale_outcomes_appraisal_id_appraisals_id_fk",
+          "tableFrom": "sale_outcomes",
+          "tableTo": "appraisals",
+          "columnsFrom": [
+            "appraisal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.service_events": {
       "name": "service_events",
       "schema": "",
@@ -1904,6 +2049,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "consent_text": {
+          "name": "consent_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "attempts": {
           "name": "attempts",
@@ -2222,6 +2373,44 @@
           ]
         }
       },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vin_decodes": {
+      "name": "vin_decodes",
+      "schema": "",
+      "columns": {
+        "vin": {
+          "name": "vin",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "raw": {
+          "name": "raw",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decoded": {
+          "name": "decoded",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

@@ -7,8 +7,10 @@ import type { DecodedSpecs, RecallItem } from '@/lib/db/schema';
 
 export type DecodedVin = DecodedSpecs & {
   vin: string;
-  /** Non-fatal decoder notes, e.g. check digit mismatch. */
+  /** Non-fatal decoder notes: check_digit_mismatch, model_year_in_future, ... */
   warnings: string[];
+  /** Raw vPIC Results[0] row, kept for the decode cache (vin_decodes.raw). */
+  raw?: Record<string, string>;
 };
 
 export interface VinDecoder {
@@ -18,6 +20,10 @@ export interface VinDecoder {
 
 export type Listing = {
   id: string;
+  /** Used only to de-duplicate the same car listed on several sites. Never persisted. */
+  vin: string | null;
+  /** MarketCheck inventory_type (e.g. "used", "certified") when present. */
+  inventoryType: string | null;
   price: number;
   miles: number;
   /** Miles from the search ZIP. */

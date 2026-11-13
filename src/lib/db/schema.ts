@@ -70,13 +70,26 @@ export const verificationTokens = pgTable('verification_tokens', {
 }, (t) => [primaryKey({ columns: [t.identifier, t.token] })]);
 
 /* ------------------------------------------------------------- vehicles */
+/** vPIC decode quality: clean (ErrorCode 0), check digit only, or partial (needs user confirmation). */
+export type DecodeStatus = 'clean' | 'check_digit_mismatch' | 'partial';
+
 /** Shape of decoded specs stored on vehicles / buy_checks (see providers/types.ts DecodedVin). */
 export type DecodedSpecs = {
   year: number; make: string; model: string;
+  /** Trim exactly as vPIC returned it (may be "L/LE/SE/XLE"). The user-confirmed trim is stored separately. */
   trimRaw: string | null; trimCandidates: string[];
   body: string | null; drive: string | null; engine: string | null; fuel: string | null;
   doors: number | null; plant: string | null; checkDigitValid: boolean;
+  decodeStatus?: DecodeStatus; decoderCodes?: string[];
 };
+
+/** Build specs never change for a VIN, so decodes are cached (raw vPIC row kept for audit). */
+export const vinDecodes = pgTable('vin_decodes', {
+  vin: text('vin').primaryKey(),
+  raw: jsonb('raw').$type<Record<string, string>>().notNull(),
+  decoded: jsonb('decoded').$type<DecodedSpecs>().notNull(),
+  fetchedAt: timestamp('fetched_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
 
 export const vehicles = pgTable('vehicles', {
   id: id(),
@@ -125,7 +138,23 @@ export type AppraisalInputs = {
 };
 export type ValueRange = { value: number; low: number; high: number };
 export type Adjustment = { key: string; label: string; amount: number; reason: string };
-export type CompStats = { found: number; used: number; excluded: number; median: number; weightedMedian: number; avgMiles: number; radiusMiles: number };
+export type CompStats = {
+  found: number; used: number; excluded: number; median: number; weightedMedian: number; avgMiles: number; radiusMiles: number;
+  /** Search widening step used: 1 = year +-1 within radius, 2 = wider radius, 3 = year +-2. */
+  searchTier?: number; privateComps?: number; dealerComps?: number; duplicatesRemoved?: number;
+};
+/** How much to trust this appraisal, shown on the Report. */
+export type Confidence = {
+  decodeStatus: DecodeStatus;
+  trimConfirmedByUser: boolean;
+  /** Inputs we could not verify, e.g. ["condition","accidents","owners"]. Shown as "you reported". */
+  selfReported: string[];
+  /** e.g. mileage_high_for_age */
+  flags: string[];
+  /** Human-readable reasons the range is wider than the base width. */
+  rangeReasons: string[];
+  searchTier: number;
+};
 
 export const appraisals = pgTable('appraisals', {
   id: id(),
@@ -144,8 +173,9 @@ export const appraisals = pgTable('appraisals', {
   compStats: jsonb('comp_stats').$type<CompStats>().notNull(),
   /** Which value the user looks at as "their" number (Activity page "Route"). */
   route: saleRouteEnum('route').notNull().default('private'),
-  /** Engine version so old reports stay explainable after formula changes. */
-  engineVersion: text('engine_version').notNull(),
+  /** Valuation method version so old reports stay reproducible after formula changes. */
+  methodVersion: text('method_version').notNull(),
+  confidence: jsonb('confidence').$type<Confidence>(),
   /** Anonymous appraisals expire; saved ones (userId set) do not. */
   expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }),
   createdAt: createdAt(),
@@ -168,7 +198,24 @@ export const comps = pgTable('comps', {
   daysOnMarket: integer('days_on_market'),
   weight: real('weight').notNull(),
   excludedAsOutlier: boolean('excluded_as_outlier').notNull().default(false),
+  /** exact | adjusted (price shifted by a trim-gap amount) | excluded */
+  trimMatch: text('trim_match').notNull().default('exact'),
+  /** Price after trim-gap / dealer-to-private conversion, as used in the base. */
+  adjustedPrice: integer('adjusted_price'),
+  searchTier: integer('search_tier').notNull().default(1),
 }, (t) => [index('comps_appraisal_idx').on(t.appraisalId)]);
+
+/** What a user actually got when they sold; feeds calibration of spreads and the asking-to-sale discount. */
+export const saleOutcomes = pgTable('sale_outcomes', {
+  id: id(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  vehicleId: text('vehicle_id').references(() => vehicles.id, { onDelete: 'set null' }),
+  appraisalId: text('appraisal_id').references(() => appraisals.id, { onDelete: 'set null' }),
+  soldPrice: integer('sold_price').notNull(),
+  route: saleRouteEnum('route').notNull(),
+  soldOn: date('sold_on', { mode: 'string' }).notNull(),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex('sale_outcome_vehicle_uq').on(t.vehicleId)]);
 
 /* ----------------------------------------------------------- maintenance */
 export const serviceEvents = pgTable('service_events', {
@@ -352,6 +399,8 @@ export const smsVerifications = pgTable('sms_verifications', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   phoneE164: text('phone_e164').notNull(),
   codeHash: text('code_hash').notNull(),
+  /** Consent wording shown at send-code time; copied to notification_settings only after verify. */
+  consentText: text('consent_text'),
   attempts: integer('attempts').notNull().default(0),
   expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
   consumedAt: timestamp('consumed_at', { withTimezone: true, mode: 'date' }),

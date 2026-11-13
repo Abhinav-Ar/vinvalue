@@ -21,12 +21,15 @@ describe('foundation', () => {
     expect(splitTrims('')).toEqual([]);
     expect(titleCaseMake('TOYOTA')).toBe('Toyota');
     expect(titleCaseMake('BMW')).toBe('BMW');
+    expect(titleCaseMake('FORD')).toBe('Ford');
+    expect(titleCaseMake('KIA')).toBe('Kia');
+    expect(titleCaseMake('LAND ROVER')).toBe('Land Rover');
   });
 
   it('decodes recorded vPIC fixtures', async () => {
     const p = fixtureProviders();
     const camry = await p.vin.decode(FIXTURE_VINS.camry2018);
-    expect(camry).toMatchObject({ year: 2018, make: 'Toyota', model: 'Camry', trimCandidates: ['L', 'LE', 'SE', 'XLE'], checkDigitValid: false });
+    expect(camry).toMatchObject({ year: 2018, make: 'Toyota', model: 'Camry', trimCandidates: ['L', 'LE', 'SE', 'XLE'], checkDigitValid: true, decodeStatus: 'clean' });
     await expect(p.vin.decode(FIXTURE_VINS.invalid)).rejects.toMatchObject({ status: 422, code: 'vin_not_decoded' });
   });
 

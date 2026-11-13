@@ -67,7 +67,8 @@ CREATE TABLE "appraisals" (
 	"adjustments" jsonb NOT NULL,
 	"comp_stats" jsonb NOT NULL,
 	"route" "sale_route" DEFAULT 'private' NOT NULL,
-	"engine_version" text NOT NULL,
+	"method_version" text NOT NULL,
+	"confidence" jsonb,
 	"expires_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "appraisals_share_slug_unique" UNIQUE("share_slug")
@@ -99,7 +100,10 @@ CREATE TABLE "comps" (
 	"seller_type" text,
 	"days_on_market" integer,
 	"weight" real NOT NULL,
-	"excluded_as_outlier" boolean DEFAULT false NOT NULL
+	"excluded_as_outlier" boolean DEFAULT false NOT NULL,
+	"trim_match" text DEFAULT 'exact' NOT NULL,
+	"adjusted_price" integer,
+	"search_tier" integer DEFAULT 1 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "documents" (
@@ -201,6 +205,17 @@ CREATE TABLE "recall_checks" (
 	"results" jsonb NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "sale_outcomes" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"vehicle_id" text,
+	"appraisal_id" text,
+	"sold_price" integer NOT NULL,
+	"route" "sale_route" NOT NULL,
+	"sold_on" date NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "service_events" (
 	"id" text PRIMARY KEY NOT NULL,
 	"vehicle_id" text NOT NULL,
@@ -240,6 +255,7 @@ CREATE TABLE "sms_verifications" (
 	"user_id" text NOT NULL,
 	"phone_e164" text NOT NULL,
 	"code_hash" text NOT NULL,
+	"consent_text" text,
 	"attempts" integer DEFAULT 0 NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
 	"consumed_at" timestamp with time zone,
@@ -284,6 +300,13 @@ CREATE TABLE "verification_tokens" (
 	CONSTRAINT "verification_tokens_identifier_token_pk" PRIMARY KEY("identifier","token")
 );
 --> statement-breakpoint
+CREATE TABLE "vin_decodes" (
+	"vin" text PRIMARY KEY NOT NULL,
+	"raw" jsonb NOT NULL,
+	"decoded" jsonb NOT NULL,
+	"fetched_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "alert_deliveries" ADD CONSTRAINT "alert_deliveries_alert_id_alerts_id_fk" FOREIGN KEY ("alert_id") REFERENCES "public"."alerts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "alerts" ADD CONSTRAINT "alerts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -302,6 +325,9 @@ ALTER TABLE "price_watches" ADD CONSTRAINT "price_watches_vehicle_id_vehicles_id
 ALTER TABLE "price_watches" ADD CONSTRAINT "price_watches_buy_check_id_buy_checks_id_fk" FOREIGN KEY ("buy_check_id") REFERENCES "public"."buy_checks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "push_subscriptions" ADD CONSTRAINT "push_subscriptions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "recall_checks" ADD CONSTRAINT "recall_checks_vehicle_id_vehicles_id_fk" FOREIGN KEY ("vehicle_id") REFERENCES "public"."vehicles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sale_outcomes" ADD CONSTRAINT "sale_outcomes_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sale_outcomes" ADD CONSTRAINT "sale_outcomes_vehicle_id_vehicles_id_fk" FOREIGN KEY ("vehicle_id") REFERENCES "public"."vehicles"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sale_outcomes" ADD CONSTRAINT "sale_outcomes_appraisal_id_appraisals_id_fk" FOREIGN KEY ("appraisal_id") REFERENCES "public"."appraisals"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "service_events" ADD CONSTRAINT "service_events_vehicle_id_vehicles_id_fk" FOREIGN KEY ("vehicle_id") REFERENCES "public"."vehicles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "service_intervals" ADD CONSTRAINT "service_intervals_vehicle_id_vehicles_id_fk" FOREIGN KEY ("vehicle_id") REFERENCES "public"."vehicles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -319,6 +345,7 @@ CREATE UNIQUE INDEX "market_snap_uq" ON "market_snapshots" USING btree ("model_k
 CREATE INDEX "odo_vehicle_idx" ON "odometer_readings" USING btree ("vehicle_id","recorded_on");--> statement-breakpoint
 CREATE INDEX "price_watches_user_idx" ON "price_watches" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "recall_vehicle_idx" ON "recall_checks" USING btree ("vehicle_id","checked_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "sale_outcome_vehicle_uq" ON "sale_outcomes" USING btree ("vehicle_id");--> statement-breakpoint
 CREATE INDEX "service_vehicle_date_idx" ON "service_events" USING btree ("vehicle_id","date");--> statement-breakpoint
 CREATE INDEX "intervals_vehicle_idx" ON "service_intervals" USING btree ("vehicle_id");--> statement-breakpoint
 CREATE INDEX "intervals_model_idx" ON "service_intervals" USING btree ("model_key");--> statement-breakpoint

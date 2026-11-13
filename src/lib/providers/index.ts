@@ -1,6 +1,7 @@
 import { AppError } from '@/lib/errors';
 import { MarketCheckListings } from './marketcheck';
 import { NhtsaRecalls, NhtsaVinDecoder } from './nhtsa';
+import { fixtureProviders } from './fixtures';
 import type { ListingsProvider, Providers } from './types';
 
 export type * from './types';
@@ -19,6 +20,8 @@ class MissingKeyListings implements ListingsProvider {
 }
 
 export function getProviders(): Providers {
+  // Local development without API keys: recorded NHTSA + synthetic MarketCheck fixtures. Never in production.
+  if (!override && process.env.PROVIDERS === 'fixtures' && process.env.NODE_ENV !== 'production') return fixtureProviders();
   const key = process.env.MARKETCHECK_API_KEY;
   return {
     vin: override?.vin ?? new NhtsaVinDecoder(),

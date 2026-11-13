@@ -5,6 +5,12 @@ import { log } from './log';
 import { currentUserId } from './session';
 import { checkRateLimit, type RateLimitRule } from './ratelimit';
 
+// Missing fields read "Required." instead of zod's "expected string, received undefined".
+// Schema-level messages still win over this.
+z.config({
+  customError: (iss) => (iss.code === 'invalid_type' && iss.input === undefined ? 'Required.' : undefined),
+});
+
 export function json<T>(data: T, init?: ResponseInit) {
   return NextResponse.json(data, init);
 }
@@ -13,7 +19,8 @@ export function errorResponse(err: AppError) {
   const body: { error: Record<string, unknown> } = {
     error: { code: err.code, message: err.message, ...(err.fields ? { fields: err.fields } : {}), ...(err.details ?? {}) },
   };
-  return NextResponse.json(body, { status: err.status });
+  const retry = err.status === 429 ? Number(err.details?.retryAfterSec) : NaN;
+  return NextResponse.json(body, { status: err.status, ...(retry > 0 ? { headers: { 'retry-after': String(retry) } } : {}) });
 }
 
 export function zodFields(error: z.ZodError): FieldErrors {
@@ -72,14 +79,23 @@ type Options<A extends boolean> = {
  * errors to the standard JSON shape. Unknown errors become 500 `internal`
  * with no detail leaked to the client.
  */
+/**
+ * Callable as Next.js calls it (req, { params }) and, in tests, as (req). The full signature is
+ * last so Next's build-time check (which reads the last overload) sees a required context.
+ */
+export type RouteHandler<P> = ((req: Request) => Promise<Response>) &
+  ((req: Request, context: { params: Promise<P> }) => Promise<Response>);
+
 export function route<P extends Params = Params, A extends boolean = boolean>(
   opts: Options<A>,
   handler: (ctx: Ctx<P, A>) => Promise<Response>,
-) {
-  return async (req: Request, context: { params?: Promise<P> } = {}) => {
+): RouteHandler<P> {
+  // Next.js checks this signature at build time: the second argument must be a required
+  // `{ params: Promise<...> }`. Tests may omit it, hence the defensive read below.
+  return (async (req: Request, context?: { params: Promise<P> }) => {
     const started = Date.now();
     try {
-      const params = ((await context.params) ?? {}) as P;
+      const params = ((await context?.params) ?? {}) as P;
       const userId = await currentUserId();
       if (opts.auth && !userId) throw unauthorized();
       if (opts.rateLimit) await checkRateLimit(req, opts.rateLimit, userId);
@@ -95,5 +111,5 @@ export function route<P extends Params = Params, A extends boolean = boolean>(
       log.error('api.crash', { route: opts.name, err, ms: Date.now() - started });
       return errorResponse(new AppError(500, 'internal', 'Something went wrong on our side.'));
     }
-  };
+  }) as RouteHandler<P>;
 }

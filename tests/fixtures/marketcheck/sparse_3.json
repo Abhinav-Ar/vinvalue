@@ -1,18 +1,19 @@
 {
  "_synthetic": true,
- "num_found": 4,
+ "num_found": 5,
  "listings": [
   {
    "id": "sparse_3-000",
-   "price": 99450,
-   "miles": 3000,
-   "dist": 70.5,
-   "dom": 35,
-   "dom_active": 35,
+   "vin": "TESTSPA0000000000",
+   "price": 90900,
+   "miles": 13493,
+   "dist": 82.1,
+   "dom": 37,
+   "dom_active": 37,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2023,
+    "year": 2022,
     "make": "Lotus",
     "model": "Emira",
     "trim": "V6"
@@ -20,12 +21,30 @@
   },
   {
    "id": "sparse_3-001",
-   "price": 100550,
+   "vin": "TESTSPA0000000001",
+   "price": 81600,
+   "miles": 13764,
+   "dist": 21.4,
+   "dom": 13,
+   "dom_active": 13,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6"
+   }
+  },
+  {
+   "id": "sparse_3-002",
+   "vin": "TESTSPA0000000002",
+   "price": 99900,
    "miles": 3000,
-   "dist": 33.2,
-   "dom": 61,
-   "dom_active": 61,
-   "seller_type": "fsbo",
+   "dist": 43.3,
+   "dom": 13,
+   "dom_active": 13,
+   "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
     "year": 2024,
@@ -35,12 +54,13 @@
    }
   },
   {
-   "id": "sparse_3-002",
-   "price": 90150,
-   "miles": 13618,
-   "dist": 31.5,
-   "dom": 30,
-   "dom_active": 30,
+   "id": "sparse_3-dup-0",
+   "vin": "TESTSPA0000000000",
+   "price": 90900,
+   "miles": 13493,
+   "dist": 82.19999999999999,
+   "dom": 37,
+   "dom_active": 37,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -52,6 +72,7 @@
   },
   {
    "id": "sparse_3-bad",
+   "vin": null,
    "price": null,
    "miles": 1000,
    "dist": 1,

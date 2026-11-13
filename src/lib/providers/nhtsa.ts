@@ -2,6 +2,8 @@ import { AppError, UpstreamError } from '@/lib/errors';
 import { log } from '@/lib/log';
 import type { RecallItem } from '@/lib/db/schema';
 import type { DecodedVin, RecallsProvider, VinDecoder } from './types';
+import type { DecodeStatus } from '@/lib/db/schema';
+import { modelYearWarning } from '@/lib/vin';
 
 const VPIC = 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues';
 const RECALLS = 'https://api.nhtsa.gov/recalls/recallsByVehicle';
@@ -10,22 +12,36 @@ type FetchLike = typeof fetch;
 
 const BODY_WORDS = /\b(coupe|sedan|convertible|hatchback|wagon|cabriolet|roadster|fastback|[2-5]d|[2-5]-door)\b/gi;
 
-/** "L/LE/SE/XLE" -> ["L","LE","SE","XLE"]; "GT Coupe" -> ["GT"]. Exported for tests. */
-export function splitTrims(raw: string | null | undefined): string[] {
+/**
+ * "L/LE/SE/XLE" -> ["L","LE","SE","XLE"]; "GT Coupe" -> ["GT"]; "Supra 3.0" (model Supra) -> ["3.0"].
+ * Exported for tests.
+ */
+export function splitTrims(raw: string | null | undefined, model?: string | null): string[] {
   if (!raw) return [];
+  const modelLc = model?.trim().toLowerCase() || null;
   const out: string[] = [];
   for (const part of raw.split('/')) {
-    const t = part.replace(BODY_WORDS, '').replace(/\s+/g, ' ').trim();
+    let t = part.replace(BODY_WORDS, '');
+    // Drop words equal to the model name ("Supra 3.0" -> "3.0") without building a regex from data.
+    if (modelLc) t = t.split(/\s+/).filter((w) => w.toLowerCase() !== modelLc).join(' ');
+    t = t.replace(/\s+/g, ' ').trim();
     if (t && !out.some((o) => o.toLowerCase() === t.toLowerCase())) out.push(t);
   }
   return out;
 }
 
-/** "FORD" -> "Ford", keeps short all-caps brands (BMW, GMC) as-is. */
+/** Brands whose official casing is not Title Case. */
+const MAKE_CASING: Record<string, string> = {
+  BMW: 'BMW', GMC: 'GMC', MINI: 'MINI', RAM: 'Ram', FIAT: 'FIAT', SRT: 'SRT', 'MERCEDES-BENZ': 'Mercedes-Benz',
+  'ROLLS-ROYCE': 'Rolls-Royce', MCLAREN: 'McLaren', 'ALFA ROMEO': 'Alfa Romeo', 'LAND ROVER': 'Land Rover',
+};
+
+/** "FORD" -> "Ford", "LAND ROVER" -> "Land Rover", "BMW" stays "BMW". */
 export function titleCaseMake(make: string): string {
   const m = make.trim();
-  if (m.length <= 4 && /^[A-Z]+$/.test(m)) return m;
-  return m.toLowerCase().replace(/\b([a-z])/g, (c) => c.toUpperCase());
+  const known = MAKE_CASING[m.toUpperCase()];
+  if (known) return known;
+  return m.toLowerCase().replace(/(^|[\s-])([a-z])/g, (_x, sep: string, c: string) => sep + c.toUpperCase());
 }
 
 const nz = (s: unknown): string | null => (typeof s === 'string' && s.trim() ? s.trim() : null);
@@ -47,13 +63,19 @@ export function mapVpic(vin: string, r: Record<string, string>): DecodedVin {
   const engine = Number.isFinite(disp) && disp > 0 ? `${disp.toFixed(1)}L${cyl ? ` ${Number(cyl) >= 6 ? 'V' : 'I'}${cyl}` : ''}` : null;
   const warnings: string[] = [];
   if (codes.includes('1')) warnings.push('check_digit_mismatch');
+  const yw = modelYearWarning(year);
+  if (yw) warnings.push(yw);
+  // vPIC: "0" = clean decode. Anything else (other than a lone check-digit code) is partial and
+  // must be confirmed by the user rather than treated as fact.
+  const nonCheck = codes.filter((c) => c !== '0' && c !== '1');
+  const decodeStatus: DecodeStatus = nonCheck.length ? 'partial' : codes.includes('1') ? 'check_digit_mismatch' : 'clean';
   return {
     vin,
     year,
     make: titleCaseMake(make),
     model,
     trimRaw,
-    trimCandidates: splitTrims(trimRaw),
+    trimCandidates: splitTrims(trimRaw, model),
     body: nz(r.BodyClass),
     drive: nz(r.DriveType),
     engine,
@@ -61,6 +83,8 @@ export function mapVpic(vin: string, r: Record<string, string>): DecodedVin {
     doors: Number(r.Doors) || null,
     plant: [nz(r.PlantCity), nz(r.PlantState), nz(r.PlantCountry)].filter(Boolean).join(', ') || null,
     checkDigitValid: !codes.includes('1'),
+    decodeStatus,
+    decoderCodes: codes,
     warnings,
   };
 }
@@ -91,7 +115,7 @@ export class NhtsaVinDecoder implements VinDecoder {
       log.error('upstream.nhtsa_vpic.malformed', { body: text.slice(0, 500) });
       throw new UpstreamError('NHTSA vPIC', res.status, 'NHTSA vPIC returned an unexpected response.');
     }
-    return mapVpic(vin, row);
+    return { ...mapVpic(vin, row), raw: row };
   }
 }
 

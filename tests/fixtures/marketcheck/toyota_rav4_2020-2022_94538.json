@@ -1,34 +1,36 @@
 {
  "_synthetic": true,
- "num_found": 41,
+ "num_found": 42,
  "listings": [
   {
    "id": "toyota_rav4_2020-2022_94538-000",
-   "price": 29200,
-   "miles": 21576,
-   "dist": 91.7,
-   "dom": 47,
-   "dom_active": 47,
-   "seller_type": "dealer",
+   "vin": "TESTT0Y0000000000",
+   "price": 26400,
+   "miles": 25728,
+   "dist": 34.5,
+   "dom": 68,
+   "dom_active": 68,
+   "seller_type": "private",
    "inventory_type": "used",
    "build": {
     "year": 2021,
     "make": "Toyota",
     "model": "RAV4",
-    "trim": "LE"
+    "trim": "Limited"
    }
   },
   {
    "id": "toyota_rav4_2020-2022_94538-001",
-   "price": 28350,
-   "miles": 37771,
-   "dist": 79.6,
-   "dom": 69,
-   "dom_active": 69,
-   "seller_type": "fsbo",
+   "vin": "TESTT0Y0000000001",
+   "price": 29300,
+   "miles": 41308,
+   "dist": 51.3,
+   "dom": 30,
+   "dom_active": 30,
+   "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2021,
+    "year": 2022,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "XLE"
@@ -36,43 +38,29 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-002",
-   "price": 29150,
-   "miles": 27005,
-   "dist": 80.9,
-   "dom": 71,
-   "dom_active": 71,
-   "seller_type": "dealer",
+   "vin": "TESTT0Y0000000002",
+   "price": 21150,
+   "miles": 56264,
+   "dist": 6.8,
+   "dom": 129,
+   "dom_active": 129,
+   "seller_type": "private",
    "inventory_type": "used",
    "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-003",
-   "price": 30300,
-   "miles": 34810,
-   "dist": 6.6,
-   "dom": 58,
-   "dom_active": 58,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
+    "year": 2020,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "Limited"
    }
   },
   {
-   "id": "toyota_rav4_2020-2022_94538-004",
-   "price": 28700,
-   "miles": 32588,
-   "dist": 69.9,
-   "dom": 52,
-   "dom_active": 52,
+   "id": "toyota_rav4_2020-2022_94538-003",
+   "vin": "TESTT0Y0000000003",
+   "price": 28100,
+   "miles": 30382,
+   "dist": 26.6,
+   "dom": 36,
+   "dom_active": 36,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -83,28 +71,47 @@
    }
   },
   {
-   "id": "toyota_rav4_2020-2022_94538-005",
-   "price": 24600,
-   "miles": 61023,
-   "dist": 75,
-   "dom": 18,
-   "dom_active": 18,
-   "seller_type": "dealer",
+   "id": "toyota_rav4_2020-2022_94538-004",
+   "vin": "TESTT0Y0000000004",
+   "price": 24800,
+   "miles": 35610,
+   "dist": 49,
+   "dom": 24,
+   "dom_active": 24,
+   "seller_type": "private",
    "inventory_type": "used",
    "build": {
-    "year": 2020,
+    "year": 2021,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "LE"
    }
   },
   {
+   "id": "toyota_rav4_2020-2022_94538-005",
+   "vin": "TESTT0Y0000000005",
+   "price": 27250,
+   "miles": 21461,
+   "dist": 71.5,
+   "dom": 17,
+   "dom_active": 17,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
    "id": "toyota_rav4_2020-2022_94538-006",
-   "price": 25350,
-   "miles": 37392,
-   "dist": 13.6,
-   "dom": 32,
-   "dom_active": 32,
+   "vin": "TESTT0Y0000000006",
+   "price": 24100,
+   "miles": 48642,
+   "dist": 59.4,
+   "dom": 21,
+   "dom_active": 21,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -116,15 +123,16 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-007",
-   "price": 23250,
-   "miles": 59805,
-   "dist": 11.8,
-   "dom": 14,
-   "dom_active": 14,
-   "seller_type": "dealer",
+   "vin": "TESTT0Y0000000007",
+   "price": 26900,
+   "miles": 36406,
+   "dist": 63.6,
+   "dom": 103,
+   "dom_active": 103,
+   "seller_type": "private",
    "inventory_type": "used",
    "build": {
-    "year": 2020,
+    "year": 2022,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "XLE Premium"
@@ -132,15 +140,16 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-008",
-   "price": 26850,
-   "miles": 35524,
-   "dist": 94.9,
-   "dom": 23,
-   "dom_active": 23,
+   "vin": "TESTT0Y0000000008",
+   "price": 27300,
+   "miles": 34555,
+   "dist": 58.7,
+   "dom": 139,
+   "dom_active": 139,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2021,
+    "year": 2020,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "LE"
@@ -148,11 +157,29 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-009",
-   "price": 27750,
-   "miles": 23105,
-   "dist": 9.4,
-   "dom": 16,
-   "dom_active": 16,
+   "vin": "TESTT0Y0000000009",
+   "price": 28800,
+   "miles": 33315,
+   "dist": 4.9,
+   "dom": 13,
+   "dom_active": 13,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-010",
+   "vin": "TESTT0Y0000000010",
+   "price": 28400,
+   "miles": 26807,
+   "dist": 47.1,
+   "dom": 146,
+   "dom_active": 146,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -163,32 +190,17 @@
    }
   },
   {
-   "id": "toyota_rav4_2020-2022_94538-010",
-   "price": 26450,
-   "miles": 33867,
-   "dist": 29.3,
-   "dom": 10,
-   "dom_active": 10,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2020,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "Limited"
-   }
-  },
-  {
    "id": "toyota_rav4_2020-2022_94538-011",
-   "price": 26750,
-   "miles": 31551,
-   "dist": 21.9,
-   "dom": 50,
-   "dom_active": 50,
+   "vin": "TESTT0Y0000000011",
+   "price": 30400,
+   "miles": 27057,
+   "dist": 22.4,
+   "dom": 48,
+   "dom_active": 48,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2020,
+    "year": 2022,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "LE"
@@ -196,31 +208,33 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-012",
-   "price": 30150,
-   "miles": 16955,
-   "dist": 63.1,
-   "dom": 8,
-   "dom_active": 8,
+   "vin": "TESTT0Y0000000012",
+   "price": 29050,
+   "miles": 23386,
+   "dist": 52.3,
+   "dom": 50,
+   "dom_active": 50,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2022,
+    "year": 2021,
     "make": "Toyota",
     "model": "RAV4",
-    "trim": "XLE Premium"
+    "trim": "LE"
    }
   },
   {
    "id": "toyota_rav4_2020-2022_94538-013",
-   "price": 30600,
-   "miles": 22366,
-   "dist": 77.6,
-   "dom": 11,
-   "dom_active": 11,
-   "seller_type": "fsbo",
+   "vin": "TESTT0Y0000000013",
+   "price": 28950,
+   "miles": 25392,
+   "dist": 40.1,
+   "dom": 22,
+   "dom_active": 22,
+   "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2022,
+    "year": 2021,
     "make": "Toyota",
     "model": "RAV4",
     "trim": "Limited"
@@ -228,92 +242,30 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-014",
-   "price": 26250,
-   "miles": 32814,
-   "dist": 20.7,
-   "dom": 62,
-   "dom_active": 62,
+   "vin": "TESTT0Y0000000014",
+   "price": 29850,
+   "miles": 26261,
+   "dist": 58,
+   "dom": 9,
+   "dom_active": 9,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
-    "year": 2020,
+    "year": 2022,
     "make": "Toyota",
     "model": "RAV4",
-    "trim": "XLE Premium"
+    "trim": "LE"
    }
   },
   {
    "id": "toyota_rav4_2020-2022_94538-015",
-   "price": 28100,
-   "miles": 42999,
-   "dist": 21.7,
-   "dom": 17,
-   "dom_active": 17,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "Limited"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-016",
-   "price": 24550,
-   "miles": 56922,
-   "dist": 70,
-   "dom": 18,
-   "dom_active": 18,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2020,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-017",
-   "price": 28600,
-   "miles": 44821,
-   "dist": 26.8,
-   "dom": 68,
-   "dom_active": 68,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-018",
-   "price": 29300,
-   "miles": 41308,
-   "dist": 35.4,
-   "dom": 25,
-   "dom_active": 25,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-019",
-   "price": 26950,
-   "miles": 53923,
-   "dist": 12.9,
-   "dom": 8,
-   "dom_active": 8,
-   "seller_type": "dealer",
+   "vin": "TESTT0Y0000000015",
+   "price": 23050,
+   "miles": 51455,
+   "dist": 47.5,
+   "dom": 63,
+   "dom_active": 63,
+   "seller_type": "private",
    "inventory_type": "used",
    "build": {
     "year": 2021,
@@ -323,12 +275,81 @@
    }
   },
   {
+   "id": "toyota_rav4_2020-2022_94538-016",
+   "vin": "TESTT0Y0000000016",
+   "price": 25000,
+   "miles": 21936,
+   "dist": 77.4,
+   "dom": 55,
+   "dom_active": 55,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-017",
+   "vin": "TESTT0Y0000000017",
+   "price": 25900,
+   "miles": 39232,
+   "dist": 28.4,
+   "dom": 35,
+   "dom_active": 35,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-018",
+   "vin": "TESTT0Y0000000018",
+   "price": 29500,
+   "miles": 39591,
+   "dist": 64.2,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-019",
+   "vin": "TESTT0Y0000000019",
+   "price": 21100,
+   "miles": 56905,
+   "dist": 68.9,
+   "dom": 48,
+   "dom_active": 48,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
    "id": "toyota_rav4_2020-2022_94538-020",
-   "price": 24350,
-   "miles": 44867,
-   "dist": 56.3,
-   "dom": 24,
-   "dom_active": 24,
+   "vin": "TESTT0Y0000000020",
+   "price": 25350,
+   "miles": 47502,
+   "dist": 70.5,
+   "dom": 149,
+   "dom_active": 149,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -340,249 +361,10 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-021",
-   "price": 28150,
-   "miles": 30200,
-   "dist": 42.2,
-   "dom": 26,
-   "dom_active": 26,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-022",
-   "price": 28050,
-   "miles": 28535,
-   "dist": 60.4,
-   "dom": 74,
-   "dom_active": 74,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "LE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-023",
-   "price": 27100,
-   "miles": 26633,
-   "dist": 19.7,
-   "dom": 56,
-   "dom_active": 56,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-024",
-   "price": 25700,
-   "miles": 53058,
-   "dist": 59.4,
-   "dom": 31,
-   "dom_active": 31,
-   "seller_type": "fsbo",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-025",
-   "price": 27450,
-   "miles": 41462,
-   "dist": 8.9,
-   "dom": 14,
-   "dom_active": 14,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-026",
-   "price": 27300,
-   "miles": 34555,
-   "dist": 71.7,
-   "dom": 10,
-   "dom_active": 10,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2020,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "LE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-027",
-   "price": 27200,
-   "miles": 45343,
-   "dist": 45.6,
-   "dom": 27,
-   "dom_active": 27,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-028",
-   "price": 26950,
-   "miles": 33747,
-   "dist": 57.1,
-   "dom": 17,
-   "dom_active": 17,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-029",
-   "price": 30750,
-   "miles": 28338,
-   "dist": 43.4,
-   "dom": 39,
-   "dom_active": 39,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "Limited"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-030",
-   "price": 28100,
-   "miles": 39997,
-   "dist": 40.5,
-   "dom": 30,
-   "dom_active": 30,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-031",
-   "price": 29500,
-   "miles": 33800,
-   "dist": 35.5,
-   "dom": 42,
-   "dom_active": 42,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2022,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-032",
-   "price": 24750,
-   "miles": 45594,
-   "dist": 40.1,
-   "dom": 27,
-   "dom_active": 27,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2020,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "Limited"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-033",
-   "price": 27950,
-   "miles": 40045,
-   "dist": 92.4,
-   "dom": 9,
-   "dom_active": 9,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "LE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-034",
-   "price": 25600,
-   "miles": 51455,
-   "dist": 81.2,
-   "dom": 49,
-   "dom_active": 49,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-035",
-   "price": 25850,
-   "miles": 43703,
-   "dist": 34.5,
-   "dom": 19,
-   "dom_active": 19,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE Premium"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-036",
-   "price": 24600,
-   "miles": 56786,
-   "dist": 45.7,
+   "vin": "TESTT0Y0000000021",
+   "price": 25350,
+   "miles": 39350,
+   "dist": 91.9,
    "dom": 61,
    "dom_active": 61,
    "seller_type": "dealer",
@@ -595,12 +377,268 @@
    }
   },
   {
-   "id": "toyota_rav4_2020-2022_94538-037",
-   "price": 28850,
-   "miles": 30807,
-   "dist": 79.3,
+   "id": "toyota_rav4_2020-2022_94538-022",
+   "vin": "TESTT0Y0000000022",
+   "price": 23850,
+   "miles": 52875,
+   "dist": 73,
    "dom": 28,
    "dom_active": 28,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-023",
+   "vin": "TESTT0Y0000000023",
+   "price": 29650,
+   "miles": 38241,
+   "dist": 74.2,
+   "dom": 17,
+   "dom_active": 17,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-024",
+   "vin": "TESTT0Y0000000024",
+   "price": 29000,
+   "miles": 41451,
+   "dist": 37.9,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-025",
+   "vin": "TESTT0Y0000000025",
+   "price": 24700,
+   "miles": 49852,
+   "dist": 24.7,
+   "dom": 134,
+   "dom_active": 134,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-026",
+   "vin": "TESTT0Y0000000026",
+   "price": 30300,
+   "miles": 17289,
+   "dist": 92.4,
+   "dom": 37,
+   "dom_active": 37,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-027",
+   "vin": "TESTT0Y0000000027",
+   "price": 25050,
+   "miles": 41409,
+   "dist": 80.5,
+   "dom": 8,
+   "dom_active": 8,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "Limited"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-028",
+   "vin": "TESTT0Y0000000028",
+   "price": 27250,
+   "miles": 16403,
+   "dist": 92.4,
+   "dom": 48,
+   "dom_active": 48,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-029",
+   "vin": "TESTT0Y0000000029",
+   "price": 26600,
+   "miles": 54518,
+   "dist": 32.9,
+   "dom": 11,
+   "dom_active": 11,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "Limited"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-030",
+   "vin": "TESTT0Y0000000030",
+   "price": 23050,
+   "miles": 62150,
+   "dist": 52.3,
+   "dom": 120,
+   "dom_active": 120,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-031",
+   "vin": "TESTT0Y0000000031",
+   "price": 28250,
+   "miles": 36226,
+   "dist": 74.8,
+   "dom": 5,
+   "dom_active": 5,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE Premium"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-032",
+   "vin": "TESTT0Y0000000032",
+   "price": 25800,
+   "miles": 34366,
+   "dist": 48.6,
+   "dom": 102,
+   "dom_active": 102,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-033",
+   "vin": "TESTT0Y0000000033",
+   "price": 27800,
+   "miles": 30968,
+   "dist": 74.9,
+   "dom": 66,
+   "dom_active": 66,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-034",
+   "vin": "TESTT0Y0000000034",
+   "price": 23750,
+   "miles": 39883,
+   "dist": 91.1,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-035",
+   "vin": "TESTT0Y0000000035",
+   "price": 26850,
+   "miles": 31129,
+   "dist": 24.4,
+   "dom": 152,
+   "dom_active": 152,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-036",
+   "vin": "TESTT0Y0000000036",
+   "price": 24950,
+   "miles": 34470,
+   "dist": 80.2,
+   "dom": 53,
+   "dom_active": 53,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-037",
+   "vin": "TESTT0Y0000000037",
+   "price": 27500,
+   "miles": 22809,
+   "dist": 38.8,
+   "dom": 70,
+   "dom_active": 70,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -612,27 +650,12 @@
   },
   {
    "id": "toyota_rav4_2020-2022_94538-038",
-   "price": 28050,
-   "miles": 33833,
-   "dist": 19.7,
-   "dom": 14,
-   "dom_active": 14,
-   "seller_type": "dealer",
-   "inventory_type": "used",
-   "build": {
-    "year": 2021,
-    "make": "Toyota",
-    "model": "RAV4",
-    "trim": "XLE"
-   }
-  },
-  {
-   "id": "toyota_rav4_2020-2022_94538-039",
-   "price": 24300,
-   "miles": 50884,
-   "dist": 11.9,
-   "dom": 54,
-   "dom_active": 54,
+   "vin": "TESTT0Y0000000038",
+   "price": 26600,
+   "miles": 30556,
+   "dist": 22.3,
+   "dom": 132,
+   "dom_active": 132,
    "seller_type": "dealer",
    "inventory_type": "used",
    "build": {
@@ -643,7 +666,42 @@
    }
   },
   {
+   "id": "toyota_rav4_2020-2022_94538-039",
+   "vin": "TESTT0Y0000000039",
+   "price": 26550,
+   "miles": 40551,
+   "dist": 53.8,
+   "dom": 19,
+   "dom_active": 19,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "Limited"
+   }
+  },
+  {
+   "id": "toyota_rav4_2020-2022_94538-dup-0",
+   "vin": "TESTT0Y0000000000",
+   "price": 26400,
+   "miles": 25728,
+   "dist": 34.6,
+   "dom": 68,
+   "dom_active": 68,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "RAV4",
+    "trim": "Limited"
+   }
+  },
+  {
    "id": "toyota_rav4_2020-2022_94538-bad",
+   "vin": null,
    "price": null,
    "miles": 1000,
    "dist": 1,

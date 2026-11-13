@@ -14,6 +14,7 @@ export const RULES = {
   decode: { id: 'decode', limit: 30, windowSec: 600 },
   appraise: { id: 'appraise', limit: 10, windowSec: 600 },
   priceCheck: { id: 'price_check', limit: 10, windowSec: 600 },
+  market: { id: 'market', limit: 30, windowSec: 600 },
   smsSend: { id: 'sms_send', limit: 3, windowSec: 3600 },
 } satisfies Record<string, RateLimitRule>;
 
