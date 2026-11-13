@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # Not `npm ci`: the lockfile is written on Windows, and npm leaves out the Linux-only
+      # optional wasm deps (@emnapi/* for sharp and rolldown), which makes `npm ci` refuse it.
+      - run: npm install --no-audit --no-fund
       - name: Typecheck
         run: npm run typecheck
       - name: Tests
