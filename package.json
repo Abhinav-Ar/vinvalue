@@ -15,7 +15,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "fixtures:record": "tsx scripts/record-fixtures.ts",
     "db:migrate:local": "tsx --env-file=.env.local scripts/migrate.ts",
-    "db:seed:local": "tsx --env-file=.env.local scripts/seed.ts"
+    "db:seed:local": "tsx --env-file=.env.local scripts/seed.ts",
+    "backtest": "tsx scripts/backtest.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
