@@ -1,7 +1,7 @@
 /* Ported from design/*.dc.html (identical stylesheet in every file). Keep class names in sync. */
 html,body{margin:0}
 .bp{--paper:#FFFFFF;--ink:#22262D;--mid:#5E6672;--line:#D5D9DF;--grid:rgba(22,26,32,.05);--grid2:rgba(22,26,32,.10);--blue:#1C3ED4;--soft:rgba(28,62,212,.07);--fill:#FFFFFF;--onblue:#FFFFFF;--shade:rgba(22,26,32,.82);--tire:rgba(22,26,32,.62);--glass:rgba(28,62,212,.07);--tone:rgba(22,26,32,.09);
-background-color:var(--paper);color:var(--ink);font-family:var(--font-sans),system-ui,sans-serif;min-height:100vh;font-feature-settings:'tnum';transition:background-color .4s,color .4s}
+background-color:var(--paper);color:var(--ink);font-family:var(--font-sans),system-ui,sans-serif;min-height:100vh;transition:background-color .4s,color .4s}
 .grid{background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
 background-size:96px 96px,96px 96px,16px 16px,16px 16px}
 [data-theme=night] .bp{--paper:#1D3B6E;--ink:#F2F5FA;--mid:#C2CDE0;--line:rgba(242,245,250,.3);--grid:rgba(242,245,250,.07);--grid2:rgba(242,245,250,.15);--blue:#F4D35E;--soft:rgba(244,211,94,.14);--fill:#1D3B6E;--onblue:#1D3B6E;--shade:rgba(5,15,35,.45);--tire:rgba(242,245,250,.12);--glass:rgba(242,245,250,.08);--tone:rgba(5,15,35,.18)}
@@ -78,7 +78,7 @@ details.note p{margin:12px 0 0 54px;color:var(--mid);font-size:16px;line-height:
 .x-glass,.x-fw,.x-rw{animation-name:xin}
 .x-lab{animation-name:fadein}
 @keyframes xin{from{transform:none}}
-@media (max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr!important}.h1{font-size:42px}.h2{font-size:32px}.cell{border-right:0;border-bottom:1px solid var(--line)}.wrap{padding:0 20px}}
+@media (max-width:820px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)!important}.h1{font-size:42px}.h2{font-size:32px}.cell{border-right:0;border-bottom:1px solid var(--line)}.wrap{padding:0 20px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 
 /* ---- Added for the app (not in the design canvas) ---- */
@@ -95,7 +95,7 @@ html[data-theme=night]{background:#1D3B6E}
 .bp a,.bp button,.bp [role=button]{touch-action:manipulation}
 .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--paper);padding:12px 16px;border:2px solid var(--blue)}
 .skip:focus{left:16px}
-.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.scroll-x{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
 .skel{background:var(--tone);display:block;min-height:1em}
 .err{color:var(--ink);font-size:14px;margin:0;display:flex;gap:8px;align-items:flex-start}
 .err::before{content:'';flex:0 0 auto;width:10px;height:10px;margin-top:5px;border:2px solid var(--blue);transform:rotate(45deg)}
@@ -104,3 +104,9 @@ html[data-theme=night]{background:#1D3B6E}
 .btn[disabled],.btn-o[disabled]{opacity:.45;cursor:not-allowed}
 .page{padding-top:48px;padding-bottom:96px}
 @media (max-width:820px){.title{font-size:var(--fs-28)}.page{padding-top:28px}.nav{padding:0 20px!important}}
+
+/* Tabular figures only in right-aligned number columns. Schibsted Grotesk's tnum also gives commas
+   and periods a full figure width ("$27 ,450", "worth , and why"), so it is off everywhere else,
+   including the design's .mono and .dim which set it. */
+.num{font-variant-numeric:tabular-nums}
+.mono,.dim,.cell,.tbl,svg text,input{font-variant-numeric:normal}

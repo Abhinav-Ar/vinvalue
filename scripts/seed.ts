@@ -18,6 +18,8 @@ import * as s from '../src/lib/db/schema';
 import { modelKey } from '../src/lib/model-key';
 import { mapRecall } from '../src/lib/providers/nhtsa';
 import { valuationConfig as cfg } from '../src/config/valuation';
+import { appraiseAndSave } from '../src/lib/appraisals/service';
+import { getProviders } from '../src/lib/providers';
 
 const DEMO_EMAIL = 'demo@autoiq.test';
 
@@ -88,6 +90,19 @@ export async function seed(db: Db) {
     appraisal(supra, 5, supra!.vin, specs.supra, '3.0', '60601', 22400, 41200, '2026-11-12T15:10:00Z'),
   ]);
   await db.update(s.users).set({ nextReportSeq: 6 }).where(eq(s.users.id, user.id));
+
+  // Public sample report at /report/sample (the landing page links to it). A real engine run, not
+  // mock numbers: fixture providers locally, live providers when keys are set. Owned by nobody, never expires.
+  await db.delete(s.appraisals).where(eq(s.appraisals.shareSlug, 'sample'));
+  try {
+    const rep = await appraiseAndSave(db, getProviders(), {
+      userId: null,
+      inputs: { vin: '1FA6P8CF9K5123456', trim: 'GT', mileage: 38200, zip: '60601', condition: 'good', title: 'clean', accidents: 'none', serviceHistory: 'full', owners: 1, keys: 'two', warningLights: 'none' },
+    });
+    await db.update(s.appraisals).set({ shareSlug: 'sample', expiresAt: null }).where(eq(s.appraisals.id, rep.id));
+  } catch (err) {
+    console.warn(`Sample report skipped: ${(err as Error).message}`);
+  }
 
   // Documents (renewals feed the calendar and alerts).
   await db.insert(s.documents).values([

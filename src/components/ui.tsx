@@ -3,6 +3,7 @@
  * Small shared building blocks. Class names come from the design stylesheet (globals.css).
  */
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useId, type CSSProperties, type ReactNode } from 'react';
 import type { ApiError } from '@/lib/client/api';
 
@@ -116,12 +117,13 @@ export function EmptyState({ text, action }: { text: ReactNode; action?: ReactNo
 
 /** Page-level API error with a recovery action. 401 becomes a sign-in prompt. */
 export function ErrorNote({ error, onRetry }: { error: ApiError | null; onRetry?: () => void }) {
+  const path = usePathname() ?? '/';
   if (!error) return null;
   if (error.status === 401) {
     return (
       <div className="notice" role="alert">
         <p style={{ margin: 0 }}>Sign in to see this page.</p>
-        <Link className="btn" href="/sign-in" style={{ marginTop: 14 }}>Sign in</Link>
+        <Link className="btn" href={`/sign-in?next=${encodeURIComponent(path)}`} style={{ marginTop: 14 }}>Sign in</Link>
       </div>
     );
   }

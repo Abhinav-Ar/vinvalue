@@ -19,6 +19,17 @@ export function Nav() {
   const [me, setMe] = useState<Me | null>(null);
   const [unread, setUnread] = useState<number | null>(null);
 
+  // Pages dispatch 'alerts:changed' after marking alerts read so the badge stays in sync.
+  useEffect(() => {
+    const refresh = () =>
+      fetch('/api/alerts')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((a) => a && setUnread(a.unreadCount ?? 0))
+        .catch(() => {});
+    window.addEventListener('alerts:changed', refresh);
+    return () => window.removeEventListener('alerts:changed', refresh);
+  }, []);
+
   useEffect(() => {
     let live = true;
     fetch('/api/me')
