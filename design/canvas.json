@@ -1,0 +1,240 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-13T04:55:25Z"
+ },
+ "title": "AutoIQ Blueprint Redesign",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Blueprint-Sheet.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1600,
+   "h": 1000,
+   "title": "Blueprint sheet \u00b7 AIQ-01 (light)"
+  },
+  "Blueprint-Sheet-Night.dc.html": {
+   "x": 1680,
+   "y": 0,
+   "w": 1600,
+   "h": 1000,
+   "title": "Blueprint sheet \u00b7 AIQ-01 (night)"
+  },
+  "Main.dc.html": {
+   "x": 0,
+   "y": 1400,
+   "w": 1440,
+   "h": 5400,
+   "title": "Landing",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Appraise-VIN.dc.html": {
+   "x": 1520,
+   "y": 1400,
+   "w": 1440,
+   "h": 1400,
+   "title": "01 Identify",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Appraise-Details.dc.html": {
+   "x": 3040,
+   "y": 1400,
+   "w": 1440,
+   "h": 1700,
+   "title": "02 Details",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Report.dc.html": {
+   "x": 4560,
+   "y": 1400,
+   "w": 1440,
+   "h": 3200,
+   "title": "03 Report",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Garage.dc.html": {
+   "x": 0,
+   "y": 7220,
+   "w": 1440,
+   "h": 1500,
+   "title": "Garage \u00b7 vehicles",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Garage-Maintenance.dc.html": {
+   "x": 1520,
+   "y": 7220,
+   "w": 1440,
+   "h": 2100,
+   "title": "Garage \u00b7 maintenance + calendar",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Activity.dc.html": {
+   "x": 3040,
+   "y": 7220,
+   "w": 1440,
+   "h": 1100,
+   "title": "Activity",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "SignIn.dc.html": {
+   "x": 4560,
+   "y": 7220,
+   "w": 1440,
+   "h": 1000,
+   "title": "Sign in",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "NotFound.dc.html": {
+   "x": 6080,
+   "y": 7220,
+   "w": 1440,
+   "h": 1000,
+   "title": "404",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Vehicle.dc.html": {
+   "x": 0,
+   "y": 9740,
+   "w": 1440,
+   "h": 1900,
+   "title": "1 \u00b7 Vehicle overview",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Value.dc.html": {
+   "x": 1520,
+   "y": 9740,
+   "w": 1440,
+   "h": 1900,
+   "title": "2 \u00b7 Value tracker",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Sell.dc.html": {
+   "x": 3040,
+   "y": 9740,
+   "w": 1440,
+   "h": 2300,
+   "title": "3 \u00b7 Sell or trade (CA)",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Buy.dc.html": {
+   "x": 4560,
+   "y": 9740,
+   "w": 1440,
+   "h": 2000,
+   "title": "4 \u00b7 Buying check",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Market.dc.html": {
+   "x": 6080,
+   "y": 9740,
+   "w": 1440,
+   "h": 1700,
+   "title": "5 \u00b7 Local market",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Alerts.dc.html": {
+   "x": 7600,
+   "y": 9740,
+   "w": 1440,
+   "h": 1500,
+   "title": "6 \u00b7 Alerts center",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Main-Night.dc.html": {
+   "x": 0,
+   "y": 12460,
+   "w": 1440,
+   "h": 5400,
+   "title": "Landing \u00b7 dark mode",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "Report-Night.dc.html": {
+   "x": 1520,
+   "y": 12460,
+   "w": 1440,
+   "h": 3200,
+   "title": "Report \u00b7 dark mode",
+   "is_interactive": true,
+   "expand": "fill"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Blueprint-Sheet.dc.html",
+  "Blueprint-Sheet-Night.dc.html",
+  "Appraise-VIN.dc.html",
+  "Appraise-Details.dc.html",
+  "Report.dc.html",
+  "Garage.dc.html",
+  "Garage-Maintenance.dc.html",
+  "Activity.dc.html",
+  "SignIn.dc.html",
+  "NotFound.dc.html",
+  "Vehicle.dc.html",
+  "Value.dc.html",
+  "Sell.dc.html",
+  "Buy.dc.html",
+  "Market.dc.html",
+  "Alerts.dc.html",
+  "Main-Night.dc.html",
+  "Report-Night.dc.html"
+ ],
+ "notes": {
+  "n0": {
+   "x": 0,
+   "y": -300,
+   "text": "Images \u00b7 original AIQ-01 coupe",
+   "kind": "title1",
+   "maxW": 3280
+  },
+  "n1": {
+   "x": 0,
+   "y": 1100,
+   "text": "Appraisal flow",
+   "kind": "title1",
+   "maxW": 6000
+  },
+  "n2": {
+   "x": 0,
+   "y": 6920,
+   "text": "Garage, account + system pages",
+   "kind": "title1",
+   "maxW": 7520
+  },
+  "n4": {
+   "x": 0,
+   "y": 9440,
+   "text": "Ownership tools",
+   "kind": "title1",
+   "maxW": 9040
+  },
+  "n3": {
+   "x": 0,
+   "y": 12160,
+   "text": "Dark mode",
+   "kind": "title1",
+   "maxW": 2960
+  }
+ },
+ "designSystems": []
+}
