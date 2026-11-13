@@ -1,0 +1,662 @@
+{
+ "_synthetic": true,
+ "num_found": 41,
+ "listings": [
+  {
+   "id": "toyota_camry_2017-2019_60601-000",
+   "price": 20750,
+   "miles": 52309,
+   "dist": 19.7,
+   "dom": 7,
+   "dom_active": 7,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-001",
+   "price": 18750,
+   "miles": 68484,
+   "dist": 25,
+   "dom": 36,
+   "dom_active": 36,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-002",
+   "price": 21100,
+   "miles": 49186,
+   "dist": 80.7,
+   "dom": 15,
+   "dom_active": 15,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-003",
+   "price": 20600,
+   "miles": 64139,
+   "dist": 14.7,
+   "dom": 12,
+   "dom_active": 12,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-004",
+   "price": 21400,
+   "miles": 56091,
+   "dist": 57.5,
+   "dom": 45,
+   "dom_active": 45,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-005",
+   "price": 18900,
+   "miles": 74560,
+   "dist": 28,
+   "dom": 31,
+   "dom_active": 31,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-006",
+   "price": 20700,
+   "miles": 45833,
+   "dist": 44.7,
+   "dom": 11,
+   "dom_active": 11,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-007",
+   "price": 16600,
+   "miles": 93719,
+   "dist": 0.5,
+   "dom": 71,
+   "dom_active": 71,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-008",
+   "price": 20800,
+   "miles": 56899,
+   "dist": 49.3,
+   "dom": 28,
+   "dom_active": 28,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-009",
+   "price": 19400,
+   "miles": 72607,
+   "dist": 51.6,
+   "dom": 57,
+   "dom_active": 57,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-010",
+   "price": 19750,
+   "miles": 51021,
+   "dist": 79.9,
+   "dom": 38,
+   "dom_active": 38,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-011",
+   "price": 19400,
+   "miles": 50147,
+   "dist": 87.4,
+   "dom": 42,
+   "dom_active": 42,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-012",
+   "price": 20050,
+   "miles": 44091,
+   "dist": 23,
+   "dom": 60,
+   "dom_active": 60,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-013",
+   "price": 16150,
+   "miles": 93718,
+   "dist": 67.1,
+   "dom": 23,
+   "dom_active": 23,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-014",
+   "price": 16350,
+   "miles": 81094,
+   "dist": 62.2,
+   "dom": 9,
+   "dom_active": 9,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-015",
+   "price": 17750,
+   "miles": 60712,
+   "dist": 97.2,
+   "dom": 38,
+   "dom_active": 38,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-016",
+   "price": 18750,
+   "miles": 78776,
+   "dist": 72.9,
+   "dom": 23,
+   "dom_active": 23,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-017",
+   "price": 18250,
+   "miles": 53252,
+   "dist": 59.3,
+   "dom": 11,
+   "dom_active": 11,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-018",
+   "price": 18750,
+   "miles": 61688,
+   "dist": 89.9,
+   "dom": 67,
+   "dom_active": 67,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-019",
+   "price": 18650,
+   "miles": 58611,
+   "dist": 69.6,
+   "dom": 7,
+   "dom_active": 7,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-020",
+   "price": 22550,
+   "miles": 39636,
+   "dist": 90.2,
+   "dom": 36,
+   "dom_active": 36,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-021",
+   "price": 20050,
+   "miles": 54261,
+   "dist": 34.1,
+   "dom": 73,
+   "dom_active": 73,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-022",
+   "price": 20500,
+   "miles": 43950,
+   "dist": 18.1,
+   "dom": 73,
+   "dom_active": 73,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-023",
+   "price": 18350,
+   "miles": 70456,
+   "dist": 13.6,
+   "dom": 55,
+   "dom_active": 55,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-024",
+   "price": 22050,
+   "miles": 29142,
+   "dist": 51.8,
+   "dom": 34,
+   "dom_active": 34,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-025",
+   "price": 19100,
+   "miles": 76135,
+   "dist": 6.8,
+   "dom": 20,
+   "dom_active": 20,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-026",
+   "price": 21300,
+   "miles": 34484,
+   "dist": 28.7,
+   "dom": 5,
+   "dom_active": 5,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-027",
+   "price": 20350,
+   "miles": 73574,
+   "dist": 31.7,
+   "dom": 56,
+   "dom_active": 56,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-028",
+   "price": 21500,
+   "miles": 47750,
+   "dist": 6.9,
+   "dom": 7,
+   "dom_active": 7,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-029",
+   "price": 22000,
+   "miles": 29503,
+   "dist": 76.8,
+   "dom": 67,
+   "dom_active": 67,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-030",
+   "price": 17850,
+   "miles": 80259,
+   "dist": 80.6,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-031",
+   "price": 21600,
+   "miles": 63912,
+   "dist": 29,
+   "dom": 69,
+   "dom_active": 69,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-032",
+   "price": 21000,
+   "miles": 78570,
+   "dist": 48.9,
+   "dom": 50,
+   "dom_active": 50,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "SE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-033",
+   "price": 20200,
+   "miles": 67595,
+   "dist": 10.5,
+   "dom": 25,
+   "dom_active": 25,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-034",
+   "price": 19000,
+   "miles": 56522,
+   "dist": 68.7,
+   "dom": 65,
+   "dom_active": 65,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-035",
+   "price": 19000,
+   "miles": 67164,
+   "dist": 89.9,
+   "dom": 12,
+   "dom_active": 12,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-036",
+   "price": 17150,
+   "miles": 66984,
+   "dist": 95.8,
+   "dom": 32,
+   "dom_active": 32,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "XLE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-037",
+   "price": 23050,
+   "miles": 44529,
+   "dist": 54.9,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-038",
+   "price": 20550,
+   "miles": 60306,
+   "dist": 94.6,
+   "dom": 60,
+   "dom_active": 60,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-039",
+   "price": 23550,
+   "miles": 31314,
+   "dist": 92.7,
+   "dom": 27,
+   "dom_active": 27,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "L"
+   }
+  },
+  {
+   "id": "toyota_camry_2017-2019_60601-bad",
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "trim": "LE"
+   }
+  }
+ ]
+}

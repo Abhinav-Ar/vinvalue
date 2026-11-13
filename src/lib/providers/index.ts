@@ -1,0 +1,28 @@
+import { AppError } from '@/lib/errors';
+import { MarketCheckListings } from './marketcheck';
+import { NhtsaRecalls, NhtsaVinDecoder } from './nhtsa';
+import type { ListingsProvider, Providers } from './types';
+
+export type * from './types';
+
+let override: Partial<Providers> | null = null;
+
+/** Tests swap in fixture-backed providers (tests/helpers/providers.ts). */
+export function setProviders(p: Partial<Providers> | null) {
+  override = p;
+}
+
+class MissingKeyListings implements ListingsProvider {
+  async searchActive(): Promise<never> {
+    throw new AppError(503, 'not_configured', 'Market data is not configured on this server (MARKETCHECK_API_KEY missing).');
+  }
+}
+
+export function getProviders(): Providers {
+  const key = process.env.MARKETCHECK_API_KEY;
+  return {
+    vin: override?.vin ?? new NhtsaVinDecoder(),
+    listings: override?.listings ?? (key ? new MarketCheckListings(key) : new MissingKeyListings()),
+    recalls: override?.recalls ?? new NhtsaRecalls(),
+  };
+}

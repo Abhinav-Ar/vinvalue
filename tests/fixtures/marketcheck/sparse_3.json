@@ -1,0 +1,70 @@
+{
+ "_synthetic": true,
+ "num_found": 4,
+ "listings": [
+  {
+   "id": "sparse_3-000",
+   "price": 99450,
+   "miles": 3000,
+   "dist": 70.5,
+   "dom": 35,
+   "dom_active": 35,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2023,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6"
+   }
+  },
+  {
+   "id": "sparse_3-001",
+   "price": 100550,
+   "miles": 3000,
+   "dist": 33.2,
+   "dom": 61,
+   "dom_active": 61,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2024,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6"
+   }
+  },
+  {
+   "id": "sparse_3-002",
+   "price": 90150,
+   "miles": 13618,
+   "dist": 31.5,
+   "dom": 30,
+   "dom_active": 30,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2022,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6"
+   }
+  },
+  {
+   "id": "sparse_3-bad",
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2023,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6"
+   }
+  }
+ ]
+}

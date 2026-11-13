@@ -1,0 +1,550 @@
+{
+ "_synthetic": true,
+ "num_found": 34,
+ "listings": [
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-000",
+   "price": 26900,
+   "miles": 61256,
+   "dist": 67.6,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-001",
+   "price": 26250,
+   "miles": 42614,
+   "dist": 69.6,
+   "dom": 75,
+   "dom_active": 75,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-002",
+   "price": 30300,
+   "miles": 28728,
+   "dist": 82.3,
+   "dom": 64,
+   "dom_active": 64,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-003",
+   "price": 28050,
+   "miles": 35356,
+   "dist": 78.9,
+   "dom": 72,
+   "dom_active": 72,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT Premium"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-004",
+   "price": 28950,
+   "miles": 26777,
+   "dist": 75.3,
+   "dom": 40,
+   "dom_active": 40,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-005",
+   "price": 27750,
+   "miles": 47702,
+   "dist": 68.8,
+   "dom": 51,
+   "dom_active": 51,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-006",
+   "price": 28600,
+   "miles": 49084,
+   "dist": 13.7,
+   "dom": 69,
+   "dom_active": 69,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-007",
+   "price": 24700,
+   "miles": 53147,
+   "dist": 91.8,
+   "dom": 16,
+   "dom_active": 16,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-008",
+   "price": 25150,
+   "miles": 62958,
+   "dist": 59.6,
+   "dom": 61,
+   "dom_active": 61,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-009",
+   "price": 28250,
+   "miles": 36734,
+   "dist": 23.4,
+   "dom": 73,
+   "dom_active": 73,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-010",
+   "price": 26200,
+   "miles": 36412,
+   "dist": 34.9,
+   "dom": 15,
+   "dom_active": 15,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-011",
+   "price": 30100,
+   "miles": 30772,
+   "dist": 40.7,
+   "dom": 49,
+   "dom_active": 49,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-012",
+   "price": 28050,
+   "miles": 48832,
+   "dist": 51.9,
+   "dom": 53,
+   "dom_active": 53,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-013",
+   "price": 27550,
+   "miles": 41290,
+   "dist": 32.3,
+   "dom": 6,
+   "dom_active": 6,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-014",
+   "price": 24850,
+   "miles": 66603,
+   "dist": 93.4,
+   "dom": 12,
+   "dom_active": 12,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT Premium"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-015",
+   "price": 30150,
+   "miles": 28383,
+   "dist": 45.6,
+   "dom": 52,
+   "dom_active": 52,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-016",
+   "price": 27600,
+   "miles": 38056,
+   "dist": 6.6,
+   "dom": 37,
+   "dom_active": 37,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT Premium"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-017",
+   "price": 26850,
+   "miles": 44921,
+   "dist": 52.8,
+   "dom": 11,
+   "dom_active": 11,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-018",
+   "price": 29450,
+   "miles": 53609,
+   "dist": 60.9,
+   "dom": 48,
+   "dom_active": 48,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-019",
+   "price": 28200,
+   "miles": 33833,
+   "dist": 32.5,
+   "dom": 12,
+   "dom_active": 12,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-020",
+   "price": 26650,
+   "miles": 52709,
+   "dist": 86.7,
+   "dom": 55,
+   "dom_active": 55,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-021",
+   "price": 25150,
+   "miles": 64337,
+   "dist": 74.9,
+   "dom": 22,
+   "dom_active": 22,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-022",
+   "price": 25950,
+   "miles": 43292,
+   "dist": 23.6,
+   "dom": 37,
+   "dom_active": 37,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-023",
+   "price": 26500,
+   "miles": 41555,
+   "dist": 80.2,
+   "dom": 8,
+   "dom_active": 8,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-024",
+   "price": 28550,
+   "miles": 43709,
+   "dist": 31.2,
+   "dom": 60,
+   "dom_active": 60,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-025",
+   "price": 27750,
+   "miles": 52334,
+   "dist": 40.2,
+   "dom": 52,
+   "dom_active": 52,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-026",
+   "price": 26150,
+   "miles": 61250,
+   "dist": 7.1,
+   "dom": 9,
+   "dom_active": 9,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT Premium"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-027",
+   "price": 27250,
+   "miles": 60543,
+   "dist": 84.9,
+   "dom": 63,
+   "dom_active": 63,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-028",
+   "price": 29500,
+   "miles": 26001,
+   "dist": 60.2,
+   "dom": 52,
+   "dom_active": 52,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-029",
+   "price": 32500,
+   "miles": 16493,
+   "dist": 30.1,
+   "dom": 45,
+   "dom_active": 45,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-out-0",
+   "price": 9800,
+   "miles": 44600,
+   "dist": 40,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-out-1",
+   "price": 61000,
+   "miles": 44600,
+   "dist": 40,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-out-2",
+   "price": 58500,
+   "miles": 44600,
+   "dist": 40,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  },
+  {
+   "id": "ford_mustang_gt_2018-2020_60601-bad",
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Ford",
+    "model": "Mustang",
+    "trim": "GT"
+   }
+  }
+ ]
+}

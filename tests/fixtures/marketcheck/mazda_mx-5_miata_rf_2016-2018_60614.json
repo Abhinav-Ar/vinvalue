@@ -1,0 +1,374 @@
+{
+ "_synthetic": true,
+ "num_found": 23,
+ "listings": [
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-000",
+   "price": 19400,
+   "miles": 46292,
+   "dist": 16,
+   "dom": 10,
+   "dom_active": 10,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-001",
+   "price": 18650,
+   "miles": 37777,
+   "dist": 73.2,
+   "dom": 64,
+   "dom_active": 64,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-002",
+   "price": 20300,
+   "miles": 46439,
+   "dist": 65.2,
+   "dom": 63,
+   "dom_active": 63,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-003",
+   "price": 19050,
+   "miles": 39324,
+   "dist": 17.5,
+   "dom": 41,
+   "dom_active": 41,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-004",
+   "price": 22150,
+   "miles": 23990,
+   "dist": 70.7,
+   "dom": 34,
+   "dom_active": 34,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-005",
+   "price": 20700,
+   "miles": 49254,
+   "dist": 68.5,
+   "dom": 14,
+   "dom_active": 14,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-006",
+   "price": 20050,
+   "miles": 54349,
+   "dist": 69.1,
+   "dom": 46,
+   "dom_active": 46,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-007",
+   "price": 17300,
+   "miles": 62511,
+   "dist": 19.2,
+   "dom": 29,
+   "dom_active": 29,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-008",
+   "price": 17450,
+   "miles": 64513,
+   "dist": 45.4,
+   "dom": 22,
+   "dom_active": 22,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-009",
+   "price": 17900,
+   "miles": 71857,
+   "dist": 84.3,
+   "dom": 9,
+   "dom_active": 9,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-010",
+   "price": 20700,
+   "miles": 38022,
+   "dist": 61.2,
+   "dom": 68,
+   "dom_active": 68,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-011",
+   "price": 19150,
+   "miles": 57808,
+   "dist": 60.5,
+   "dom": 63,
+   "dom_active": 63,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-012",
+   "price": 20300,
+   "miles": 30449,
+   "dist": 9,
+   "dom": 49,
+   "dom_active": 49,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-013",
+   "price": 18200,
+   "miles": 62524,
+   "dist": 19.8,
+   "dom": 44,
+   "dom_active": 44,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-014",
+   "price": 19800,
+   "miles": 57603,
+   "dist": 89.3,
+   "dom": 56,
+   "dom_active": 56,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-015",
+   "price": 20100,
+   "miles": 46017,
+   "dist": 83.8,
+   "dom": 14,
+   "dom_active": 14,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-016",
+   "price": 18600,
+   "miles": 51684,
+   "dist": 31.9,
+   "dom": 70,
+   "dom_active": 70,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-017",
+   "price": 17450,
+   "miles": 52037,
+   "dist": 25.5,
+   "dom": 34,
+   "dom_active": 34,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-018",
+   "price": 21850,
+   "miles": 28876,
+   "dist": 24.5,
+   "dom": 25,
+   "dom_active": 25,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-019",
+   "price": 15750,
+   "miles": 82866,
+   "dist": 84.8,
+   "dom": 32,
+   "dom_active": 32,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-020",
+   "price": 17500,
+   "miles": 73160,
+   "dist": 12.7,
+   "dom": 52,
+   "dom_active": 52,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-021",
+   "price": 17650,
+   "miles": 66797,
+   "dist": 80.4,
+   "dom": 18,
+   "dom_active": 18,
+   "seller_type": "fsbo",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_miata_rf_2016-2018_60614-bad",
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Miata RF",
+    "trim": "Grand Touring"
+   }
+  }
+ ]
+}
