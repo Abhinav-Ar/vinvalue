@@ -26,12 +26,19 @@ export function getDb(): Db {
       const req = createRequire(import.meta.url);
       const { PGlite } = req('@electric-sql/pglite') as typeof import('@electric-sql/pglite');
       const { drizzle } = req('drizzle-orm/pglite') as typeof import('drizzle-orm/pglite');
-      real = drizzle(new PGlite(url.slice('pglite:'.length)), { schema }) as unknown as Db;
+      // One PGlite per process. Next dev bundles each route separately, so a module-level cache would
+      // open the same data folder once per route: writes in one route are invisible to the others and
+      // concurrent writers can corrupt the folder. globalThis is shared across those bundles.
+      const g = globalThis as unknown as { __autoiqPglite?: Db };
+      g.__autoiqPglite ??= drizzle(new PGlite(url.slice('pglite:'.length)), { schema }) as unknown as Db;
+      real = g.__autoiqPglite;
       return real;
     }
     // prepare:false keeps us compatible with poolers (Neon/Supabase pgbouncer).
-    const client = postgres(url, { prepare: false, max: Number(process.env.DB_POOL_MAX ?? 5) });
-    real = drizzlePg(client, { schema }) as unknown as Db;
+    // Shared on globalThis for the same reason as PGlite: one pool per process, not one per route bundle.
+    const g = globalThis as unknown as { __autoiqPg?: Db };
+    g.__autoiqPg ??= drizzlePg(postgres(url, { prepare: false, max: Number(process.env.DB_POOL_MAX ?? 5) }), { schema }) as unknown as Db;
+    real = g.__autoiqPg;
   }
   return real;
 }

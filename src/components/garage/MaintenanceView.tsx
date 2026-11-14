@@ -230,8 +230,8 @@ export function MaintenanceView() {
                 <a className="btn-o" href="#log-form">Schedule a service</a>
               </div>
             )}
-            {dueNext.map((d) => (
-              <div key={`${d.vehicleId}-${d.type}-${d.date}`} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
+            {dueNext.map((d, i) => (
+              <div key={`${d.vehicleId}-${d.type}-${d.date}-${i}`} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
                 {d.vehicle && <span className={badgeClass(d.vehicle.index)} aria-hidden="true">{d.vehicle.letter}</span>}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 500 }}>{d.title}</div>
@@ -246,11 +246,11 @@ export function MaintenanceView() {
             <h2 style={label}>By mileage</h2>
             {upcoming.loading && !upcoming.data && [0, 1, 2].map((i) => <Skeleton key={i} h={48} style={{ marginTop: 12 }} />)}
             {upcoming.data && byMileage.length === 0 && <p className="small" style={{ margin: '12px 0 0' }}>No mileage-based service is tracked for this car.</p>}
-            {byMileage.map((it) => {
+            {byMileage.map((it, idx) => {
               const every = intervals[it.vehicleId]?.find((i) => i.type === it.type)?.everyMiles ?? null;
               const pct = every ? Math.min(100, Math.max(0, ((it.currentMiles - (it.dueAtMiles - every)) / every) * 100)) : null;
               return (
-                <div key={`${it.vehicleId}-${it.type}`} style={{ padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
+                <div key={`${it.vehicleId}-${it.type}-${idx}`} style={{ padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10 }}>
                     {it.vehicle && <span className={badgeClass(it.vehicle.index)} aria-hidden="true">{it.vehicle.letter}</span>}
                     <span style={{ flex: 1 }}>{it.title}<span className="sr">, {it.vehicle?.label}</span></span>
@@ -397,8 +397,9 @@ function LogForm({ vehicles, preselect, today, onAdded }: {
       if (fe.costCents) mapped.cost = fe.costCents;
       if (fe.vehicleId) mapped.vehicle = fe.vehicleId;
       setFields(mapped);
-      if (!Object.keys(mapped).length) setErr(ae);
-      else setErr(ae.message ? ae : null);
+      // Form-level line only when it says something the field errors do not (no "Some fields are invalid." echo).
+      const shown = new Set(Object.values(mapped).flat());
+      setErr(!Object.keys(mapped).length || (ae.message && !shown.has(ae.message) && ae.code !== 'invalid_input') ? ae : null);
     } finally {
       setBusy(false);
     }

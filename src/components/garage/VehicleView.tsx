@@ -329,8 +329,10 @@ function OdometerForm({ id, current, today, onSaved }: { id: string; current: nu
       onSaved();
     } catch (e) {
       const ae = asApiError(e);
-      if (ae.fields.miles || ae.fields.on) setFields({ miles: ae.fields.miles ?? [], on: ae.fields.on ?? [] });
-      setErr(ae.message);
+      const hasField = !!(ae.fields.miles || ae.fields.on);
+      if (hasField) setFields({ miles: ae.fields.miles ?? [], on: ae.fields.on ?? [] });
+      // Skip the form-level line when a field error already says it.
+      setErr(hasField && (ae.code === 'invalid_input' || [...(ae.fields.miles ?? []), ...(ae.fields.on ?? [])].includes(ae.message)) ? null : ae.message);
     } finally {
       setBusy(false);
     }
@@ -467,7 +469,9 @@ function UploadForm({ id, onDone, onCancel }: { id: string; onDone: () => void; 
     } catch (e) {
       const ae = asApiError(e);
       setFields(ae.fields);
-      setErr(ae.message);
+      const fieldMsgs = Object.values(ae.fields).flat();
+      const allShown = Object.keys(ae.fields).every((k) => ['kind', 'label', 'expiresOn', 'file'].includes(k));
+      setErr(fieldMsgs.length && allShown && (ae.code === 'invalid_input' || fieldMsgs.includes(ae.message)) ? null : ae.message);
     } finally {
       setBusy(false);
     }

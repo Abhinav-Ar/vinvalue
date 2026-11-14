@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { api, ApiError, type FieldErrors } from '@/lib/client/api';
 import { EmptyState, ErrorNote, Field, SegmentedControl, Select, Skeleton, Stepper } from '@/components/ui';
 import { CarDrawing } from '@/components/CarDrawing';
-import { carVariant, countWord, loadDecode, specLine, WARNING_TEXT, type StoredDecode } from './session';
+import { carVariant, countWord, loadDecode, loadDraft, saveDraft, specLine, WARNING_TEXT, type StoredDecode } from './session';
 
 type Condition = 'excellent' | 'good' | 'fair' | 'rough';
 type Title = 'clean' | 'rebuilt' | 'salvage';
@@ -77,8 +77,32 @@ export function DetailsStep() {
   useEffect(() => {
     const s = loadDecode();
     setStored(s);
-    if (s) setTrims(s.decode.trimCandidates);
+    if (!s) return;
+    setTrims(s.decode.trimCandidates);
+    const d = loadDraft(s.decode.vin);
+    if (d) {
+      setTrim(d.trim);
+      setTrimConfirmed(d.trimConfirmed);
+      setTrimText(d.trimText);
+      setDetailsOk(d.detailsOk);
+      setMileage(d.mileage);
+      setZip(d.zip);
+      setCondition(d.condition as Condition);
+      setTitle(d.title as Title);
+      setAccidents(d.accidents as Accidents);
+      setServiceHistory(d.serviceHistory);
+      setOwners(d.owners);
+      setKeys(d.keys);
+      setWarningLights(d.warningLights);
+      if (d.serviceHistory || d.owners || d.keys || d.warningLights) setRefineOpen(true);
+    }
   }, []);
+
+  // Keep what the user typed, so Back from the report (or a reload) does not clear the form.
+  useEffect(() => {
+    if (!stored) return;
+    saveDraft({ vin: stored.decode.vin, trim, trimConfirmed, trimText, detailsOk, mileage, zip, condition, title, accidents, serviceHistory, owners, keys, warningLights });
+  }, [stored, trim, trimConfirmed, trimText, detailsOk, mileage, zip, condition, title, accidents, serviceHistory, owners, keys, warningLights]);
 
   function focusFirst(f: FieldErrors) {
     const first = ORDER.find((k) => f[k]?.length);

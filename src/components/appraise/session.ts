@@ -72,3 +72,40 @@ export function carVariant(model: string): CarVariant {
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 export const countWord = (n: number) => WORDS[n] ?? String(n);
+
+/** What the user typed on the details step, kept per VIN so Back from the report keeps it. */
+export type DetailsDraft = {
+  vin: string;
+  trim: string | null;
+  trimConfirmed: boolean;
+  trimText: string;
+  detailsOk: boolean;
+  mileage: string;
+  zip: string;
+  condition: string;
+  title: string;
+  accidents: string;
+  serviceHistory: string;
+  owners: string;
+  keys: string;
+  warningLights: string;
+};
+
+const DRAFT_KEY = 'autoiq.appraise.draft';
+
+export function saveDraft(d: DetailsDraft) {
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+  } catch {
+    /* private mode: the form just starts empty */
+  }
+}
+
+export function loadDraft(vin: string): DetailsDraft | null {
+  try {
+    const d = JSON.parse(sessionStorage.getItem(DRAFT_KEY) ?? 'null') as DetailsDraft | null;
+    return d?.vin === vin ? d : null;
+  } catch {
+    return null;
+  }
+}
