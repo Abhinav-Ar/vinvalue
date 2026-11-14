@@ -1,8 +1,17 @@
+'use client';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { CarDrawing, type Callout } from '@/components/CarDrawing';
+import { Car3D, useCan3D } from '@/components/car3d/useCan3D';
+import { PART_INFO, type PartId } from '@/components/car3d/parts';
+import { createProgressSource, EXPLODE_PARTS, ExplodeLabels, explodeVars, stepOf, type ProgressSource } from './ExplodeCar';
 import styles from './landing.module.css';
 
-/** Box ratio matches the drawing's viewBox (1000 x 400). A 3D canvas can replace the SVG in the same box. */
-export const HERO_ASPECT = '1000 / 400';
+/**
+ * Frame shared by the drawing and the 3D canvas: the car plus room above for the lifted glass and
+ * below for the dropped wheels. Wheel centers sit at SVG (233, 261) and (743, 261) in both.
+ */
+const VIEWBOX = '0 -60 1000 540';
+export const HERO_ASPECT = '1000 / 540';
 
 const CALLOUTS: Callout[] = [
   { x: 84, y: 262, label: 'condition', lx: 0, ly: 150 },
@@ -13,27 +22,175 @@ const CALLOUTS: Callout[] = [
 
 const dim = { stroke: 'currentColor', strokeWidth: 0.9, fill: 'none' } as const;
 
-/** Hero car: draws itself in once (final state under reduced motion), with dimensions and notes. */
-export function HeroCar() {
+/** Explode window inside the pinned scroll (fraction of the pin travel). */
+const EXPLODE_FROM = 0.06;
+const EXPLODE_TO = 0.78;
+
+/**
+ * Landing hero art: floor plan backdrop plus the car. With motion allowed the art pins while the
+ * page scrolls and the car comes apart in three steps (the same steps as "How we get to the
+ * number"). The 3D car can be turned and its parts selected; without WebGL the line drawing does
+ * the same explode; under reduced motion nothing pins and the drawing stays assembled.
+ */
+export function HeroStage({ plan }: { plan: ReactNode }) {
+  const track = useRef<HTMLDivElement>(null);
+  const art = useRef<HTMLDivElement>(null);
+  const source = useMemo(() => createProgressSource(), []);
+
+  useEffect(() => {
+    const el = track.current;
+    const a = art.current;
+    if (!el || !a) return;
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const travel = el.offsetHeight - a.offsetHeight;
+      if (travel <= 0) { source.set(0); return; }
+      const top = parseFloat(getComputedStyle(a).top) || 0;
+      const raw = Math.min(1, Math.max(0, (top - el.getBoundingClientRect().top) / travel));
+      source.set(Math.min(1, Math.max(0, (raw - EXPLODE_FROM) / (EXPLODE_TO - EXPLODE_FROM))));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    measure();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [source]);
+
   return (
-    <div className={styles.carBox} style={{ aspectRatio: HERO_ASPECT }}>
-      <CarDrawing variant="gt" animate viewBox="0 10 1000 400" label="Line drawing of the AIQ-01 concept coupe" callouts={CALLOUTS}>
-        <g className="f" style={{ animationDelay: '1.8s' }} {...dim}>
-          <path d="M233 312 L233 374 M743 312 L743 374" strokeDasharray="3 3" />
-          <path d="M233 366 L743 366 M242 362 L233 366 L242 370 M734 362 L743 366 L734 370" />
+    <div ref={track} className={styles.heroTrack}>
+      <div ref={art} className={styles.heroArt}>
+        <div className={`tilt ${styles.heroPlan}`}>{plan}</div>
+        <div className={styles.heroCarSlot}><HeroCar progress={source} /></div>
+      </div>
+      {/* Scroll room for the pin (zero height under reduced motion). A sticky element cannot travel into padding. */}
+      <div className={styles.heroSpacer} aria-hidden />
+    </div>
+  );
+}
+
+function HeroCar({ progress }: { progress: ProgressSource }) {
+  const box = useRef<HTMLDivElement>(null);
+  const can3d = useCan3D();
+  const [failed, setFailed] = useState(false);
+  const use3d = can3d && !failed;
+  const [selected, setSelected] = useState<PartId | null>(null);
+  const [turned, setTurned] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+  const [look, setLookState] = useState<'xray' | 'solid'>('xray');
+  // Remember the viewer's choice of look (a convenience; falls back to x-ray).
+  useEffect(() => {
+    try { if (localStorage.getItem('autoiq-car-look') === 'solid') setLookState('solid'); } catch { /* storage blocked */ }
+  }, []);
+  const chooseLook = (l: 'xray' | 'solid') => {
+    setLookState(l);
+    try { localStorage.setItem('autoiq-car-look', l); } catch { /* storage blocked */ }
+  };
+  const quiet = useRef({ turned: false, selected: false });
+  quiet.current = { turned, selected: !!selected };
+
+  // Scroll progress drives the drawing's CSS vars, the lit step label and whether the dimension notes show.
+  useEffect(() => {
+    const apply = () => {
+      const el = box.current;
+      if (!el) return;
+      const p = progress.get();
+      for (const [k, v] of Object.entries(explodeVars(p))) el.style.setProperty(k, v);
+      const step = p < 0.03 ? '0' : String(stepOf(p));
+      if (el.dataset.step !== step) el.dataset.step = step;
+      const hud = p < 0.03 && !quiet.current.turned && !quiet.current.selected ? 'on' : 'off';
+      if (el.dataset.hud !== hud) el.dataset.hud = hud;
+    };
+    apply();
+    return progress.subscribe(apply);
+  }, [progress, turned, selected]);
+
+  const info = selected ? PART_INFO[selected] : null;
+  return (
+    <div
+      ref={box}
+      className={styles.carBox}
+      style={{ aspectRatio: HERO_ASPECT, ...(explodeVars(0) as CSSProperties) }}
+      data-step="0"
+      data-hud="on"
+      {...(use3d
+        ? { tabIndex: 0, role: 'group', 'aria-label': 'AIQ-01 concept coupe in 3D. Drag or use the arrow keys to turn it; click a part to see what it changes in the value.' }
+        : {})}
+    >
+      {use3d && (
+        <Car3D
+          viewBox={VIEWBOX}
+          progress={progress}
+          draw
+          look={look}
+          resetKey={resetKey}
+          keyTarget={box}
+          onSelect={setSelected}
+          onTurned={setTurned}
+          onFail={() => setFailed(true)}
+        />
+      )}
+      <CarDrawing
+        variant="gt"
+        animate
+        bare={use3d}
+        parts={EXPLODE_PARTS}
+        viewBox={VIEWBOX}
+        hudClassName={styles.hud}
+        label={use3d ? undefined : 'The AIQ-01 concept coupe, with its dimensions'}
+        callouts={CALLOUTS}
+        style={{ pointerEvents: 'none' }}
+      >
+        <g className={styles.hud}>
+          <g className="f" style={{ animationDelay: '1.8s' }} {...dim}>
+            <path d="M233 312 L233 374 M743 312 L743 374" strokeDasharray="3 3" />
+            <path d="M233 366 L743 366 M242 362 L233 366 L242 370 M734 362 L743 366 L734 370" />
+          </g>
+          <text className="f dimt" style={{ animationDelay: '1.8s' }} x={488} y={359} textAnchor="middle" fontSize={12} fill="currentColor">Wheelbase 100.4 in</text>
+          <g className="f" style={{ animationDelay: '2s' }} {...dim}>
+            <path d="M62 312 L62 404 M938 312 L938 404" strokeDasharray="3 3" />
+            <path d="M62 396 L938 396 M71 392 L62 396 L71 400 M929 392 L938 396 L929 400" />
+          </g>
+          <text className="f dimt" style={{ animationDelay: '2s' }} x={500} y={389} textAnchor="middle" fontSize={12} fill="currentColor">Overall length 172.0 in</text>
+          <g className="f" style={{ animationDelay: '2.1s' }} {...dim}>
+            <path d="M660 74 L984 74 M944 330 L984 330" strokeDasharray="3 3" />
+            <path d="M974 74 L974 330 M970 83 L974 74 L978 83 M970 321 L974 330 L978 321" />
+          </g>
+          <text className="f dimt" style={{ animationDelay: '2.1s' }} transform="translate(992 202) rotate(-90)" textAnchor="middle" fontSize={12} fill="currentColor">Height 51.2 in</text>
         </g>
-        <text className="f dimt" style={{ animationDelay: '1.8s' }} x={488} y={359} textAnchor="middle" fontSize={12} fill="currentColor">Wheelbase 100.4 in</text>
-        <g className="f" style={{ animationDelay: '2s' }} {...dim}>
-          <path d="M62 312 L62 404 M938 312 L938 404" strokeDasharray="3 3" />
-          <path d="M62 396 L938 396 M71 392 L62 396 L71 400 M929 392 L938 396 L929 400" />
-        </g>
-        <text className="f dimt" style={{ animationDelay: '2s' }} x={500} y={389} textAnchor="middle" fontSize={12} fill="currentColor">Overall length 172.0 in</text>
-        <g className="f" style={{ animationDelay: '2.1s' }} {...dim}>
-          <path d="M660 74 L984 74 M944 330 L984 330" strokeDasharray="3 3" />
-          <path d="M974 74 L974 330 M970 83 L974 74 L978 83 M970 321 L974 330 L978 321" />
-        </g>
-        <text className="f dimt" style={{ animationDelay: '2.1s' }} transform="translate(992 202) rotate(-90)" textAnchor="middle" fontSize={12} fill="currentColor">Height 51.2 in</text>
+        <ExplodeLabels />
       </CarDrawing>
+
+      {use3d && (
+        <div className={styles.carUi}>
+          <div className={styles.partCard} aria-live="polite">
+            {info ? (
+              <>
+                <p className="label" style={{ color: 'var(--blue)' }}>{info.name}</p>
+                <p className="small" style={{ margin: '6px 0 0', color: 'var(--ink)' }}>{info.note}</p>
+              </>
+            ) : (
+              <p className="small" style={{ margin: 0 }}>Drag to turn the car. Click a part to see what it changes in the value.</p>
+            )}
+          </div>
+          <div className={styles.carActions}>
+            {(turned || selected) && (
+              <button type="button" className="btn-o" onClick={() => setResetKey((k) => k + 1)}>Reset view</button>
+            )}
+            <div className={styles.looks} role="group" aria-label="How the car is drawn">
+              {(['xray', 'solid'] as const).map((l) => (
+                <button key={l} type="button" aria-pressed={look === l} className={look === l ? styles.lookOn : undefined} onClick={() => chooseLook(l)}>
+                  {l === 'xray' ? 'X-ray' : 'Solid'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CarDrawing } from '@/components/CarDrawing';
 import { FloorPlan } from '@/components/landing/FloorPlan';
-import { HeroCar } from '@/components/landing/HeroCar';
+import { HeroStage } from '@/components/landing/HeroCar';
 import { HowSection } from '@/components/landing/HowSection';
 import styles from '@/components/landing/landing.module.css';
 
@@ -52,10 +52,7 @@ export default function Home() {
             <p className="small mono" style={{ margin: 0 }}>No account needed, <Link href="/appraise">Where is my VIN?</Link></p>
           </div>
         </div>
-        <div className={styles.heroArt}>
-          <div className={`tilt ${styles.heroPlan}`}><FloorPlan /></div>
-          <div className={styles.heroCarSlot}><HeroCar /></div>
-        </div>
+        <HeroStage plan={<FloorPlan />} />
         <div className="sheet frame g4" style={{ marginTop: 8 }}>
           {SOURCES.map(([k, v]) => (
             <div key={k} className="cell"><p className="label">{k}</p><p style={{ margin: '6px 0 0' }}>{v}</p></div>

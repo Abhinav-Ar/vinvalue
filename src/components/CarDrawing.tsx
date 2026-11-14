@@ -29,8 +29,12 @@ type Car = {
 
 export function CarDrawing({
   variant = 'gt', label, animate = false, callouts, markers, style,
-  viewBox = '20 50 960 300', parts, ink = true, className, children,
+  viewBox = '20 50 960 300', parts, ink = true, bare = false, hudClassName, className, children,
 }: {
+  /** Optional: class on the group holding markers and callouts (to fade them as one). */
+  hudClassName?: string;
+  /** Leave the car out and draw only callouts, markers and children (a 3D car sits underneath). */
+  bare?: boolean;
   variant?: CarVariant;
   /** Accessible description; omit for decorative use (aria-hidden). */
   label?: string;
@@ -81,13 +85,13 @@ export function CarDrawing({
           <stop offset="1" style={{ stopColor: 'var(--shade)', stopOpacity: 0 }} />
         </radialGradient>
       </defs>
-      <Shape e={car.shadow} id={id} />
-      {ink && (
+      {!bare && <Shape e={car.shadow} id={id} />}
+      {ink && !bare && (
         <g className={animate ? 'ink' : undefined} filter={`url(#${id}i)`} stroke="var(--blue)" fill="none" transform="translate(1.6 -1.2)">
           {car.ink.map((p, i) => <path key={i} d={p.d} strokeWidth={p.w} opacity={p.o} />)}
         </g>
       )}
-      <g>
+      <g style={bare ? { display: 'none' } : undefined}>
         {car.base.map(sh)}
         {car.shadows.map(sh)}
         {car.body.map(sh)}
@@ -95,6 +99,7 @@ export function CarDrawing({
         <g style={parts?.frontWheel}>{car.front.map(sh)}</g>
         <g style={parts?.rearWheel}>{car.rear.map(sh)}</g>
       </g>
+      <g className={hudClassName}>
       {markers?.map((m, i) => (
         <g key={`m${m.n}`} className="f" style={{ animationDelay: `${2 + i * 0.3}s` }}>
           <circle cx={m.x} cy={m.y} r={15} fill="var(--blue)" />
@@ -113,6 +118,7 @@ export function CarDrawing({
           </g>
         );
       })}
+      </g>
       {children}
     </svg>
   );

@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { ExplodeCar, STILL_PROGRESS, stepOf, type ProgressSource } from './ExplodeCar';
+import { useSyncExternalStore } from 'react';
+import { ExplodeCar, STILL_PROGRESS } from './ExplodeCar';
 import styles from './landing.module.css';
 
 const STEPS = [
@@ -9,8 +9,8 @@ const STEPS = [
   { title: 'Show each adjustment', body: 'Mileage, condition, title and accident history each change the number by an amount listed in the report.' },
 ];
 
-/** Still layout when the user asked for reduced motion, or the screen is too narrow for a sticky stage. */
-const STILL_QUERY = '(prefers-reduced-motion: reduce), (max-width: 820px)';
+/** Under reduced motion the hero car stays assembled, so this section shows the three stills instead. */
+const STILL_QUERY = '(prefers-reduced-motion: reduce)';
 function useStill() {
   return useSyncExternalStore(
     (cb) => {
@@ -24,8 +24,24 @@ function useStill() {
 }
 
 export function HowSection() {
-  const still = useStill();
-  return still ? <HowStill /> : <HowScroll />;
+  return useStill() ? <HowStill /> : <HowSteps />;
+}
+
+/** The car at the top of the page acts the steps out while scrolling; here they are spelled out. */
+function HowSteps() {
+  return (
+    <section className="wrap" aria-labelledby="how-h" style={{ marginTop: 96 }}>
+      <h2 id="how-h" className="h2">How we get to the number</h2>
+      <ol className={`g3 ${styles.steps}`} style={{ gap: 32 }}>
+        {STEPS.map((s, i) => (
+          <li key={s.title} className={styles.step}>
+            <span className={`mono ${styles.stepNum}`}>{i + 1}</span>
+            <div><h3>{s.title}</h3><p>{s.body}</p></div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
 }
 
 function HowStill() {
@@ -43,81 +59,6 @@ function HowStill() {
           </li>
         ))}
       </ol>
-    </section>
-  );
-}
-
-function HowScroll() {
-  const track = useRef<HTMLElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-
-  // One progress value, many readers; updated in requestAnimationFrame while the section is near view.
-  const source = useMemo(() => {
-    let value = 0;
-    const subs = new Set<() => void>();
-    return {
-      get: () => value,
-      subscribe: (cb: () => void) => { subs.add(cb); return () => { subs.delete(cb); }; },
-      set: (v: number) => { if (v !== value) { value = v; subs.forEach((cb) => cb()); } },
-    } satisfies ProgressSource & { set(v: number): void };
-  }, []);
-
-  useEffect(() => {
-    const el = track.current;
-    if (!el) return;
-    let frame = 0;
-    const measure = () => {
-      frame = 0;
-      const rect = el.getBoundingClientRect();
-      const travel = rect.height - (stage.current?.offsetHeight ?? window.innerHeight);
-      const raw = travel > 0 ? Math.min(1, Math.max(0, -rect.top / travel)) : 0;
-      // Same window as the design: the explode runs between 10% and 75% of the pinned scroll.
-      const p = Math.min(1, Math.max(0, (raw - 0.1) / 0.65));
-      source.set(p);
-      setStep(stepOf(p));
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure); };
-    let listening = false;
-    const listen = (on: boolean) => {
-      if (on === listening) return;
-      listening = on;
-      if (on) {
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll);
-        onScroll();
-      } else {
-        window.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', onScroll);
-      }
-    };
-    const io = new IntersectionObserver(([e]) => { listen(e.isIntersecting); if (!e.isIntersecting) measure(); }, { rootMargin: '200px 0px' });
-    io.observe(el);
-    measure();
-    return () => { io.disconnect(); listen(false); if (frame) cancelAnimationFrame(frame); };
-  }, [source]);
-
-  return (
-    <section ref={track} className={styles.howTrack} aria-labelledby="how-h">
-      <div ref={stage} className={`wrap g2 ${styles.howStage}`}>
-        <div>
-          <h2 id="how-h" className="h2">How we get to the number</h2>
-          <ol className={styles.steps}>
-            {STEPS.map((s, i) => {
-              const on = step === i + 1;
-              return (
-                <li key={s.title} className={`${styles.step} ${on ? styles.stepOn : styles.stepOff}`} aria-current={on ? 'step' : undefined}>
-                  <span className={`mono ${styles.stepNum}`}>{i + 1}</span>
-                  <div><h3>{s.title}</h3><p>{s.body}</p></div>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-        <div>
-          <ExplodeCar progress={source} />
-        </div>
-      </div>
     </section>
   );
 }
