@@ -1,9 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "AutoIQ — Car Form Filler",
-  "version": "1.1.0",
+  "name": "AutoIQ \u2014 Car Form Filler",
+  "version": "2.0.0",
   "description": "Use saved AutoIQ vehicle details to complete supported valuation forms faster.",
-  "permissions": ["storage", "scripting", "tabs"],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "https://autoiq-vinvalue.vercel.app/*",
     "https://www.carvana.com/*",
@@ -15,8 +17,12 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://autoiq-vinvalue.vercel.app/*"],
-      "js": ["controllers/garageSyncController.js"],
+      "matches": [
+        "https://autoiq-vinvalue.vercel.app/*"
+      ],
+      "js": [
+        "controllers/garageSyncController.js"
+      ],
       "run_at": "document_idle"
     },
     {
@@ -28,7 +34,9 @@
         "https://www.peddle.com/*",
         "https://www.autonation.com/*"
       ],
-      "js": ["controllers/formFillController.js"],
+      "js": [
+        "controllers/formFillController.js"
+      ],
       "run_at": "document_idle"
     }
   ],

@@ -15,35 +15,6 @@ function element(tag, className, text) {
   return node;
 }
 
-function decodeConditions(encoded) {
-  try {
-    const d = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-    return {
-      bodyDamage:          d.dmg  || null,
-      mechanicalIssues:    d.mch  || null,
-      warningLights:       d.wl   || null,
-      accidents:           d.ac   || null,
-      titleStatus:         d.tl   || null,
-      serviceHistory:      d.sv   || null,
-      owners:              d.ow   || null,
-      keysCount:           d.ky   || null,
-      featuresWorking:     d.ft   || null,
-      exteriorColor:       d.ecol || null,
-      interiorColor:       d.icol || null,
-      tireCondition:       d.trc  || null,
-      glassCondition:      d.glc  || null,
-      interiorCleanliness: d.intc || null,
-      odors:               d.odo  || null,
-      roofType:            d.rftp || null,
-      zip:                 d.zp   || null,
-      bodyClass:           d.bd   || null,
-      driveType:           d.drv  || null,
-      fuelType:            d.fue  || null,
-      cylinders:           d.eng  || null,
-    };
-  } catch { return {}; }
-}
-
 // Classify a value as good / warn / bad for color coding
 function classify(field, val) {
   if (!val) return "";
@@ -72,7 +43,7 @@ function renderDetailPanel(car) {
   const grid  = document.getElementById("detail-grid");
   const title = document.getElementById("detail-panel-title");
 
-  const cond = car.profile_encoded ? decodeConditions(car.profile_encoded) : {};
+  const cond = car.answers || {};
 
   title.textContent = [car.year, car.make, car.model].filter(Boolean).join(" ");
   grid.innerHTML = "";
@@ -122,7 +93,18 @@ function renderDetailPanel(car) {
 
 let selectedCar = null;
 
-chrome.storage.local.get("garage", ({ garage }) => {
+async function loadGarage() {
+  const tabs = await chrome.tabs.query({ url: 'https://autoiq-vinvalue.vercel.app/*' });
+  if (tabs.length) {
+    try { await chrome.tabs.sendMessage(tabs[0].id, { type: 'autoiq:sync' }); }
+    catch { await chrome.storage.local.remove('snapshot'); }
+  }
+  const { snapshot } = await chrome.storage.local.get('snapshot');
+  if (!snapshot || snapshot.version !== 1 || Date.now() - snapshot.syncedAt > 300000) {
+    await chrome.storage.local.remove(['snapshot', 'garage', 'conditions']);
+    show('state-login'); return;
+  }
+  const garage = snapshot.cars;
   if (!garage) { show("state-login"); return; }
   if (garage.length === 0) { show("state-empty"); return; }
 
@@ -156,7 +138,8 @@ chrome.storage.local.get("garage", ({ garage }) => {
   if (garage.length === 1) {
     list.querySelector(".car-item")?.click();
   }
-});
+}
+loadGarage().catch(() => show("state-login"));
 
 document.getElementById("btn-fill")?.addEventListener("click", async () => {
   if (!selectedCar) return;
@@ -170,10 +153,7 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     return;
   }
 
-  const profileCond = selectedCar.profile_encoded
-    ? decodeConditions(selectedCar.profile_encoded)
-    : {};
-
+  const profileCond = selectedCar.answers || {};
   const car = {
     vin:          selectedCar.vin,
     year:         selectedCar.year,
@@ -185,7 +165,7 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     transmission: selectedCar.transmission || "",
     fuelType:     selectedCar.fuel_type || profileCond.fuelType || "",
     cylinders:    selectedCar.cylinders || profileCond.cylinders || "",
-    mileage:      String(selectedCar.mileage || ""),
+    mileage:      String(selectedCar.mileage ?? ""),
     condition:    selectedCar.condition || "",
     zip:          selectedCar.zip || profileCond.zip || "",
   };
@@ -201,17 +181,13 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
     interiorColor:       profileCond.interiorColor       || null,
   };
 
-  chrome.storage.local.get("conditions", ({ conditions = {} }) => {
-    const storedCond = conditions[car.vin] || {};
-    const carWithCondition = { ...car, ...storedCond, ...profileCond, ...extendedFields };
+  const supported = /^https:\/\/www\.(carvana|carmax|cargurus|kbb|peddle|autonation)\.com\//;
+  if (!supported.test(tab.url || '')) {
+    status.className = 'status err'; status.textContent = "This page isn't supported for autofill."; return;
+  }
+  const carWithCondition = { ...car, ...profileCond, ...extendedFields };
 
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (carData) => {
-        window.dispatchEvent(new CustomEvent("autoiq:fill", { detail: carData }));
-      },
-      args: [carWithCondition],
-    }).then(() => {
+    chrome.tabs.sendMessage(tab.id, { type: 'autoiq:fill', car: carWithCondition }    ).then(() => {
       status.className = "status ok";
       status.textContent = "Filling… check the page for results.";
       setTimeout(() => {
@@ -222,5 +198,4 @@ document.getElementById("btn-fill")?.addEventListener("click", async () => {
       status.className = "status err";
       status.textContent = "This page isn't supported for autofill.";
     });
-  });
 });

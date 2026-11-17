@@ -1,0 +1,414 @@
+{
+ "_synthetic": true,
+ "num_found": 24,
+ "listings": [
+  {
+   "id": "mazda_mx-5_2016-2018_60614-000",
+   "vin": "TESTMAZ0000000000",
+   "price": 18650,
+   "miles": 57248,
+   "dist": 43.2,
+   "dom": 50,
+   "dom_active": 50,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-001",
+   "vin": "TESTMAZ0000000001",
+   "price": 19750,
+   "miles": 52315,
+   "dist": 29.8,
+   "dom": 42,
+   "dom_active": 42,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-002",
+   "vin": "TESTMAZ0000000002",
+   "price": 17050,
+   "miles": 73517,
+   "dist": 34,
+   "dom": 127,
+   "dom_active": 127,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-003",
+   "vin": "TESTMAZ0000000003",
+   "price": 16500,
+   "miles": 45809,
+   "dist": 45.4,
+   "dom": 35,
+   "dom_active": 35,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-004",
+   "vin": "TESTMAZ0000000004",
+   "price": 19700,
+   "miles": 58879,
+   "dist": 84.8,
+   "dom": 9,
+   "dom_active": 9,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-005",
+   "vin": "TESTMAZ0000000005",
+   "price": 20700,
+   "miles": 38022,
+   "dist": 24.9,
+   "dom": 49,
+   "dom_active": 49,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-006",
+   "vin": "TESTMAZ0000000006",
+   "price": 18900,
+   "miles": 72804,
+   "dist": 94.9,
+   "dom": 9,
+   "dom_active": 9,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-007",
+   "vin": "TESTMAZ0000000007",
+   "price": 16450,
+   "miles": 67212,
+   "dist": 52.2,
+   "dom": 24,
+   "dom_active": 24,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-008",
+   "vin": "TESTMAZ0000000008",
+   "price": 21550,
+   "miles": 29036,
+   "dist": 73.3,
+   "dom": 46,
+   "dom_active": 46,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-009",
+   "vin": "TESTMAZ0000000009",
+   "price": 18950,
+   "miles": 64445,
+   "dist": 13.2,
+   "dom": 18,
+   "dom_active": 18,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-010",
+   "vin": "TESTMAZ0000000010",
+   "price": 21000,
+   "miles": 31368,
+   "dist": 31.9,
+   "dom": 43,
+   "dom_active": 43,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-011",
+   "vin": "TESTMAZ0000000011",
+   "price": 17450,
+   "miles": 47983,
+   "dist": 71.5,
+   "dom": 120,
+   "dom_active": 120,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-012",
+   "vin": "TESTMAZ0000000012",
+   "price": 21850,
+   "miles": 28876,
+   "dist": 18,
+   "dom": 22,
+   "dom_active": 22,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-013",
+   "vin": "TESTMAZ0000000013",
+   "price": 18400,
+   "miles": 49501,
+   "dist": 58.1,
+   "dom": 49,
+   "dom_active": 49,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-014",
+   "vin": "TESTMAZ0000000014",
+   "price": 17850,
+   "miles": 51088,
+   "dist": 80,
+   "dom": 45,
+   "dom_active": 45,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-015",
+   "vin": "TESTMAZ0000000015",
+   "price": 17750,
+   "miles": 75982,
+   "dist": 63.4,
+   "dom": 154,
+   "dom_active": 154,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-016",
+   "vin": "TESTMAZ0000000016",
+   "price": 19950,
+   "miles": 45419,
+   "dist": 4,
+   "dom": 151,
+   "dom_active": 151,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-017",
+   "vin": "TESTMAZ0000000017",
+   "price": 21200,
+   "miles": 37705,
+   "dist": 84.4,
+   "dom": 49,
+   "dom_active": 49,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-018",
+   "vin": "TESTMAZ0000000018",
+   "price": 16250,
+   "miles": 74256,
+   "dist": 30.6,
+   "dom": 16,
+   "dom_active": 16,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Club"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-019",
+   "vin": "TESTMAZ0000000019",
+   "price": 19900,
+   "miles": 41187,
+   "dist": 77.4,
+   "dom": 65,
+   "dom_active": 65,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-020",
+   "vin": "TESTMAZ0000000020",
+   "price": 22950,
+   "miles": 35203,
+   "dist": 45.9,
+   "dom": 25,
+   "dom_active": 25,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2018,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-021",
+   "vin": "TESTMAZ0000000021",
+   "price": 21550,
+   "miles": 29074,
+   "dist": 74.9,
+   "dom": 33,
+   "dom_active": 33,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-dup-0",
+   "vin": "TESTMAZ0000000000",
+   "price": 18650,
+   "miles": 57248,
+   "dist": 43.300000000000004,
+   "dom": 50,
+   "dom_active": 50,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2016,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  },
+  {
+   "id": "mazda_mx-5_2016-2018_60614-bad",
+   "vin": null,
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5",
+    "trim": "Grand Touring"
+   }
+  }
+ ]
+}

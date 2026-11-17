@@ -1,0 +1,482 @@
+{
+ "_synthetic": true,
+ "num_found": 28,
+ "listings": [
+  {
+   "id": "toyota_supra_2019-2021_60601-000",
+   "vin": "TESTT0Y0000000000",
+   "price": 41050,
+   "miles": 13161,
+   "dist": 90.2,
+   "dom": 26,
+   "dom_active": 26,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-001",
+   "vin": "TESTT0Y0000000001",
+   "price": 43750,
+   "miles": 18789,
+   "dist": 91,
+   "dom": 27,
+   "dom_active": 27,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-002",
+   "vin": "TESTT0Y0000000002",
+   "price": 45000,
+   "miles": 11459,
+   "dist": 71.4,
+   "dom": 13,
+   "dom_active": 13,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-003",
+   "vin": "TESTT0Y0000000003",
+   "price": 47300,
+   "miles": 5306,
+   "dist": 83.8,
+   "dom": 27,
+   "dom_active": 27,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-004",
+   "vin": "TESTT0Y0000000004",
+   "price": 37350,
+   "miles": 24119,
+   "dist": 42.3,
+   "dom": 72,
+   "dom_active": 72,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-005",
+   "vin": "TESTT0Y0000000005",
+   "price": 38750,
+   "miles": 42670,
+   "dist": 83.2,
+   "dom": 35,
+   "dom_active": 35,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-006",
+   "vin": "TESTT0Y0000000006",
+   "price": 37250,
+   "miles": 23079,
+   "dist": 18.4,
+   "dom": 35,
+   "dom_active": 35,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-007",
+   "vin": "TESTT0Y0000000007",
+   "price": 37800,
+   "miles": 18314,
+   "dist": 22.1,
+   "dom": 64,
+   "dom_active": 64,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-008",
+   "vin": "TESTT0Y0000000008",
+   "price": 39800,
+   "miles": 22291,
+   "dist": 89.5,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-009",
+   "vin": "TESTT0Y0000000009",
+   "price": 45400,
+   "miles": 15988,
+   "dist": 83,
+   "dom": 67,
+   "dom_active": 67,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-010",
+   "vin": "TESTT0Y0000000010",
+   "price": 45450,
+   "miles": 8161,
+   "dist": 17,
+   "dom": 69,
+   "dom_active": 69,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-011",
+   "vin": "TESTT0Y0000000011",
+   "price": 41700,
+   "miles": 23168,
+   "dist": 69.2,
+   "dom": 64,
+   "dom_active": 64,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-012",
+   "vin": "TESTT0Y0000000012",
+   "price": 41500,
+   "miles": 23831,
+   "dist": 85.1,
+   "dom": 32,
+   "dom_active": 32,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-013",
+   "vin": "TESTT0Y0000000013",
+   "price": 40100,
+   "miles": 32677,
+   "dist": 80.3,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-014",
+   "vin": "TESTT0Y0000000014",
+   "price": 42550,
+   "miles": 26092,
+   "dist": 75.8,
+   "dom": 58,
+   "dom_active": 58,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-015",
+   "vin": "TESTT0Y0000000015",
+   "price": 43550,
+   "miles": 22293,
+   "dist": 54.2,
+   "dom": 30,
+   "dom_active": 30,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-016",
+   "vin": "TESTT0Y0000000016",
+   "price": 42000,
+   "miles": 11858,
+   "dist": 19.7,
+   "dom": 50,
+   "dom_active": 50,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-017",
+   "vin": "TESTT0Y0000000017",
+   "price": 39850,
+   "miles": 25055,
+   "dist": 48.2,
+   "dom": 36,
+   "dom_active": 36,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-018",
+   "vin": "TESTT0Y0000000018",
+   "price": 44700,
+   "miles": 13524,
+   "dist": 59.8,
+   "dom": 144,
+   "dom_active": 144,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-019",
+   "vin": "TESTT0Y0000000019",
+   "price": 43200,
+   "miles": 23552,
+   "dist": 73.6,
+   "dom": 136,
+   "dom_active": 136,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-020",
+   "vin": "TESTT0Y0000000020",
+   "price": 42300,
+   "miles": 25574,
+   "dist": 71.1,
+   "dom": 29,
+   "dom_active": 29,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-021",
+   "vin": "TESTT0Y0000000021",
+   "price": 39100,
+   "miles": 19375,
+   "dist": 45.9,
+   "dom": 24,
+   "dom_active": 24,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-022",
+   "vin": "TESTT0Y0000000022",
+   "price": 39700,
+   "miles": 24347,
+   "dist": 92.6,
+   "dom": 69,
+   "dom_active": 69,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-023",
+   "vin": "TESTT0Y0000000023",
+   "price": 38750,
+   "miles": 34184,
+   "dist": 49.3,
+   "dom": 60,
+   "dom_active": 60,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-024",
+   "vin": "TESTT0Y0000000024",
+   "price": 45600,
+   "miles": 15308,
+   "dist": 18,
+   "dom": 57,
+   "dom_active": 57,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-025",
+   "vin": "TESTT0Y0000000025",
+   "price": 40850,
+   "miles": 25266,
+   "dist": 6.2,
+   "dom": 62,
+   "dom_active": 62,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0 Premium"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-dup-0",
+   "vin": "TESTT0Y0000000000",
+   "price": 41050,
+   "miles": 13161,
+   "dist": 90.3,
+   "dom": 26,
+   "dom_active": 26,
+   "seller_type": "private",
+   "inventory_type": "used",
+   "build": {
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  },
+  {
+   "id": "toyota_supra_2019-2021_60601-bad",
+   "vin": null,
+   "price": null,
+   "miles": 1000,
+   "dist": 1,
+   "dom": 1,
+   "dom_active": 1,
+   "seller_type": "dealer",
+   "inventory_type": "used",
+   "build": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Supra",
+    "trim": "3.0"
+   }
+  }
+ ]
+}

@@ -1,74 +1,11 @@
 # AutoIQ
 
-AutoIQ estimates instant-sale, private-sale, and dealer-retail value from current comparable listings. It decodes VINs with NHTSA data, removes pricing outliers, weights comparable vehicles by mileage proximity, and shows the evidence behind every range.
+Used car valuation and ownership app. Live at https://autoiq-vinvalue.vercel.app
 
-## Interface direction
+- `design/`: frontend redesign export, one `.dc.html` per page with mock data inline. `canvas.json` is the canvas index.
+- Backend plan: `docs/backend-plan.md` (in progress).
 
-The interface follows the charcoal-and-lime garage reference in `design/autoiq-ui-direction.png`. Manrope handles the workspace, Cormorant Garamond provides editorial headlines, and JetBrains Mono labels the technical details. Shared color tokens and responsive layouts live in `views/styles/globals.css`.
-
-Motion includes staggered entrances, one-time intersection-based reveals, sticky process copy, and progressive-enhancement scroll-linked effects. All motion respects `prefers-reduced-motion`; content remains available without scroll-animation support. The garage supports vehicle search and list/grid views. Landing-page appraisal figures are explicitly illustrative, not live market quotes.
-
-## Local setup
-
-Use Node.js 20.9 or newer, then install dependencies and create `.env.local`:
-
-```env
-AUTH_SECRET=generate-a-long-random-value
-AUTH_URL=http://localhost:3000
-AUTH_TRUST_HOST=true
-GOOGLE_CLIENT_ID=your-google-oauth-client-id
-GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
-DATABASE_URL=your-postgres-connection-string
-MARKETCHECK_API_KEY=your-marketcheck-key
-```
-
-Google OAuth must include this local redirect URI:
-
-```text
-http://localhost:3000/api/auth/callback/google
-```
-
-Production currently uses:
-
-```text
-https://autoiq-vinvalue.vercel.app/api/auth/callback/google
-```
-
-Run the application:
-
-```bash
-npm run dev
-```
-
-## Verification
-
-```bash
-npm run lint
-npm run check:architecture
-npm run build
-```
-
-## MVC architecture
-
-The application uses an MVC-style structure while preserving the file conventions required by the Next.js App Router:
-
-```text
-app/          Next.js route and page adapters only
-controllers/  HTTP, authentication, validation, and request orchestration
-models/       Valuation rules, database access, reports, VINs, and provider integrations
-views/        Page views, shared presentation components, and UI primitives
-shared/       Framework-neutral presentation utilities
-extension/    Browser-extension controllers and views
-```
-
-Dependencies flow inward: adapters call controllers or views; controllers coordinate models; models never import views or controllers. The one-line files under `app/` exist only because Next.js requires `page` and `route` entry points there.
-
-## Data semantics
-
-- Prices are estimates based on active asking-price comparables, not guaranteed offers or completed-sale prices.
-- NHTSA model-level recall campaigns are shown as campaigns to verify. They are not represented as VIN-specific open recalls.
-- Market listing photos are representative, ranked by vehicle match and gallery quality, and labeled as such throughout the product.
-- Shared seller reports contain seller-provided condition information and should not be described as independently verified.
-- Named buyer values are never simulated. Users compare the AutoIQ instant-sale range with real third-party quotes.
-
-The schema required by Auth.js and AutoIQ is in `supabase/schema.sql`. Any PostgreSQL provider can be used; Supabase is not required by the application code.
+Photo lookup is available at `GET /api/photo` and the server-side MarketCheck image proxy at
+`GET /api/photo/image?path=...`. Both endpoints validate inputs, rate-limit requests, and keep
+`MARKETCHECK_API_KEY` on the server. Missing keys return a structured 503; upstream failures are
+temporary and include `Retry-After: 60`.

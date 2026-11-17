@@ -5,8 +5,22 @@ const root = process.cwd();
 const sourceExtensions = new Set([".js", ".jsx", ".ts", ".tsx", ".mjs"]);
 const violations = [];
 
+const controllerEntries = await readdir(join(root, "controllers"), { withFileTypes: true });
+for (const entry of controllerEntries) {
+  const file = `controllers/${entry.name}`;
+  if (entry.isDirectory()) {
+    violations.push(`${file} should not contain controller subdirectories`);
+  } else if (!/^[a-z][A-Za-z0-9]*Controller\.ts$/.test(entry.name)) {
+    violations.push(`${file} should be a flat camelCase *Controller.ts module`);
+  }
+}
+for (const file of await filesUnder("views/pages")) {
+  if (!/View\.tsx$/.test(file)) violations.push(`${file} should be a *View.tsx page module`);
+}
+
 async function filesUnder(directory) {
-  const entries = await readdir(join(root, directory), { withFileTypes: true });
+  let entries;
+  try { entries = await readdir(join(root, directory), { withFileTypes: true }); } catch { return []; }
   const nested = await Promise.all(entries.map((entry) => {
     const path = join(directory, entry.name);
     return entry.isDirectory() ? filesUnder(path) : [path];

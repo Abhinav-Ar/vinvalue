@@ -1,3 +1,4 @@
+"use strict";
 // AutoIQ intelligent form filler
 // Scans every form control on the page, reads its label, and matches to car data.
 
@@ -28,7 +29,7 @@ function setInputValue(el, value) {
 }
 
 function setSelectValue(el, value) {
-  const lower = value.toLowerCase();
+  const lower = String(value).toLowerCase();
   for (const opt of el.options) {
     if (opt.text.toLowerCase().includes(lower) || opt.value.toLowerCase().includes(lower)) {
       el.value = opt.value;
@@ -41,7 +42,7 @@ function setSelectValue(el, value) {
 
 // Handle custom React/ARIA dropdowns (role="combobox", role="listbox" etc.)
 async function fillAriaDropdown(trigger, value) {
-  const lower = value.toLowerCase();
+  const lower = String(value).toLowerCase();
   trigger.click();
   trigger.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
 
@@ -150,6 +151,7 @@ function fillPage(car) {
   ];
 
   for (const el of controls) {
+    if (!isVisible(el) || el.disabled || el.readOnly) continue;
     const label = getLabelText(el);
     if (!label) continue;
 
@@ -274,7 +276,7 @@ function highlightUnfilled() {
       target = el.closest("label,fieldset,div,li") || el;
       // Keep walking up until we find something visible with reasonable size
       let cur = target;
-      while (cur && cur !== document.body) {
+      while (cur && cur !== container.parentElement) {
         if (isVisible(cur) && cur.offsetWidth > 20 && cur.offsetHeight > 10) {
           target = cur;
           break;
@@ -480,6 +482,7 @@ const CONDITION_ANSWERS = [
       "None":     ["no exterior damage", "no damage", "none"],
       "Minor":    ["minor damage", "scuffs", "scratches", "chips"],
       "Moderate": ["dents", "scrapes", "moderate"],
+      "Major":    ["major damage", "severe", "significant"],
       "Severe":   ["major damage", "severe", "significant"],
     },
   },
@@ -498,6 +501,8 @@ const CONDITION_ANSWERS = [
     answers: {
       "None":          ["no warning", "no lights", "none"],
       "Check Engine":  ["check engine"],
+      "Check engine": ["check engine"],
+      "Other": ["other"],
       "Multiple":      ["multiple", "several", "other"],
     },
   },
@@ -514,7 +519,7 @@ const CONDITION_ANSWERS = [
     questionKeywords: ["title", "lien", "loan"],
     field: "titleStatus",
     answers: {
-      "Clean":   ["clean", "no lien", "i own it outright"],
+      "Clean":   ["clean"],
       "Salvage": ["salvage"],
       "Rebuilt": ["rebuilt"],
     },
@@ -569,11 +574,11 @@ const CONDITION_ANSWERS = [
   },
 ];
 
-function clickByText(text) {
+function clickByText(text, container) {
   const lower = text.toLowerCase();
 
   // Walk every visible element, find the most specific one whose text contains the target
-  const candidates = [...document.querySelectorAll("*")].filter((el) => {
+  const candidates = [...container.querySelectorAll("label, button, [role=radio], [role=checkbox], span, p")].filter((el) => {
     if (!isVisible(el)) return false;
     const ownText = [...el.childNodes]
       .filter((n) => n.nodeType === Node.TEXT_NODE)
@@ -604,14 +609,14 @@ function clickByText(text) {
     // Going higher would find the first input in the container (wrong checkbox)
     if (!input) {
       let cur = el.parentElement;
-      for (let depth = 0; depth < 3 && cur && cur !== document.body; depth++) {
+      for (let depth = 0; depth < 3 && cur && cur !== container.parentElement; depth++) {
         const found = cur.querySelector("input[type=checkbox], input[type=radio]");
         if (found) { input = found; break; }
         cur = cur.parentElement;
       }
     }
 
-    if (input) {
+    if (input && container.contains(input) && /^(checkbox|radio)$/.test(input.type)) {
       // Use native checked setter so React's synthetic event system sees the change
       const checkedSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "checked")?.set;
       if (checkedSetter) checkedSetter.call(input, true);
@@ -619,20 +624,18 @@ function clickByText(text) {
       input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
       triggerReact(input);
-      console.log("[AutoIQ] checked input for:", text);
       return true;
     }
 
     // 5. No input — click the closest interactive ancestor
-    const interactive = el.closest("button, a, label, [role='button'], [role='checkbox'], [role='radio'], [onclick]");
-    const clickTarget = interactive || el;
+    const interactive = el.closest("button[type=button], label, [role='checkbox'], [role='radio']");
+    if (!interactive || !container.contains(interactive)) continue;
+    const clickTarget = interactive;
     clickTarget.click();
     clickTarget.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-    console.log("[AutoIQ] clicked:", clickTarget.tagName, el.textContent.trim().slice(0, 40));
     return true;
   }
 
-  console.log("[AutoIQ] clickByText found nothing for:", text);
   return false;
 }
 
@@ -642,26 +645,29 @@ function applyConditionAnswers(car) {
     const value = car[field];
     if (!value || !answers[value]) continue;
 
-    // Find a question on the page matching this condition type
-    const pageText = document.body.innerText.toLowerCase();
-    const questionFound = questionKeywords.some((kw) => pageText.includes(kw));
-    if (!questionFound) continue;
+    // Only explicit question groups qualify; ambiguous markup needs manual input.
+    const groups = [...document.querySelectorAll('fieldset, [role=group], [role=radiogroup]')];
+    const container = groups.find(group => {
+      const heading = group.querySelector('legend, [data-question], h2, h3, h4');
+      const labelled = group.getAttribute('aria-label') || document.getElementById(group.getAttribute('aria-labelledby'))?.textContent;
+      const text = (heading?.textContent || labelled || '').toLowerCase();
+      return questionKeywords.some(kw => text.includes(kw));
+    });
+    if (!container) continue;
 
     // Try each answer text until one clicks successfully
     for (const answerText of answers[value]) {
-      if (clickByText(answerText)) { filled++; break; }
+      if (clickByText(answerText, container)) { filled++; break; }
     }
   }
   return filled;
 }
 
-// ── Triggered by popup "Fill form" button ────────────────────────────────────
-window.addEventListener("autoiq:fill", (e) => {
-  const car = e?.detail;
-  if (!car) return showToast("No car selected.", false);
-
-  // Debug: log what condition data arrived
-  console.log("[AutoIQ] car data received:", JSON.stringify(car, null, 2));
-
+// Extension-only message bridge; page events cannot trigger filling.
+chrome.runtime.onMessage.addListener((message, sender, reply) => {
+  if (sender.id !== chrome.runtime.id || message?.type !== 'autoiq:fill') return;
+  const car = message.car;
+  if (!car || typeof car.vin !== 'string' || !/^[A-HJ-NPR-Z0-9]{17}$/.test(car.vin) || JSON.stringify(car).length > 10000) return;
   fillWithRetry(car);
+  reply({ ok: true });
 });

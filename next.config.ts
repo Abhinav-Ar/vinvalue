@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const config: NextConfig = {
+  // web-push and postgres are server-only; keep them out of the client bundle.
+  serverExternalPackages: ['web-push', 'postgres', '@electric-sql/pglite'],
 };
 
-export default nextConfig;
+export default config;

@@ -1,44 +1,32 @@
-// Syncs the user's AutoIQ garage into extension storage whenever they visit AutoIQ.
-// Content scripts run in the page context so the session cookie is included automatically.
+// Isolated-world content script. Same-origin requests include the web session;
+// no credentials or page-provided condition payloads enter extension storage.
+let pending;
 async function syncGarage() {
-  try {
-    const res = await fetch("/api/garage", { credentials: "include" });
-    if (!res.ok) return;
-    const { cars } = await res.json();
-    if (Array.isArray(cars)) {
-      chrome.storage.local.set({ garage: cars });
+  if (pending) return pending;
+  pending = (async () => {
+    try {
+      const res = await fetch('/api/extension/garage', { credentials: 'include', cache: 'no-store' });
+      if (!res.ok) throw new Error('Unavailable session');
+      const data = await res.json();
+      if (data.version !== 1 || typeof data.accountId !== 'string' || !Array.isArray(data.cars) || data.cars.length > 200 || JSON.stringify(data).length > 300000) throw new Error('Invalid snapshot');
+      await chrome.storage.local.remove(['garage', 'conditions', 'accountId']);
+      await chrome.storage.local.set({ snapshot: { ...data, syncedAt: Date.now() } });
+      return true;
+    } catch {
+      await chrome.storage.local.remove(['snapshot', 'garage', 'conditions', 'accountId']);
+      return false;
     }
-  } catch {
-    // Not logged in, network error, or extension context invalidated — silent fail
-  }
+  })();
+  try { return await pending; } finally { pending = null; }
 }
-
 syncGarage();
-
-window.addEventListener("autoiq:garage-saved", () => setTimeout(syncGarage, 300));
-
-// Store detailed condition data keyed by VIN so filler can use it
-window.addEventListener("autoiq:appraisal", (e) => {
-  const d = e.detail;
-  if (!d?.vin) return;
-  try {
-    chrome.storage.local.get("conditions", ({ conditions = {} }) => {
-      conditions[d.vin] = {
-        bodyDamage:       d.bodyDamage,
-        mechanicalIssues: d.mechanicalIssues,
-        warningLights:    d.warningLights,
-        accidents:        d.accidents,
-        titleStatus:      d.titleStatus,
-        serviceHistory:   d.serviceHistory,
-        owners:           d.owners,
-        keysCount:        d.keysCount,
-        featuresWorking:  d.featuresWorking,
-        condition:        d.condition,
-      };
-      chrome.storage.local.set({ conditions });
-    });
-    setTimeout(syncGarage, 1500);
-  } catch {
-    // Extension was reloaded — refresh this tab to reconnect
-  }
+// Events are hints only; always re-read authenticated server data.
+window.addEventListener('autoiq:garage-saved', () => setTimeout(syncGarage, 300));
+window.addEventListener('autoiq:appraisal', () => setTimeout(syncGarage, 1500));
+window.addEventListener('focus', syncGarage);
+setInterval(() => { if (document.visibilityState === 'visible') syncGarage(); }, 30000);
+chrome.runtime.onMessage.addListener((message, sender, reply) => {
+  if (sender.id !== chrome.runtime.id || message?.type !== 'autoiq:sync') return;
+  syncGarage().then(reply);
+  return true;
 });
