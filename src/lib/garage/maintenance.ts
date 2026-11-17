@@ -54,10 +54,12 @@ export async function recordOdometer(
     .orderBy(desc(odometerReadings.miles))
     .limit(1);
   if (conflict) {
-    throw badRequest(
-      `That reading conflicts with ${conflict.miles.toLocaleString('en-US')} mi recorded on ${conflict.recordedOn}. Odometer readings cannot go backwards.`,
-      { [field]: ['Odometer readings cannot go backwards.'] },
-    );
+    const day = new Date(`${conflict.recordedOn}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    const later = conflict.recordedOn > on;
+    const msg = later
+      ? `The odometer read ${conflict.miles.toLocaleString('en-US')} mi on ${day}, after this date. Enter a lower reading or a later date.`
+      : `The odometer already read ${conflict.miles.toLocaleString('en-US')} mi on ${day}. Enter at least that, or an earlier date.`;
+    throw badRequest(msg, { [field]: [msg] });
   }
   await db.insert(odometerReadings).values({ vehicleId, miles, recordedOn: on, source });
   const [newer] = await db

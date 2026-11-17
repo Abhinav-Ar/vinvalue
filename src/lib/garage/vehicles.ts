@@ -169,8 +169,8 @@ export async function updateVehicle(db: Db, v: Vehicle, patch: z.infer<typeof pa
   const odo = patch.odometer ?? v.odometer;
   if (patch.odometer !== undefined && patch.odometer < v.odometer) {
     throw badRequest(
-      `The odometer was already at ${v.odometer.toLocaleString('en-US')} mi. Odometer readings cannot go backwards.`,
-      { odometer: ['Odometer readings cannot go backwards.'] },
+      `The odometer was already at ${v.odometer.toLocaleString('en-US')} mi. Enter that or a higher reading.`,
+      { odometer: [`The odometer was already at ${v.odometer.toLocaleString('en-US')} mi. Enter that or a higher reading.`] },
     );
   }
   checkPurchase({ purchaseOdometer: set.purchaseOdometer ?? v.purchaseOdometer, purchaseDate: set.purchaseDate ?? v.purchaseDate }, odo, today);

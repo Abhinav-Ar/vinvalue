@@ -10,3 +10,6 @@ coverage/
 next-env.d.ts
 *.tsbuildinfo
 .data/
+qa/
+test-results/
+playwright-report/
