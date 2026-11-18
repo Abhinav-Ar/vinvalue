@@ -428,4 +428,41 @@ export const rateLimits = pgTable('rate_limits', {
   expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
 });
 
+/* --------------------------------------------- public records (privacy-safe) */
+export const publicRecordSales = pgTable('public_record_sales', {
+  id: id(),
+  sourceDataset: text('source_dataset').notNull(),
+  rowHash: text('row_hash').notNull().unique(),
+  make: text('make').notNull(),
+  model: text('model').notNull(),
+  modelYear: integer('model_year').notNull(),
+  salePrice: integer('sale_price').notNull(),
+  odometer: integer('odometer'),
+  transactionMonth: date('transaction_month', { mode: 'string' }).notNull(),
+  transactionDate: date('transaction_date', { mode: 'string' }).notNull(),
+  transactionType: text('transaction_type').notNull(),
+  county: text('county'),
+  state: text('state').notNull().default('WA'),
+  retrievedAt: timestamp('retrieved_at', { withTimezone: true, mode: 'date' }).notNull(),
+}, (t) => [index('public_sales_lookup_idx').on(t.make, t.model, t.modelYear, t.transactionDate), index('public_sales_watermark_idx').on(t.sourceDataset, t.transactionDate)]);
+
+export const publicRecordPopularity = pgTable('public_record_popularity', {
+  id: id(),
+  sourceDataset: text('source_dataset').notNull(),
+  state: text('state').notNull(),
+  make: text('make').notNull(),
+  model: text('model').notNull(),
+  modelYear: integer('model_year').notNull(),
+  period: date('period', { mode: 'string' }).notNull(),
+  vehicleCount: integer('vehicle_count').notNull(),
+  refreshedAt: timestamp('refreshed_at', { withTimezone: true, mode: 'date' }).notNull(),
+}, (t) => [uniqueIndex('public_popularity_key').on(t.sourceDataset, t.state, t.make, t.model, t.modelYear, t.period), index('public_popularity_lookup_idx').on(t.state, t.make, t.model, t.modelYear)]);
+
+export const publicRecordJobState = pgTable('public_record_job_state', {
+  job: text('job').primaryKey(),
+  offset: integer('offset').notNull().default(0),
+  watermark: timestamp('watermark', { withTimezone: true, mode: 'date' }),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull(),
+});
+
 export const _sql = sql; // re-export for raw fragments in migrations if needed

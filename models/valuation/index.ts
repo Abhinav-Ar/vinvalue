@@ -1,38 +1,8 @@
-/**
- * AutoIQ valuation engine, method v1.1 (config.methodVersion). PURE: no HTTP, no DB, deterministic
- * (pass `now` for the mileage-for-age flag).
- *
- * Knobs live in src/config/valuation.ts; ENGINE_MIN_LOCAL_COMPS is pending a move there.
- *
- *  1. Eligible listings: drop certified (CPO) inventory (the subject is never CPO today) and
- *     de-duplicate the same car listed twice (same VIN; keep the closest). Count in duplicatesRemoved.
- *  2. Private-equivalent price: dealer (or unknown seller) asks x (1 + dealerToPrivatePct);
- *     private-seller asks as-is. Asking price is not sale price; dealers carry prep and margin.
- *  3. Trim: when the subject trim is known, a comp of another trim is shifted by the trim gap
- *     (median private-equivalent price of that trim minus the subject trim's median) when each side
- *     has >= trimGapMinPerSide listings: trimMatch 'adjusted'. Otherwise it is 'excluded' (weight 0).
- *  4. Weight = 1 / (1 + (|dMiles| / mileageWeightScale)^2)
- *             x otherYearWeight^|dYear| x staleWeight (DOM >= staleDomDays) x trimAdjustedWeight (adjusted).
- *  5. Outliers: adjusted prices outside [Q1 - iqrK x IQR, Q3 + iqrK x IQR] are excluded but kept in the
- *     output (excludedAsOutlier). Fewer than minComps remaining -> TooFewCompsError(remaining, minComps).
- *  6. Base set: the private-seller comps when there are >= minPrivateComps of them; otherwise all comps
- *     (dealer asks already converted in step 2). Base = weighted median of adjusted prices, rounded to $10.
- *  7. Adjustments (each rounded to $10), in order:
- *       mileage   weighted least-squares slope of adjusted price on miles over all used comps, applied
- *                 to (subject miles - weighted average miles of the base set). Used when >= mileageFitMinComps,
- *                 miles spread >= mileageFitMinSpreadMiles and slope < 0; else mileagePctPer1k of base per
- *                 1k miles. Capped at +-mileageAdjCapPct of base.
- *       regional  only when the search widened (tier >= 2): local (distance <= radiusMiles) median vs the
- *                 widened-area median, capped at +-regionalCapPct. At tier 1 it is $0 (comps are local).
- *       condition, accidents, title   always present (comps are assumed good / none / clean)
- *       service history, owners, keys, warning lights   only when answered
- *  8. Private = base + sum(adjustments), floored at floorPct of base.
- *  9. Range half-width = (weighted IQR / 2) / weighted median of the base set
- *       + rangeFewCompsPct (used < fullConfidenceComps) + tierRangePct[tier] + rangeUnconfirmedTrimPct
- *       + rangeSelfReportedConditionPct + rangeNoTitleDataPct, clamped to [rangeMinPct, rangeMaxPct].
- * 10. Instant / retail = private (and its range) x (1 + spreads.instant / spreads.retail).
- */
 import type { DecodedSpecs, AppraisalInputs, ValueRange, Adjustment, CompStats, Confidence } from '@/models/db/schema';
+import type { ValuationAudit } from '@/shared/valuation';
+import { loadReferences, type ReferenceData } from '@/models/reference';
+import { evaluateSurface, NotEnoughDataError, type Surface } from './surface';
+import { normalizeSurfaceComps } from './normalizeComps';
 import type { Listing } from '@/models/providers/types';
 import { valuationConfig, type ValuationConfig } from '@/models/config/valuation';
 import { AppError, TooFewCompsError } from '@/models/errors';
@@ -58,6 +28,8 @@ export type ScoredComp = Listing & {
 };
 
 export type ValuationResult = {
+  mode?: 'comps' | 'model';
+  audit?: ValuationAudit;
   private: ValueRange;
   instant: ValueRange;
   retail: ValueRange;
@@ -78,6 +50,7 @@ export type ComputeArgs = {
   inputs: AppraisalInputs;
   listings: Listing[];
   config?: ValuationConfig;
+  references?: ReferenceData;
   /** Local search radius (default config.radiusMiles). */
   radiusMiles?: number;
   /** Search tier the listings came from (fetchCompsTiered). Inferred from distance/years when omitted. */
@@ -225,7 +198,7 @@ function inferTier(listings: Listing[], subjectYear: number, radius: number): nu
   return t;
 }
 
-export function computeValuation(args: ComputeArgs): ValuationResult {
+export function computeLegacyValuation(args: ComputeArgs, normalized = false, surfaceWeights?: Map<string, number>): ValuationResult {
   const config = args.config ?? valuationConfig;
   const { specs, inputs } = args;
   const radius = args.radiusMiles ?? config.radiusMiles;
@@ -239,14 +212,14 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
 
   // 2. Private-equivalent prices.
   const isPrivate = (l: Listing) => l.sellerType === 'private';
-  const pe = listings.map((l) => (isPrivate(l) ? l.price : l.price * (1 + config.dealerToPrivatePct)));
+  const pe = listings.map((l) => (normalized || isPrivate(l) || l.inventoryType === 'public_record' ? l.price : l.price * (1 + config.dealerToPrivatePct)));
 
   // 3. Trim gap.
   const trimMatch: TrimMatch[] = listings.map(() => 'exact');
   const shift: number[] = listings.map(() => 0);
   const trimNotes: string[] = [];
   let sameCount = 0;
-  if (subjectTrim) {
+  if (subjectTrim && !normalized) {
     const same = listings.map((l, i) => (trimsMatch(l.trim, subjectTrim) ? pe[i]! : null)).filter((x): x is number => x != null);
     const groups = new Map<string, number[]>();
     listings.forEach((l, i) => {
@@ -279,7 +252,7 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
   const subject = { miles: inputs.mileage, year: specs.year };
   const comps: ScoredComp[] = listings.map((l, i) => ({
     ...l,
-    weight: Math.round(compWeight(l, subject, trimMatch[i], config) * 1000) / 1000,
+    weight: surfaceWeights?.get(l.id) ?? compWeight(l, subject, trimMatch[i], config),
     excludedAsOutlier: outlier[i]!,
     trimMatch: trimMatch[i]!,
     adjustedPrice: adjusted[i]!,
@@ -323,7 +296,7 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
 
   // 7. Adjustments.
   const adjustments: Adjustment[] = [];
-  {
+  if (!normalized) {
     const miles = used.map((c) => c.miles);
     const spread = Math.max(...miles) - Math.min(...miles);
     const slope = wlsSlope(used.map((c) => ({ x: c.miles, y: c.adjustedPrice, w: c.weight })));
@@ -363,15 +336,7 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
     adjustments.push({ key: 'regional', label: `Regional demand, ${inputs.zip}`, amount, reason });
   }
 
-  const pctLine = (key: string, label: string, pct: number, what: string) =>
-    adjustments.push({ key, label, amount: r10(base * pct), reason: pctReason(pct, what) });
-  pctLine('condition', `Condition, ${inputs.condition}`, config.condition[inputs.condition], `${cap1(inputs.condition)} condition (as you reported)`);
-  pctLine('accidents', `Accident history, ${ACCIDENT_LABEL[inputs.accidents]}`, config.accidents[inputs.accidents], inputs.accidents === 'none' ? 'No reported accidents' : `A ${inputs.accidents} accident`);
-  pctLine('title', `Title, ${inputs.title}`, config.title[inputs.title], `A ${inputs.title} title`);
-  if (inputs.serviceHistory) pctLine('serviceHistory', `Service history, ${SERVICE_LABEL[inputs.serviceHistory]}`, config.serviceHistory[inputs.serviceHistory], `Service history with ${SERVICE_LABEL[inputs.serviceHistory]}`);
-  if (inputs.owners) pctLine('owners', `Owners, ${OWNERS_LABEL[inputs.owners]}`, config.owners[inputs.owners], cap1(OWNERS_LABEL[inputs.owners]));
-  if (inputs.keys) pctLine('keys', `Keys, ${KEYS_LABEL[inputs.keys]}`, config.keys[inputs.keys], inputs.keys === 'two' ? 'Both key sets' : 'A missing key set');
-  if (inputs.warningLights) pctLine('warningLights', `Warning lights, ${LIGHTS_LABEL[inputs.warningLights]}`, config.warningLights[inputs.warningLights], inputs.warningLights === 'none' ? 'No warning lights' : `A ${LIGHTS_LABEL[inputs.warningLights]} light`);
+  adjustments.push(...historyAdjustments(base, inputs, config));
 
   // 8. Private value.
   const sum = adjustments.reduce((a, x) => a + x.amount, 0);
@@ -448,11 +413,67 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
     },
     confidence,
     methodNotes,
-    methodVersion: config.methodVersion,
-    engineVersion: config.methodVersion,
+    methodVersion: normalized ? config.methodVersion : '1.2.0',
+    engineVersion: normalized ? config.methodVersion : '1.2.0',
   };
 }
 
 function cap1(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+export function historyAdjustments(base: number, inputs: AppraisalInputs, config: ValuationConfig): Adjustment[] {
+  const adjustments: Adjustment[] = [];
+  const pctLine = (key: string, label: string, pct: number, what: string) =>
+    adjustments.push({ key, label, amount: r10(base * pct), reason: pctReason(pct, what) });
+  pctLine('condition', `Condition, ${inputs.condition}`, config.condition[inputs.condition], `${cap1(inputs.condition)} condition (as you reported)`);
+  pctLine('accidents', `Accident history, ${ACCIDENT_LABEL[inputs.accidents]}`, config.accidents[inputs.accidents], inputs.accidents === 'none' ? 'No reported accidents' : `A ${inputs.accidents} accident`);
+  pctLine('title', `Title, ${inputs.title}`, config.title[inputs.title], `A ${inputs.title} title`);
+  if (inputs.serviceHistory) pctLine('serviceHistory', `Service history, ${SERVICE_LABEL[inputs.serviceHistory]}`, config.serviceHistory[inputs.serviceHistory], `Service history with ${SERVICE_LABEL[inputs.serviceHistory]}`);
+  if (inputs.owners) pctLine('owners', `Owners, ${OWNERS_LABEL[inputs.owners]}`, config.owners[inputs.owners], cap1(OWNERS_LABEL[inputs.owners]));
+  if (inputs.keys) pctLine('keys', `Keys, ${KEYS_LABEL[inputs.keys]}`, config.keys[inputs.keys], inputs.keys === 'two' ? 'Both key sets' : 'A missing key set');
+  if (inputs.warningLights) pctLine('warningLights', `Warning lights, ${LIGHTS_LABEL[inputs.warningLights]}`, config.warningLights[inputs.warningLights], inputs.warningLights === 'none' ? 'No warning lights' : `A ${LIGHTS_LABEL[inputs.warningLights]} light`);
+
+  return adjustments;
+}
+
+export function computeValuation(args: ComputeArgs): ValuationResult {
+  const config = args.config ?? valuationConfig, data = args.references ?? loadReferences(), now = args.now ?? new Date();
+  let subject: Surface;
+  try { subject = evaluateSurface(args.specs, args.inputs.trim, args.inputs.mileage, now, data, config); }
+  catch (e) {
+    if (!(e instanceof NotEnoughDataError)) throw e;
+    // Replay the explicitly versioned legacy comp method only when no reference surface exists.
+    // Missing anchors must never produce a model dollar guess.
+    try { return computeLegacyValuation(args); }
+    catch (err) { if (err instanceof TooFewCompsError) throw e; throw err; }
+  }
+  const normalized = normalizeSurfaceComps(args, subject, data, now, config);
+  let result: ValuationResult | null = null;
+  if (normalized.listings.length >= config.minComps) {
+    try {
+      result = computeLegacyValuation({ ...args, listings: normalized.listings, inputs: { ...args.inputs, trim: null } }, true, normalized.weights);
+      result.comps.forEach(c => { const original = args.listings.find(l => l.id === c.id); if (original) { c.price = original.price; c.trim = original.trim; } c.trimMatch = normalized.matches.get(c.id) ?? 'adjusted'; });
+    } catch (e) { if (!(e instanceof TooFewCompsError)) throw e; }
+  }
+  const model = !result, p = config.surface;
+  const adjustments = result?.adjustments ?? historyAdjustments(subject.H, args.inputs, config);
+  const base = result?.stats.weightedMedian ?? subject.H;
+  const value = result?.private.value ?? roundTo(Math.max(base+adjustments.reduce((a,x) => a+x.amount,0),base*config.floorPct),config.roundTo);
+  const comps = result?.comps ?? [];
+  const used = comps.filter(c => c.usedInBase);
+  const sumW = used.reduce((a,c) => a+c.weight,0), sumW2 = used.reduce((a,c) => a+c.weight*c.weight,0);
+  const nEff = sumW2 ? sumW*sumW/sumW2 : 0;
+  const legacyHalf = result ? result.private.high/result.private.value-1 : 0;
+  const unknownTrimLog = normalized.audit.some(a=>a.reason?.startsWith('unknown trim')) ? p.unknownTrimLog : 0;
+  const rawWidth = model ? (config.segmentCalibration[subject.segment]?.interval ?? p.modelLogBase)+subject.modelUncertainty : Math.log1p(legacyHalf)+subject.uncertainty+unknownTrimLog+(nEff<8 ? p.weakEffectiveLog : 0)+p.priorContrastLog*(used.filter(c=>c.trimMatch==='adjusted').length/Math.max(1,used.length));
+  if (model && rawWidth > p.modelLogMax) throw new NotEnoughDataError('uncertainty exceeds the supported range; confirm the vehicle specification.');
+  const hLog = clamp(rawWidth,model ? p.modelLogMin : p.compsLogMin,model ? p.modelLogMax : p.compsLogMax);
+  const range = (factor:number): ValueRange => ({ value: roundTo(value*factor,config.roundTo), low: roundTo(value*factor*Math.exp(-hLog),config.roundTo), high: roundTo(value*factor*Math.exp(hLog),config.roundTo) });
+  const notes = model ? ['Model estimate (no local sales data)', 'Original MSRP adjusted for inflation, retention and mileage; calibrated to approximate market references (and real WA EV sales for EVs).'] : ['Sales normalized by subject/comp value-surface ratios. No separate mileage, trim or collector uplift is added.'];
+  if (subject.msrpRow?.confidence === "approximate") notes.push("Original MSRP is approximate (best-knowledge figure, not from a cited source); the range is widened to reflect it.");
+  notes.push("Not an offer. A buyer's inspection decides.");
+  const audit: ValuationAudit = { references:{msrp:subject.msrpRow,generation:subject.generationRef,variant:subject.variantRef},parameters:{surface:p,retention:config.retentionPriors,segments:config.segmentCalibration,brands:config.brandCalibration,overrides:config.generationCurvePriors},mode: model ? 'model' : 'comps', asOf: now.toISOString(), parameterVersion:p.parameterVersion, referenceVintage:subject.cpiVintage,score:subject.D,coverage:subject.q,factors:subject.factors,notes,anchor:subject.M,retention:subject.R,mileageFactor:Math.exp(subject.L),base:roundTo(base,config.roundTo),hLog,effectiveComps:nEff,normalizations:normalized.audit };
+  const confidence: Confidence & { valuation: ValuationAudit } = { decodeStatus:args.specs.decodeStatus ?? 'clean',trimConfirmedByUser:args.trimConfirmedByUser ?? !!args.inputs.trim,selfReported:['condition','title','accidents'],flags:[...(model ? ['model_estimate','approximate_reference_calibration'] : []),...(subject.caps ? ['surface_cap'] : [])],rangeReasons:[...notes,...subject.factors],searchTier:model ? 0 : result!.stats.searchTier,valuation:audit };
+  return { mode:audit.mode,audit,private:range(1),instant:range(1+config.spreads.instant),retail:range(1+config.spreads.retail),adjustments,comps,stats:result?.stats ?? { found:0,used:0,excluded:0,median:0,weightedMedian:0,avgMiles:args.inputs.mileage,radiusMiles:0,searchTier:0,privateComps:0,dealerComps:0,duplicatesRemoved:0 },confidence,methodNotes:notes,methodVersion:config.methodVersion,engineVersion:config.methodVersion };
 }

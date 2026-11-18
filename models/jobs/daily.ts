@@ -29,6 +29,7 @@ import { vehicleBadgeLabel } from '@/models/garage/labels';
 import { drainDeliveries } from '@/models/notify/drain';
 import { getSenders, type Senders } from '@/models/notify';
 import { counter, type JobReport } from './types';
+import { runPublicRecordsDaily } from './publicRecords';
 
 const fmtUsd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
@@ -64,6 +65,8 @@ export async function runDaily(
   const overBudget = () => Date.now() >= deadline;
   const today = now.toISOString().slice(0, 10);
   const c = counter();
+  const publicRecords = await runPublicRecordsDaily(db, now);
+  for (const [k, n] of Object.entries(publicRecords.counts)) c.add(`publicRecords_${k}`, n);
   const drafts: AlertDraft[] = [];
 
   const step = async <T>(name: string, fn: () => Promise<T>): Promise<T | null> => {

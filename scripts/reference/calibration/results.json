@@ -1,0 +1,659 @@
+{
+  "excluded": [
+    "TOYOTA/4Runner/2025: missing CPI 2025",
+    "BMW/X3/2025: missing CPI 2025"
+  ],
+  "date": "2026-11-17",
+  "seed": "FNV1a, alternating segment/median-age strata",
+  "counts": {
+    "train": 235,
+    "holdout": 236,
+    "trainFamilies": 51,
+    "holdoutFamilies": 50
+  },
+  "parameters": {
+    "beta": 0.2414,
+    "betaD2": 0.8,
+    "floorD2": 0.5301,
+    "onset": 29.766,
+    "onsetD": 17.056,
+    "economy.market": 1.3094,
+    "economy.k": 0.9246,
+    "economy.floor": 0.535,
+    "midsize.market": 1.0884,
+    "midsize.k": 0.8782,
+    "midsize.floor": 0.8075,
+    "fullsize.market": 1,
+    "fullsize.k": 1,
+    "fullsize.floor": 1,
+    "suv.market": 1.3302,
+    "suv.k": 0.94925,
+    "suv.floor": 0.715,
+    "truck.market": 1.1989,
+    "truck.k": 0.8637,
+    "truck.floor": 1.08,
+    "van.market": 0.9701,
+    "van.k": 0.8666,
+    "van.floor": 0.6575,
+    "luxury.market": 1.1144,
+    "luxury.k": 1.0928,
+    "luxury.floor": 1.4475,
+    "sports.market": 1.6695,
+    "sports.k": 1.5655,
+    "sports.floor": 0.5,
+    "ev.market": 1.1508,
+    "ev.k": 1.37845,
+    "ev.floor": 0.5,
+    "brand.acura": 0.6575,
+    "brand.audi": 0.8215,
+    "brand.bmw": 1.25725,
+    "brand.chevrolet": 1.18375,
+    "brand.dodge": 1.2805,
+    "brand.ford": 1.102,
+    "brand.gmc": 1.04725,
+    "brand.honda": 0.94375,
+    "brand.hyundai": 1.04425,
+    "brand.jeep": 1.045,
+    "brand.kia": 0.98425,
+    "brand.land rover": 1.18675,
+    "brand.lexus": 1.0045,
+    "brand.lincoln": 0.75475,
+    "brand.mazda": 0.94225,
+    "brand.mercedes-benz": 1.13875,
+    "brand.nissan": 1.021,
+    "brand.porsche": 1.07875,
+    "brand.tesla": 0.95725,
+    "brand.toyota": 0.86875,
+    "brand.volkswagen": 0.96625
+  },
+  "segmentCalibration": {
+    "economy": {
+      "market": 1.3094,
+      "k": 0.9246,
+      "floor": 0.535,
+      "interval": 0.19335516015890222
+    },
+    "midsize": {
+      "market": 1.0884,
+      "k": 0.8782,
+      "floor": 0.8075,
+      "interval": 0.20171512605020883
+    },
+    "fullsize": {
+      "market": 1,
+      "k": 1,
+      "floor": 1,
+      "interval": 0.3764232476777453
+    },
+    "suv": {
+      "market": 1.3302,
+      "k": 0.94925,
+      "floor": 0.715,
+      "interval": 0.3190541739125425
+    },
+    "truck": {
+      "market": 1.1989,
+      "k": 0.8637,
+      "floor": 1.08,
+      "interval": 0.29876847889320624
+    },
+    "van": {
+      "market": 0.9701,
+      "k": 0.8666,
+      "floor": 0.6575,
+      "interval": 0.29227605789924366
+    },
+    "luxury": {
+      "market": 1.1144,
+      "k": 1.0928,
+      "floor": 1.4475,
+      "interval": 0.3764232476777453
+    },
+    "sports": {
+      "market": 1.6695,
+      "k": 1.5655,
+      "floor": 0.5,
+      "interval": 0.489961513961377
+    },
+    "ev": {
+      "market": 1.1508,
+      "k": 1.37845,
+      "floor": 0.5,
+      "interval": 0.40811327833254313
+    }
+  },
+  "holdout": {
+    "refs": {
+      "all": {
+        "n": 133,
+        "sales": 133,
+        "median": 16.408787739480402,
+        "p80": 32.73091737793432,
+        "p90": 46.407684898143685
+      },
+      "segment": {
+        "economy": {
+          "n": 17,
+          "sales": 17,
+          "median": 8.31496336790929,
+          "p80": 19.16009943633728,
+          "p90": 32.184906741151316
+        },
+        "midsize": {
+          "n": 11,
+          "sales": 11,
+          "median": 16.044728346353587,
+          "p80": 22.349941535019923,
+          "p90": 30.39635186330445
+        },
+        "fullsize": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "suv": {
+          "n": 54,
+          "sales": 54,
+          "median": 16.353559357720087,
+          "p80": 31.929242404199957,
+          "p90": 52.18264177414652
+        },
+        "truck": {
+          "n": 25,
+          "sales": 25,
+          "median": 14.688244726279143,
+          "p80": 32.37277049684174,
+          "p90": 37.27258601137661
+        },
+        "van": {
+          "n": 8,
+          "sales": 8,
+          "median": 16.07893531071332,
+          "p80": 28.1676085161974,
+          "p90": 33.24243998195325
+        },
+        "luxury": {
+          "n": 5,
+          "sales": 5,
+          "median": 15.815953718022168,
+          "p80": 24.51835405065075,
+          "p90": 35.55068381029558
+        },
+        "sports": {
+          "n": 12,
+          "sales": 12,
+          "median": 26.226856077411338,
+          "p80": 45.14743814189498,
+          "p90": 56.502451049112885
+        },
+        "ev": {
+          "n": 1,
+          "sales": 1,
+          "median": 51.176153593539134,
+          "p80": 51.176153593539134,
+          "p90": 51.176153593539134
+        }
+      },
+      "age": {
+        "0-5": {
+          "n": 47,
+          "sales": 47,
+          "median": 13.841295420449718,
+          "p80": 23.279367625102974,
+          "p90": 29.36623176370588
+        },
+        "6-10": {
+          "n": 27,
+          "sales": 27,
+          "median": 16.592140734692506,
+          "p80": 33.82664073625776,
+          "p90": 42.19824650171933
+        },
+        "11-20": {
+          "n": 47,
+          "sales": 47,
+          "median": 17.338894743750366,
+          "p80": 45.14743814189499,
+          "p90": 67.62982561665947
+        },
+        "21+": {
+          "n": 12,
+          "sales": 12,
+          "median": 22.068955258079733,
+          "p80": 41.22660718731225,
+          "p90": 56.12153333605242
+        }
+      }
+    },
+    "wa": {
+      "all": {
+        "n": 103,
+        "sales": 5287,
+        "median": 18.735302221368542,
+        "p80": 48.021217157387845,
+        "p90": 82.21387084305432
+      },
+      "segment": {
+        "economy": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "midsize": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "fullsize": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "suv": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "truck": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "van": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "luxury": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "sports": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        },
+        "ev": {
+          "n": 103,
+          "sales": 5287,
+          "median": 18.735302221368542,
+          "p80": 48.021217157387845,
+          "p90": 82.21387084305432
+        }
+      },
+      "age": {
+        "0-5": {
+          "n": 46,
+          "sales": 4090,
+          "median": 10.56717672475596,
+          "p80": 18.89963950208594,
+          "p90": 35.44481272387089
+        },
+        "6-10": {
+          "n": 44,
+          "sales": 920,
+          "median": 21.913389788400956,
+          "p80": 32.869602072203534,
+          "p90": 71.92755171510986
+        },
+        "11-20": {
+          "n": 13,
+          "sales": 277,
+          "median": 89.09535890634479,
+          "p80": 147.546785194994,
+          "p90": 171.03245816948615
+        },
+        "21+": {
+          "n": 0,
+          "sales": 0,
+          "median": null,
+          "p80": null,
+          "p90": null
+        }
+      }
+    }
+  },
+  "split": {
+    "mazda/mazda3": "train",
+    "kia/forte": "holdout",
+    "toyota/corolla": "train",
+    "toyota/matrix": "holdout",
+    "honda/fit": "train",
+    "honda/civic": "holdout",
+    "volkswagen/jetta": "train",
+    "hyundai/elantra": "holdout",
+    "nissan/sentra": "train",
+    "subaru/impreza": "holdout",
+    "volkswagen/golf": "train",
+    "tesla/model y": "holdout",
+    "tesla/model 3": "train",
+    "nissan/leaf": "holdout",
+    "tesla/model s": "train",
+    "tesla/model x": "holdout",
+    "chevrolet/bolt ev": "train",
+    "chevrolet/volt": "holdout",
+    "bmw/3 series": "train",
+    "audi/a4": "holdout",
+    "lexus/ls": "train",
+    "mercedes-benz/c-class": "holdout",
+    "lexus/es": "train",
+    "cadillac/cts": "holdout",
+    "mercedes-benz/s-class": "train",
+    "mercedes-benz/e-class": "holdout",
+    "acura/integra": "train",
+    "acura/tlx": "holdout",
+    "lexus/is": "train",
+    "nissan/altima": "holdout",
+    "chevrolet/malibu": "train",
+    "volkswagen/passat": "holdout",
+    "toyota/camry": "train",
+    "honda/accord": "holdout",
+    "honda/s2000": "train",
+    "bmw/m4": "holdout",
+    "toyota/supra": "train",
+    "mitsubishi/lancer evolution": "holdout",
+    "mazda/rx-7": "train",
+    "chevrolet/corvette": "holdout",
+    "mazda/mx-5 miata": "train",
+    "bmw/m3": "holdout",
+    "acura/nsx": "train",
+    "porsche/911": "holdout",
+    "volkswagen/golf r": "train",
+    "subaru/forester": "holdout",
+    "volkswagen/tiguan": "train",
+    "subaru/outback": "holdout",
+    "chevrolet/tahoe": "train",
+    "lexus/rx": "holdout",
+    "land rover/range rover": "train",
+    "mercedes-benz/gle-class": "holdout",
+    "chevrolet/trax": "train",
+    "ford/bronco": "holdout",
+    "porsche/cayenne": "train",
+    "bmw/x5": "holdout",
+    "chevrolet/suburban": "train",
+    "acura/mdx": "holdout",
+    "gmc/yukon": "train",
+    "cadillac/escalade": "holdout",
+    "porsche/macan": "train",
+    "audi/q7": "holdout",
+    "lincoln/navigator": "train",
+    "gmc/yukon xl": "holdout",
+    "lexus/gx": "train",
+    "toyota/land cruiser": "holdout",
+    "toyota/sequoia": "train",
+    "toyota/4runner": "holdout",
+    "jeep/cherokee": "train",
+    "chevrolet/equinox": "holdout",
+    "ford/escape": "train",
+    "volvo/xc90": "holdout",
+    "kia/soul": "train",
+    "jeep/wrangler": "holdout",
+    "hyundai/santa fe": "train",
+    "jeep/compass": "holdout",
+    "hyundai/tucson": "train",
+    "kia/sportage": "holdout",
+    "toyota/rav4": "train",
+    "honda/pilot": "holdout",
+    "mazda/cx-5": "train",
+    "nissan/rogue": "holdout",
+    "honda/cr-v": "train",
+    "audi/q3": "holdout",
+    "audi/q5": "train",
+    "ford/expedition": "holdout",
+    "nissan/frontier": "train",
+    "chevrolet/colorado": "holdout",
+    "dodge/ram 2500": "train",
+    "gmc/sierra 1500": "holdout",
+    "toyota/tundra": "train",
+    "dodge/ram 1500": "holdout",
+    "ford/ranger": "train",
+    "chevrolet/silverado 1500": "holdout",
+    "ford/f-150": "train",
+    "toyota/tacoma": "holdout",
+    "jeep/gladiator": "train",
+    "chrysler/pacifica": "holdout",
+    "dodge/grand caravan": "train",
+    "toyota/sienna": "holdout",
+    "honda/odyssey": "train"
+  },
+  "bounds": {
+    "beta": [
+      0.05,
+      0.6
+    ],
+    "betaD2": [
+      0,
+      0.8
+    ],
+    "floorD2": [
+      0.1,
+      1.2
+    ],
+    "onset": [
+      12,
+      30
+    ],
+    "onsetD": [
+      0,
+      18
+    ],
+    "economy.market": [
+      0.7,
+      2
+    ],
+    "economy.k": [
+      0.35,
+      1.8
+    ],
+    "economy.floor": [
+      0.5,
+      3
+    ],
+    "midsize.market": [
+      0.7,
+      2
+    ],
+    "midsize.k": [
+      0.35,
+      1.8
+    ],
+    "midsize.floor": [
+      0.5,
+      3
+    ],
+    "fullsize.market": [
+      0.7,
+      2
+    ],
+    "fullsize.k": [
+      0.35,
+      1.8
+    ],
+    "fullsize.floor": [
+      0.5,
+      3
+    ],
+    "suv.market": [
+      0.7,
+      2
+    ],
+    "suv.k": [
+      0.35,
+      1.8
+    ],
+    "suv.floor": [
+      0.5,
+      3
+    ],
+    "truck.market": [
+      0.7,
+      2
+    ],
+    "truck.k": [
+      0.35,
+      1.8
+    ],
+    "truck.floor": [
+      0.5,
+      3
+    ],
+    "van.market": [
+      0.7,
+      2
+    ],
+    "van.k": [
+      0.35,
+      1.8
+    ],
+    "van.floor": [
+      0.5,
+      3
+    ],
+    "luxury.market": [
+      0.7,
+      2
+    ],
+    "luxury.k": [
+      0.35,
+      1.8
+    ],
+    "luxury.floor": [
+      0.5,
+      3
+    ],
+    "sports.market": [
+      0.7,
+      2
+    ],
+    "sports.k": [
+      0.35,
+      1.8
+    ],
+    "sports.floor": [
+      0.5,
+      3
+    ],
+    "ev.market": [
+      0.7,
+      2
+    ],
+    "ev.k": [
+      0.35,
+      1.8
+    ],
+    "ev.floor": [
+      0.5,
+      3
+    ],
+    "brand.acura": [
+      0.65,
+      1.4
+    ],
+    "brand.audi": [
+      0.65,
+      1.4
+    ],
+    "brand.bmw": [
+      0.65,
+      1.4
+    ],
+    "brand.chevrolet": [
+      0.65,
+      1.4
+    ],
+    "brand.dodge": [
+      0.65,
+      1.4
+    ],
+    "brand.ford": [
+      0.65,
+      1.4
+    ],
+    "brand.gmc": [
+      0.65,
+      1.4
+    ],
+    "brand.honda": [
+      0.65,
+      1.4
+    ],
+    "brand.hyundai": [
+      0.65,
+      1.4
+    ],
+    "brand.jeep": [
+      0.65,
+      1.4
+    ],
+    "brand.kia": [
+      0.65,
+      1.4
+    ],
+    "brand.land rover": [
+      0.65,
+      1.4
+    ],
+    "brand.lexus": [
+      0.65,
+      1.4
+    ],
+    "brand.lincoln": [
+      0.65,
+      1.4
+    ],
+    "brand.mazda": [
+      0.65,
+      1.4
+    ],
+    "brand.mercedes-benz": [
+      0.65,
+      1.4
+    ],
+    "brand.nissan": [
+      0.65,
+      1.4
+    ],
+    "brand.porsche": [
+      0.65,
+      1.4
+    ],
+    "brand.tesla": [
+      0.65,
+      1.4
+    ],
+    "brand.toyota": [
+      0.65,
+      1.4
+    ],
+    "brand.volkswagen": [
+      0.65,
+      1.4
+    ]
+  },
+  "limitations": [
+    "References are informed estimates, not transactions.",
+    "WA: 2026 sales only; minimum 10 sales per 20k-mile cell; model-level base trim; no trim correction. Cell medians weighted equally, not by volume.",
+    "Sparse segment intervals (<8 cells) use pooled holdout absolute log residual p80.",
+    "Holdout measures family transfer; used to set intervals, never to fit centers.",
+    "No supplied numeric spec bounds for new market/brand parameters: explicit conservative search bounds recorded here. No appreciation fitted; G remains evidence gated."
+  ]
+}

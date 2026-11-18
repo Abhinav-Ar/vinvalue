@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  computeValuation, compWeight, eligibleListings, pricableCount, normalizeTrim, outlierFlags, trimsMatch, weightLabel, weightedQuantile, wlsSlope,
+  computeLegacyValuation as computeValuation, compWeight, eligibleListings, pricableCount, normalizeTrim, outlierFlags, trimsMatch, weightLabel, weightedQuantile, wlsSlope,
 } from '@/models/valuation';
 import { fetchComps, fetchCompsTiered } from '@/models/valuation/comps';
 import { backtest } from '@/models/valuation/backtest';
@@ -296,7 +296,7 @@ describe('ranges, spreads, confidence', () => {
     const r = computeValuation({ specs: { ...specs, decodeStatus: 'partial' }, inputs: inputs({ mileage: 250000 }), listings: flat(PRICES), now });
     expect(r.confidence).toMatchObject({ decodeStatus: 'partial', trimConfirmedByUser: true, flags: ['mileage_high_for_age'], searchTier: 1 });
     expect(computeValuation({ specs, inputs: inputs(), listings: flat(PRICES), now }).confidence.flags).toEqual([]);
-    expect(r.methodVersion).toBe(C.methodVersion);
+    expect(r.methodVersion).toBe('1.2.0');
   });
 
   it('rounds to config.roundTo and is deterministic', () => {

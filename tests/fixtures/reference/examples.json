@@ -1,0 +1,10 @@
+[
+  {"make":"Ford","model":"Mustang GT","year":2019,"M":50000,"miles":50000,"D":0.58,"G":0,"before":26730},
+  {"make":"Ford","model":"Mustang EcoBoost","year":2019,"M":37500,"miles":50000,"D":0.37,"G":0,"before":18270},
+  {"make":"Honda","model":"S2000","year":2000,"M":55000,"miles":20000,"D":0.85,"G":1,"before":42160},
+  {"make":"Porsche","model":"911 GT3","year":2008,"M":170000,"miles":20000,"D":0.925,"G":1,"before":126640},
+  {"make":"Toyota","model":"Camry LE","year":2017,"M":30000,"miles":90000,"D":0,"G":0,"before":9950},
+  {"make":"Toyota","model":"Camry XSE","year":2017,"M":35000,"miles":90000,"D":0,"G":0,"before":11610},
+  {"make":"Toyota","model":"Supra Turbo","year":1995,"M":95000,"miles":30000,"D":0.85,"G":1,"before":69930},
+  {"make":"Nissan","model":"Altima","year":2015,"M":30000,"miles":120000,"D":0,"G":0,"before":8240}
+]
