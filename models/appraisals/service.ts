@@ -92,26 +92,27 @@ export async function appraiseAndSave(db: Db, providers: Providers, args: Apprai
   if (!trim) {
     if (specs.trimCandidates.length === 1) trim = specs.trimCandidates[0]!;
     else if (specs.trimCandidates.length > 1 && !args.allowUnknownTrim) throw trimRequiredError(specs.trimCandidates);
+  } else if (specs.trimCandidates.length > 0 && !args.allowUnknownTrim) {
+    // In model mode the trim selects the MSRP anchor, so a trim the VIN contradicts (e.g. "Shelby GT500"
+    // on a GT VIN) would silently price a different car. Ask the user to pick one the VIN supports.
+    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!specs.trimCandidates.some((c) => norm(c) === norm(trim!))) {
+      throw new AppError(400, 'invalid_input', "That trim doesn't match this VIN. Pick one of the trims it decodes to.", { trim: ['Choose a trim this VIN supports.'] }, { trimCandidates: specs.trimCandidates });
+    }
   }
   const inputs: AppraisalInputs = { ...args.inputs, trim };
 
   const trimConfirmedByUser = args.trimConfirmedByUser ?? !!args.inputs.trim?.trim();
   let compsSearch: Awaited<ReturnType<typeof fetchCompsTiered>> | null = null;
   let result: ReturnType<typeof computeValuation>;
-  let earlyEnrichment: Awaited<ReturnType<typeof loadEnrichments>> | null = null;
   try {
     compsSearch = await fetchCompsTiered(providers, { specs, trim, zip: inputs.zip, radiusMiles: config.radiusMiles });
     const { listings, searchTier } = compsSearch;
     result = computeValuation({ specs, inputs, listings, radiusMiles: config.radiusMiles, searchTier, trimConfirmedByUser, now });
     result.stats.comparisonBasis = compsSearch.comparisonBasis; result.stats.searchStages = compsSearch.searchStages;
   } catch (err) {
-    if (!(err instanceof TooFewCompsError) || !providers.enrichment?.stats && !providers.enrichment?.prediction) throw err;
-    earlyEnrichment = await loadEnrichments(providers.enrichment, specs, inputs.vin, now);
-    const values = [earlyEnrichment.prediction?.value, earlyEnrichment.marketStats?.value].filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
-    if (!values.length) throw err;
-    const value = Math.round(values.reduce((a,b) => a+b, 0) / values.length / 10) * 10; const half = Math.round(value * 0.12 / 10) * 10;
-    const range = { value, low: value-half, high: value+half };
-    result = { private: range, instant: range, retail: range, adjustments: [], comps: [], stats: { found: 0, used: 0, excluded: 0, median: value, weightedMedian: value, avgMiles: inputs.mileage, radiusMiles: config.radiusMiles, searchTier: 3, privateComps: 0, dealerComps: 0, duplicatesRemoved: 0, comparisonBasis: 'local', searchStages: [] }, confidence: { decodeStatus: specs.decodeStatus ?? 'clean', trimConfirmedByUser, selfReported: ['market'], flags: ['provisional_enrichment_only'], rangeReasons: ['No minimum comparable set was available; estimate uses optional market data.'], searchTier: 3 }, methodNotes: ['Provisional estimate from optional market statistics or VIN prediction; minimum-comps requirement was not met.'], methodVersion: `${config.methodVersion}-provisional-enrichment`, engineVersion: `${config.methodVersion}-provisional-enrichment` };
+    if (!(err instanceof TooFewCompsError) && !(err instanceof AppError && ['not_configured', 'upstream_failed'].includes(err.code))) throw err;
+    result = computeValuation({ specs, inputs, listings: [], trimConfirmedByUser, now });
   }
 
   const id = await db.transaction(async (tx) => {
@@ -141,7 +142,7 @@ export async function appraiseAndSave(db: Db, providers: Providers, args: Apprai
         result.confidence.flags.push('mileage_below_last_reading');
       }
     }
-    const enrichment = earlyEnrichment ?? await loadEnrichments(providers.enrichment, specs, inputs.vin, now);
+    const enrichment = await loadEnrichments(providers.enrichment, specs, inputs.vin, now);
     const [row] = await tx
       .insert(appraisals)
       .values({

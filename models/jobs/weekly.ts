@@ -15,6 +15,7 @@ import { drainDeliveries } from '@/models/notify/drain';
 import { buildWeeklyDigests } from '@/models/notify/digest';
 import { getSenders, type Senders } from '@/models/notify';
 import { counter, type JobReport } from './types';
+import { runPublicRecordsWeekly } from './publicRecords';
 
 /** Per-run memo so vehicles sharing a make/model/year cost one NHTSA call. */
 function memoRecalls(p: Providers): Providers {
@@ -47,6 +48,8 @@ export async function runWeekly(
   const deadline = started + (opts.budgetMs ?? cfg.jobBudgetMs);
   const memo = memoRecalls(providers);
   const c = counter();
+  const publicRecords = await runPublicRecordsWeekly(db, now);
+  for (const [k, n] of Object.entries(publicRecords.counts)) c.add(`publicRecords_${k}`, n);
   const drafts: AlertDraft[] = [];
 
   // Bounded by count and wall clock. TODO: rotate (oldest recall check first) once garages outgrow one run.

@@ -15,9 +15,15 @@ it('production ignores DEV_USER_EMAIL and consults the live session on every req
 it('production rejects fixture-provider and embedded-database shortcuts', async () => {
   vi.stubEnv('NODE_ENV', 'production'); vi.stubEnv('PROVIDERS', 'fixtures');
   vi.stubEnv('MARKETCHECK_API_KEY', ''); vi.stubEnv('DATABASE_URL', 'pglite:should-never-open');
+  vi.stubEnv('MARKET_DATA_PROVIDER', '');
   const { getProviders, setProviders } = await import('@/models/providers');
+  const { PublicRecordsListingsProvider } = await import('@/models/providers/publicRecords');
   setProviders(null);
-  await expect(getProviders().listings.searchActive({} as never)).rejects.toMatchObject({ status: 503 });
+  // Production never serves fixture data: PROVIDERS=fixtures is ignored and the free public-records source is used.
+  expect(getProviders().listings).toBeInstanceOf(PublicRecordsListingsProvider);
+  // A leftover MarketCheck key alone must not switch the paid provider back on.
+  vi.stubEnv('MARKETCHECK_API_KEY', 'retired-key');
+  expect(getProviders().listings).toBeInstanceOf(PublicRecordsListingsProvider);
   const { getDb, setDb } = await import('@/models/db'); setDb(null);
   expect(() => getDb()).toThrow('for local development only');
 });

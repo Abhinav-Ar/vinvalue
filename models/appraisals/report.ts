@@ -2,6 +2,7 @@
 import type { Adjustment, CompStats, Confidence, ValueRange } from '@/models/db/schema';
 import type { appraisals, comps } from '@/models/db/schema';
 import { valuationConfig } from '@/models/config/valuation';
+import type { ValuationAudit } from '@/shared/valuation';
 import { weightLabel } from '@/models/valuation';
 
 type AppraisalRow = Omit<typeof appraisals.$inferSelect, 'enrichment'> & { enrichment?: typeof appraisals.$inferSelect.enrichment };
@@ -89,6 +90,7 @@ const baseCount = (s: CompStats) => (s.privateComps != null && s.privateComps >=
 
 export function buildReport(a: AppraisalRow, rows: CompRow[], code: string | null): AppraisalReport {
   const s = a.compStats;
+  const audit = (a.confidence as (Confidence & { valuation?: ValuationAudit }) | null)?.valuation;
   const trim = a.inputs.trim;
   const label = [a.specs.year, a.specs.make, a.specs.model, trim].filter(Boolean).join(' ');
   const reportComps: ReportComp[] = rows
@@ -129,12 +131,12 @@ export function buildReport(a: AppraisalRow, rows: CompRow[], code: string | nul
     private: a.privateValue,
     instant: a.instantValue,
     retail: a.retailValue,
-    base: { label: `Weighted median of ${plural(baseCount(s), s.privateComps != null && s.privateComps >= valuationConfig.minPrivateComps ? 'private-seller listing' : 'comparable listing')}`, amount: s.weightedMedian },
+    base: { label: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : `Weighted median of ${plural(baseCount(s), s.privateComps != null && s.privateComps >= valuationConfig.minPrivateComps ? 'private-seller listing' : 'comparable listing')}`, amount: audit?.base ?? s.weightedMedian },
     adjustments: a.adjustments,
     comps: reportComps,
-    compStats: { ...s, summary: `${plural(s.used, 'comparable listing')} within ${s.radiusMiles} miles` },
+    compStats: { ...s, summary: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : `${plural(s.used, 'comparable listing')} within ${s.radiusMiles} miles` },
     confidence: a.confidence,
-    methodNotes: methodNotes(s, rows),
+    methodNotes: audit ? [...audit.notes, `Desirability score: ${audit.score.toFixed(2)}.`, ...audit.factors] : methodNotes(s, rows),
     methodVersion: a.methodVersion,
     enrichment: a.enrichment ?? null,
   };

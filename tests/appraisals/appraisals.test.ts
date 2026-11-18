@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { createTestDb, createUser } from '../helpers/db';
 import { useFixtureProviders, fixtureProviders, FIXTURE_VINS } from '../helpers/providers';
@@ -18,6 +18,9 @@ import { GET as reportGET } from '@/app/api/reports/[slug]/route';
 import { POST as claimPOST } from '@/app/api/reports/[slug]/claim/route';
 import { POST as refreshPOST } from '@/app/api/vehicles/[id]/refresh-value/route';
 import { POST as outcomePOST } from '@/app/api/appraisals/[id]/outcome/route';
+
+// Legacy route fixtures intentionally have no reference snapshot. Model persistence has separate tests.
+vi.mock('@/models/reference', async (original) => ({ ...await original<typeof import('@/models/reference')>(), loadReferences: () => ({ msrp: [], generations: [], variants: [], cpi: null }) }));
 
 const post = (url: string, body: unknown) =>
   new Request(`http://test${url}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
@@ -165,23 +168,23 @@ describe('POST /api/appraisals', () => {
     [{ status: 401 }, 401],
     [{ status: 429 }, 429],
     ['network' as const, null],
-  ])('upstream failure %j -> 502 with provider', async (failure, upstreamStatus) => {
+  ])('upstream failure %j -> model or friendly missing-anchor response', async (failure, upstreamStatus) => {
     useFixtureProviders({ listingsFailure: failure });
     const res = await appraisePOST(post('/api/appraisals', mustang));
-    expect(res.status).toBe(502);
-    expect((await res.json()).error).toMatchObject({ code: 'upstream_failed', provider: 'MarketCheck', upstreamStatus });
+    expect(res.status).toBe(422);
+    expect((await res.json()).error).toMatchObject({ code: 'invalid_input', reason: 'needs_reference' });
   });
 
-  it('503 not_configured without a MarketCheck key', async () => {
+  it('friendly missing-anchor response without a MarketCheck key', async () => {
     const f = fixtureProviders();
     setProviders({ vin: f.vin, recalls: f.recalls });
     delete process.env.MARKETCHECK_API_KEY;
     const res = await appraisePOST(post('/api/appraisals', mustang));
-    expect(res.status).toBe(503);
-    expect((await res.json()).error.code).toBe('not_configured');
+    expect(res.status).toBe(422);
+    expect((await res.json()).error.reason).toBe('needs_reference');
   });
 
-  it('too few comps -> 404 with compCount, and no report number is used', async () => {
+  it('too few comps without an anchor -> 422, and no report number is used', async () => {
     const u = await createUser(db);
     setTestUser(u.id);
     const f = fixtureProviders();
@@ -192,8 +195,8 @@ describe('POST /api/appraisals', () => {
       vin: { decode: async () => ({ ...mx, vin, year: 2023, make: 'Lotus', model: 'Emira', trimRaw: 'V6', trimCandidates: ['V6'] }) },
     });
     const res = await appraisePOST(post('/api/appraisals', { ...mustang, vin, trim: 'V6', mileage: 4000 }));
-    expect(res.status).toBe(404);
-    expect((await res.json()).error).toMatchObject({ code: 'too_few_comps', compCount: 3 });
+    expect(res.status).toBe(422);
+    expect((await res.json()).error).toMatchObject({ code: 'invalid_input', reason: 'needs_reference' });
     expect((await db.select().from(users).where(eq(users.id, u.id)))[0]!.nextReportSeq).toBe(0);
     expect(await db.select().from(appraisals)).toHaveLength(0);
   });

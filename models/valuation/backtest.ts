@@ -9,7 +9,7 @@ import type { Listing } from '@/models/providers/types';
 import { TooFewCompsError } from '@/models/errors';
 import { median } from '@/models/stats';
 import { valuationConfig, type ValuationConfig } from '@/models/config/valuation';
-import { computeValuation, eligibleListings } from './index';
+import { computeLegacyValuation as computeValuation, eligibleListings } from './index';
 
 export type BacktestResult = {
   /** Listings that could be predicted (others had >= minComps usable). */

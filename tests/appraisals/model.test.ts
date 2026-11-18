@@ -1,0 +1,21 @@
+import { it, expect, vi } from 'vitest';
+import { createTestDb } from '../helpers/db';
+import { fixtureProviders } from '../helpers/providers';
+import { exampleReference } from '../fixtures/reference/factory';
+import { appraiseAndSave, loadReportById } from '@/models/appraisals/service';
+vi.mock('@/models/reference', async original => ({ ...await original<typeof import('@/models/reference')>(), loadReferences: () => exampleReference() }));
+it('persists and reloads the model basis, wide interval, factors and one history adjustment', async()=>{
+ const db=await createTestDb(),p=fixtureProviders();
+ p.listings={searchActive:vi.fn(async()=>({numFound:0,listings:[]}))};
+ const report=await appraiseAndSave(db,p,{userId:null,now:new Date('2026-11-16Z'),specs:{year:2017,make:'Toyota',model:'Camry LE',trimRaw:'Base',trimCandidates:['Base'],body:null,drive:null,engine:null,fuel:null,doors:null,plant:null,checkDigitValid:true},inputs:{vin:'FIXTURE',trim:'Base',mileage:90000,zip:'60601',condition:'fair',title:'clean',accidents:'none',serviceHistory:null,owners:null,keys:null,warningLights:null}});
+ const loaded=await loadReportById(db,report.id);
+ expect(loaded?.base.label).toBe('Model estimate (no local sales data)');
+ expect(loaded?.compStats.used).toBe(0);
+ expect(loaded?.compStats.weightedMedian).toBe(0);
+ expect(loaded?.methodVersion).toBe('2.1.0');
+ expect(loaded?.confidence?.flags).toContain('model_estimate');
+ expect(loaded?.private).toEqual(report.private);
+ expect(loaded!.base.amount+loaded!.adjustments.reduce((a,x)=>a+x.amount,0)).toBe(loaded?.private.value);
+ expect(loaded?.adjustments.filter(a=>a.key==='condition')).toHaveLength(1);
+ expect(loaded?.methodNotes).toContain('Desirability score: 0.00.');
+});

@@ -75,12 +75,12 @@ export function ReportView({ slug }: { slug: string }) {
         <div className="g2" style={{ marginTop: 56, alignItems: 'center', gridTemplateColumns: '5fr 7fr' }}>
           <div>
             <VehiclePhoto car={r.vehicle} />
-            <h2 className="label" style={{ color: 'var(--blue)', fontSize: 13 }}>Private sale estimate</h2>
+            <h2 className="label" style={{ color: 'var(--blue)', fontSize: 13 }}>{r.confidence?.flags.includes('model_estimate') ? 'Model estimate (no local sales data)' : 'Private sale estimate'}</h2>
             <p className="mono" style={{ margin: '10px 0 24px', fontSize: 84, letterSpacing: '-.04em', lineHeight: 1 }}>{usd(r.private.value)}</p>
             <div style={{ fontSize: 14 }}>
               <RangeBar low={r.private.low} high={r.private.high} value={r.private.value} label={`Likely range ${usd(r.private.low)} to ${usd(r.private.high)}, estimate ${usd(r.private.value)}`} />
             </div>
-            <p className="small" style={{ marginTop: 12 }}>Likely range based on comparable listings</p>
+            <p className="small" style={{ marginTop: 12 }}>{r.confidence?.flags.includes('model_estimate') ? 'Wide model range from original MSRP, inflation, retention and mileage; limited market evidence.' : 'Likely range based on comparable listings'}</p>
           </div>
           <div><CarDrawing variant={carVariant(r.vehicle.model)} /></div>
         </div>
@@ -288,7 +288,7 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
   if (!c.trimConfirmedByUser) {
     checked.push(trim ? `Trim ${trim}, the only one this VIN matches. Not confirmed by you.` : 'Trim unknown, so listings of every trim were compared.');
   }
-  checked.push(`Prices from ${r.compStats.used} live listings within ${r.compStats.radiusMiles} miles.`);
+  if (!c.flags.includes('model_estimate')) checked.push(`Prices from ${r.compStats.used} live listings within ${r.compStats.radiusMiles} miles.`);
 
   const reported: string[] = [`Mileage, ${num(r.mileage)}`];
   if (c.trimConfirmedByUser && trim) reported.push(`Trim, ${trim}`);
