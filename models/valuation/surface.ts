@@ -23,7 +23,11 @@ export function evaluateSurface(specs: Pick<DecodedSpecs, 'year' | 'make' | 'mod
   const scarcity = g && g.E >= p.scarcityDemandMin && v?.productionScope === 'us' && v.productionCount != null ? (p.scarcity.find(b=>v.productionCount!<=b.max)?.score ?? 0) : 0;
   // Missing facts contribute zero to D but reduce coverage. Curated zero facts retain coverage.
   const features = { E: g?.E ?? 0, P: v?.P ?? 0, L: scarcity, I: g?.I ?? 0, T: manual && v?.manualPreferred ? 1 : 0, B: g?.B ?? 0, H: g?.H ?? 0 };
-  const confidence = { E: g ? 1 : 0, P: v ? 1 : 0, L: v?.productionCount != null ? 1 : 0, I: g ? 1 : 0, T: v && (!v.manualPreferred || manual || specs.transmission) ? 1 : 0, B: g ? 1 : 0, H: g ? 1 : 0 };
+  // Ordinary cars are deliberately absent from generations/variants.json (schema contract: "all zero"),
+  // so an absent row is a KNOWN zero, not missing evidence. Treating it as unknown gave q=0 and zero
+  // comp weights for every ordinary car. Scarcity (L) only matters for enthusiast generations (E>=.6).
+  const enthusiast = (g?.E ?? 0) >= .6;
+  const confidence = { E: 1, P: 1, L: !enthusiast || v?.productionCount != null ? 1 : 0, I: 1, T: !v?.manualPreferred || manual || specs.transmission ? 1 : 0, B: 1, H: 1 };
   let D = 0, q = 0;
   for (const key of Object.keys(features) as Array<keyof typeof features>) { D += p.weights[key] * features[key] * confidence[key]; q += p.weights[key] * confidence[key]; }
   D = clamp(D, 0, 1);

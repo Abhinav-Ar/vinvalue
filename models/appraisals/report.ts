@@ -51,7 +51,8 @@ export type PublicReport = {
   base: { label: string; amount: number };
   adjustments: Adjustment[];
   comps: ReportComp[];
-  compStats: CompStats & { summary: string };
+  /** source: live asking-price listings, or recorded public-record sales (e.g. Washington title transfers). */
+  compStats: CompStats & { summary: string; source: 'listings' | 'recorded_sales' };
   confidence: Confidence | null;
   methodNotes: string[];
   methodVersion: string;
@@ -89,6 +90,7 @@ function methodNotes(s: CompStats, rows: CompRow[]): string[] {
 const baseCount = (s: CompStats) => (s.privateComps != null && s.privateComps >= valuationConfig.minPrivateComps ? s.privateComps : s.used);
 
 export function buildReport(a: AppraisalRow, rows: CompRow[], code: string | null): AppraisalReport {
+  const recorded = rows.length > 0 && rows.every((r) => r.listingId.startsWith('wa-public-'));
   const s = a.compStats;
   const audit = (a.confidence as (Confidence & { valuation?: ValuationAudit }) | null)?.valuation;
   const trim = a.inputs.trim;
@@ -131,10 +133,10 @@ export function buildReport(a: AppraisalRow, rows: CompRow[], code: string | nul
     private: a.privateValue,
     instant: a.instantValue,
     retail: a.retailValue,
-    base: { label: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : `Weighted median of ${plural(baseCount(s), s.privateComps != null && s.privateComps >= valuationConfig.minPrivateComps ? 'private-seller listing' : 'comparable listing')}`, amount: audit?.base ?? s.weightedMedian },
+    base: { label: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : recorded ? `Weighted median of ${plural(baseCount(s), 'recorded sale')}` : `Weighted median of ${plural(baseCount(s), s.privateComps != null && s.privateComps >= valuationConfig.minPrivateComps ? 'private-seller listing' : 'comparable listing')}`, amount: audit?.base ?? s.weightedMedian },
     adjustments: a.adjustments,
     comps: reportComps,
-    compStats: { ...s, summary: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : `${plural(s.used, 'comparable listing')} within ${s.radiusMiles} miles` },
+    compStats: { ...s, source: recorded ? 'recorded_sales' : 'listings', summary: audit?.mode === 'model' ? 'Model estimate (no local sales data)' : recorded ? `${plural(s.used, 'recorded sale')} of this model from Washington State title records` : `${plural(s.used, 'comparable listing')} within ${s.radiusMiles} miles` },
     confidence: a.confidence,
     methodNotes: audit ? [...audit.notes, `Desirability score: ${audit.score.toFixed(2)}.`, ...audit.factors] : methodNotes(s, rows),
     methodVersion: a.methodVersion,

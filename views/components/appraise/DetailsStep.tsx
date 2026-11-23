@@ -346,7 +346,7 @@ export function DetailsStep() {
 
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
             <button type="submit" className="btn" disabled={busy}>{busy ? 'Calculating value' : 'Calculate value'}</button>
-            <span className="small">Uses live listings within 100 miles of your ZIP.</span>
+            <span className="small">Uses recorded sales where available, otherwise a calibrated estimate from the original MSRP.</span>
           </div>
         </form>
 

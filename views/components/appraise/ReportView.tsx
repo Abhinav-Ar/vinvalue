@@ -288,7 +288,7 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
   if (!c.trimConfirmedByUser) {
     checked.push(trim ? `Trim ${trim}, the only one this VIN matches. Not confirmed by you.` : 'Trim unknown, so listings of every trim were compared.');
   }
-  if (!c.flags.includes('model_estimate')) checked.push(`Prices from ${r.compStats.used} live listings within ${r.compStats.radiusMiles} miles.`);
+  if (!c.flags.includes('model_estimate')) checked.push(r.compStats.source === 'recorded_sales' ? `Prices from ${r.compStats.used} recorded sales in Washington State title records (trim not recorded).` : `Prices from ${r.compStats.used} live listings within ${r.compStats.radiusMiles} miles.`);
 
   const reported: string[] = [`Mileage, ${num(r.mileage)}`];
   if (c.trimConfirmedByUser && trim) reported.push(`Trim, ${trim}`);

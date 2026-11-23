@@ -465,8 +465,15 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
   const sumW = used.reduce((a,c) => a+c.weight,0), sumW2 = used.reduce((a,c) => a+c.weight*c.weight,0);
   const nEff = sumW2 ? sumW*sumW/sumW2 : 0;
   const legacyHalf = result ? result.private.high/result.private.value-1 : 0;
-  const unknownTrimLog = normalized.audit.some(a=>a.reason?.startsWith('unknown trim')) ? p.unknownTrimLog : 0;
-  const rawWidth = model ? (config.segmentCalibration[subject.segment]?.interval ?? p.modelLogBase)+subject.modelUncertainty : Math.log1p(legacyHalf)+subject.uncertainty+unknownTrimLog+(nEff<8 ? p.weakEffectiveLog : 0)+p.priorContrastLog*(used.filter(c=>c.trimMatch==='adjusted').length/Math.max(1,used.length));
+  // Comps mode: unknown-trim comps (e.g. WA recorded sales) widen once, in proportion to their share; they are
+  // not also charged the known-trim contrast prior. The MSRP anchor cancels in same-generation H_s/H_c ratios,
+  // so its uncertainty belongs to model mode only.
+  const unknownIds = new Set(normalized.audit.filter(a=>a.reason?.startsWith('unknown trim')).map(a=>a.id));
+  const unknownShare = used.length ? used.filter(c=>unknownIds.has(c.id)).length/used.length : 0;
+  const knownAdjustedShare = used.length ? used.filter(c=>c.trimMatch==='adjusted' && !unknownIds.has(c.id)).length/used.length : 0;
+  const unknownTrimLog = p.unknownTrimLog*unknownShare;
+  const compsUncertainty = subject.uncertainty - p.anchorLog*({ documented: 0, inferred: .4, approximate: 1 } as const)[subject.msrpRow!.confidence];
+  const rawWidth = model ? (config.segmentCalibration[subject.segment]?.interval ?? p.modelLogBase)+subject.modelUncertainty : Math.log1p(legacyHalf)+compsUncertainty+unknownTrimLog+(nEff<8 ? p.weakEffectiveLog : 0)+p.priorContrastLog*knownAdjustedShare;
   if (model && rawWidth > p.modelLogMax) throw new NotEnoughDataError('uncertainty exceeds the supported range; confirm the vehicle specification.');
   const hLog = clamp(rawWidth,model ? p.modelLogMin : p.compsLogMin,model ? p.modelLogMax : p.compsLogMax);
   const range = (factor:number): ValueRange => ({ value: roundTo(value*factor,config.roundTo), low: roundTo(value*factor*Math.exp(-hLog),config.roundTo), high: roundTo(value*factor*Math.exp(hLog),config.roundTo) });

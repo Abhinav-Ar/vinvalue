@@ -58,7 +58,20 @@ export async function ingestWashingtonSales(db: Db, opts: IngestOptions = {}) {
     }
     if (!res!.ok) throw new Error(`WA SODA ${res!.status}`);
     const rows = await res!.json() as RawWaSale[]; if (!Array.isArray(rows) || rows.length === 0) { offset = 0; break; }
-    for (const raw of rows) { const f = filterWashingtonSale(raw, now); if (!f.row) { rejected++; const reason = f.reason ?? 'rejected'; rejectedByReason[reason] = (rejectedByReason[reason] ?? 0) + 1; continue; } try { await db.insert(publicRecordSales).values(f.row).onConflictDoNothing({ target: publicRecordSales.rowHash }); kept++; } catch { rejectedByReason.duplicate = (rejectedByReason.duplicate ?? 0) + 1; } const d = new Date(f.row.transactionDate); if (!maxDate || d > maxDate) maxDate = d; }
+    // One multi-row insert per page: row-by-row inserts over a remote pooler ran ~280 rows/min.
+    const batch = new Map<string, NonNullable<FilterResult['row']>>();
+    for (const raw of rows) {
+      const f = filterWashingtonSale(raw, now);
+      if (!f.row) { rejected++; const reason = f.reason ?? 'rejected'; rejectedByReason[reason] = (rejectedByReason[reason] ?? 0) + 1; continue; }
+      if (batch.has(f.row.rowHash)) { rejectedByReason.duplicate = (rejectedByReason.duplicate ?? 0) + 1; continue; }
+      batch.set(f.row.rowHash, f.row);
+      const d = new Date(f.row.transactionDate); if (!maxDate || d > maxDate) maxDate = d;
+    }
+    if (batch.size) {
+      const inserted = await db.insert(publicRecordSales).values([...batch.values()]).onConflictDoNothing({ target: publicRecordSales.rowHash }).returning({ id: publicRecordSales.id });
+      kept += inserted.length;
+      if (inserted.length < batch.size) rejectedByReason.duplicate = (rejectedByReason.duplicate ?? 0) + batch.size - inserted.length;
+    }
     offset += rows.length; if (rows.length < pageSize) { offset = 0; break; }
   }
   const watermark = offset === 0 ? maxDate : state?.watermark ?? null;
