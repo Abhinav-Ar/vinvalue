@@ -37,7 +37,7 @@ export function filterWashingtonSale(raw: RawWaSale, now = new Date()): FilterRe
   return { row: { sourceDataset: WA_SALES_DATASET, rowHash: createHash('sha256').update(stable).digest('hex'), make, model, modelYear: year, salePrice: Math.round(price), odometer, transactionMonth: `${sale.slice(0, 7)}-01`, transactionDate, transactionType: tx, county, state: 'WA', retrievedAt: now } };
 }
 
-export type IngestOptions = { pageSize?: number; maxPages?: number; fetchImpl?: typeof fetch; now?: Date; timeBudgetMs?: number; requestTimeoutMs?: number };
+export type IngestOptions = { pageSize?: number; maxPages?: number; fetchImpl?: typeof fetch; now?: Date; timeBudgetMs?: number; requestTimeoutMs?: number; retryDelayMs?: number };
 export async function ingestWashingtonSales(db: Db, opts: IngestOptions = {}) {
   const pageSize = Math.min(opts.pageSize ?? 250, 1000), maxPages = opts.maxPages ?? 4, fetchImpl = opts.fetchImpl ?? fetch, now = opts.now ?? new Date(), deadline = Date.now() + (opts.timeBudgetMs ?? 25_000);
   const [state] = await db.select().from(publicRecordJobState).where(eq(publicRecordJobState.job, 'wa-sales')).limit(1);
@@ -47,8 +47,17 @@ export async function ingestWashingtonSales(db: Db, opts: IngestOptions = {}) {
     const where = ["new_or_used_vehicle='Used'", 'sale_price > 1500', "transaction_type in('Transfer Title','Original Title')"];
     if (state?.watermark) where.push(`transaction_date ${offset > 0 ? '>=' : '>'} '${state.watermark.toISOString().slice(0, 10)}T00:00:00'`);
     u.searchParams.set('$where', where.join(' AND ')); u.searchParams.set('$order', 'transaction_date ASC, :id ASC');
-    const res = await fetchImpl(u, { signal: AbortSignal.timeout(opts.requestTimeoutMs ?? 20_000) }); if (!res.ok) throw new Error(`WA SODA ${res.status}`);
-    const rows = await res.json() as RawWaSale[]; if (!Array.isArray(rows) || rows.length === 0) { offset = 0; break; }
+    // The WA portal occasionally stalls on a single page; retry with backoff instead of failing the whole run.
+    let res: Response | null = null;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        res = await fetchImpl(u, { signal: AbortSignal.timeout(opts.requestTimeoutMs ?? 20_000) });
+        if (res.ok || res.status < 500 || attempt >= 3) break;
+      } catch (err) { if (attempt >= 3) throw err; }
+      await new Promise((r) => setTimeout(r, opts.retryDelayMs ?? 2000 * attempt));
+    }
+    if (!res!.ok) throw new Error(`WA SODA ${res!.status}`);
+    const rows = await res!.json() as RawWaSale[]; if (!Array.isArray(rows) || rows.length === 0) { offset = 0; break; }
     for (const raw of rows) { const f = filterWashingtonSale(raw, now); if (!f.row) { rejected++; const reason = f.reason ?? 'rejected'; rejectedByReason[reason] = (rejectedByReason[reason] ?? 0) + 1; continue; } try { await db.insert(publicRecordSales).values(f.row).onConflictDoNothing({ target: publicRecordSales.rowHash }); kept++; } catch { rejectedByReason.duplicate = (rejectedByReason.duplicate ?? 0) + 1; } const d = new Date(f.row.transactionDate); if (!maxDate || d > maxDate) maxDate = d; }
     offset += rows.length; if (rows.length < pageSize) { offset = 0; break; }
   }
