@@ -90,3 +90,16 @@ Unweighted per-label/per-cell absolute percentage errors. WA sales counts descri
 Changed expectations: `tests/appraisals/model.test.ts` now expects persisted method 2.1.0. `tests/valuation/surface.test.ts` replaces the old high/low >1.7 requirement with lower/upper bounds .75/1.26 of center, reflecting calibrated Camry uncertainty. No worked-example dollar targets were changed: those remain historical arithmetic illustrations, not price labels. New coverage checks verify every MSRP family has a supported segment, near-equal family partitions, and no G=0 collector appreciation. The fitter asserts every cached prediction equals the production surface.
 
 Validation passed: `npx tsc --noEmit`; `npx vitest run` (29 files, 251 tests); `node scripts/check-architecture.mjs`; `npm run backtest` (all legacy accuracy and coverage gates); `npx next build`.
+
+
+## Monthly dealer sample proposals
+
+Run `npx tsx scripts/calibrate.ts --local-db` against an explicitly local database to
+include private sale outcomes, WA records, curated refs, and `market_samples`.
+Without `--local-db`, calibration reads curated refs and optional fixture JSON only.
+Outputs are `market-proposals.json` and `MARKET_REPORT.md`; config is never applied.
+Dealer asks use the configured 0.90 private-party conversion, strict trim aliases,
+and a fixed 50/50 family split shared by fits before/after adding samples.
+Review source-specific and segment/age errors, coverage, and WA EV overlap before
+accepting any proposed market multipliers. No dealer observations were fetched for
+this implementation; generated proposals demonstrate the offline reference path.

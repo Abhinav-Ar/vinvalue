@@ -466,3 +466,17 @@ export const publicRecordJobState = pgTable('public_record_job_state', {
 });
 
 export const _sql = sql; // re-export for raw fragments in migrations if needed
+
+/** Research-only dealer asks; never used by live appraisal providers. */
+export const marketSamples = pgTable('market_samples', {
+  id: id(), source: text('source').notNull(), make: text('make').notNull(), model: text('model').notNull(),
+  year: integer('year').notNull(), trim: text('trim'), miles: integer('miles').notNull(), price: integer('price').notNull(),
+  sellerType: text('seller_type'), inventoryType: text('inventory_type'), daysOnMarket: integer('days_on_market'),
+  zip: text('zip').notNull(), radius: integer('radius').notNull(), sampleMonth: text('sample_month').notNull(),
+  fetchedAt: timestamp('fetched_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(), listingHash: text('listing_hash').notNull(),
+}, t => [uniqueIndex('market_samples_month_listing').on(t.sampleMonth, t.listingHash)]);
+export const marketSampleUsage = pgTable('market_sample_usage', {
+  month: text('month').primaryKey(), calls: integer('calls').notNull().default(0), cursor: integer('cursor').notNull().default(0),
+  stopped: text('stopped'), quotaRemaining: integer('quota_remaining'), rateRemaining: integer('rate_remaining'),
+  rateReset: text('rate_reset'), leaseUntil: timestamp('lease_until', { withTimezone: true }), leaseToken: text('lease_token'),
+});

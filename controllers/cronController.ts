@@ -20,3 +20,10 @@ export const runWeekly = route({ auth: false, name: 'cron.weekly' }, async ({ re
   requireCronSecret(req);
   return json(await runWeeklyModel(getDb(), getProviders(), new Date()));
 });
+
+/** Resumable monthly research sampling. Never invoked by an appraisal. */
+export const runMarketSampler = route({ auth: false, name: 'cron.marketSampler' }, async ({ req }) => {
+  requireCronSecret(req);
+  const { runMarketSampler } = await import('@/models/jobs/marketSampler');
+  return json(await runMarketSampler(getDb()));
+});

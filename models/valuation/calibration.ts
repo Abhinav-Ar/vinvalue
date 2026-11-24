@@ -1,7 +1,7 @@
 import { evaluateSurface, NotEnoughDataError } from './surface';
 import { resolveReference, exactName, type ReferenceData } from '@/models/reference';
 import { valuationConfig, type ValuationConfig } from '@/models/config/valuation';
-export type LabeledSale = { id:string; groupId:string; source:'sale_outcome'|'wa_record'; soldOn:string; soldPrice:number; year:number; make:string; model:string; trim:string|null; miles:number; transmission?:string|null };
+export type LabeledSale = { id:string; groupId:string; source:'sale_outcome'|'wa_record'|'reference'|'market_sample'; soldOn:string; soldPrice:number; year:number; make:string; model:string; trim:string|null; miles:number; transmission?:string|null };
 export function scoreSales(rows:LabeledSale[], data:ReferenceData, config:ValuationConfig=valuationConfig) {
   const scores:Array<{id:string;segment:string;ageBucket:string;ape:number;signed:number}> = [], skips:Array<{id:string;reason:string}> = [];
   for (const r of rows) {
