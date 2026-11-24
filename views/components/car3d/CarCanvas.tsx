@@ -4,8 +4,7 @@
  * stays underneath as the fallback and carries the callouts and labels.
  *
  * The camera frames the same rectangle as the SVG's viewBox, so in the resting view the wheel
- * centers sit on the same pixels in both. A small yaw and pitch shows the car in three quarters;
- * the frustum is widened by 1/cos(yaw) to keep the axle positions exact.
+ * centers sit on the same pixels in both. The glass lift turns the elevation into an axonometric view.
  *
  * Interaction: drag to turn the car (touch turns it sideways only, so vertical swipes still scroll
  * the page), arrow keys turn it when focused, hover outlines a part, click selects it.
@@ -15,11 +14,11 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import { Component, useEffect, useMemo, useRef, type ReactNode, type RefObject } from 'react';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import type { ProgressSource } from '@/views/components/landing/ExplodeCar';
-import { buildCar, highlight, pickPart, setColors, setLook, setReveal, type CarColors, type CarLook, type CarModel, type PartId } from './model';
+import { anchors, explodePhases, type ProgressSource } from '@/views/components/landing/ExplodeCar';
+import { buildCar, highlight, pickPart, setColors, setLook, type CarColors, type CarLook, type CarModel, type PartId } from './model';
 
-export const REST = { yaw: 0.13, pitch: 0.16 };
-const DRAW_MS = 1900;
+export const REST = { yaw: 0, pitch: 0 };
+
 const PITCH_RANGE = [-0.05, 0.85] as const;
 
 export type CarCanvasProps = {
@@ -27,8 +26,8 @@ export type CarCanvasProps = {
   viewBox: string;
   /** Scroll progress 0..1: 0 assembled, 1 fully apart. */
   progress?: ProgressSource;
-  /** Sweep the car in on mount. */
-  draw?: boolean;
+  /** Fired after the assembled scene has been drawn. */
+  onReady?: () => void;
   /** X-ray (see-through, theme colors) or solid (painted, lit by a studio environment). */
   look?: CarLook;
   /** Bump to return to the resting view and clear the selection. */
@@ -62,22 +61,27 @@ export default function CarCanvas(props: CarCanvasProps) {
 
 function readColors(el: HTMLElement | null): CarColors {
   const cs = el ? getComputedStyle(el) : null;
-  const get = (name: string, fallback: string) => {
-    const v = cs?.getPropertyValue(name).trim();
-    try { return new THREE.Color(v || fallback); } catch { return new THREE.Color(fallback); }
+  const get = (name: string) => {
+    const token = cs?.getPropertyValue(name).trim();
+    // Three ignores CSS alpha. The grid shader controls its own fade.
+    return new THREE.Color(token?.replace(/rgba\(([^)]+),[^,]+\)/, 'rgb($1)') || undefined);
   };
-  return { ink: get('--ink', '#22262D'), accent: get('--blue', '#1C3ED4') };
+  return { ink: get('--ink'), accent: get('--blue'), paper: get('--paper'), mid: get('--mid'), grid: get('--grid2') };
 }
 
-const smooth = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
 const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.min(hi, Math.max(lo, v));
 
-function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, onSelect, onTurned, host }: CarCanvasProps & { host: RefObject<HTMLDivElement | null> }) {
+function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, keyTarget, onSelect, onTurned, host }: CarCanvasProps & { host: RefObject<HTMLDivElement | null> }) {
   const set = useThree((s) => s.set);
   const gl = useThree((s) => s.gl);
   const invalidate = useThree((s) => s.invalidate);
   const model = useMemo<CarModel>(() => buildCar(readColors(host.current)), [host]);
-  const start = useRef<number | null>(null);
+  useEffect(() => {
+    const el = gl.domElement;
+    const lost = () => onFail?.();
+    el.addEventListener('webglcontextlost', lost);
+    return () => el.removeEventListener('webglcontextlost', lost);
+  }, [gl, onFail]);
   const view = useRef({ yaw: REST.yaw, pitch: REST.pitch, ty: REST.yaw, tp: REST.pitch });
   const sel = useRef<{ selected: PartId | null; hovered: PartId | null }>({ selected: null, hovered: null });
   const dragged = useRef(false);
@@ -88,11 +92,10 @@ function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, on
   // Orthographic camera on the viewBox rectangle.
   const camera = useMemo(() => {
     const [vx, vy, vw, vh] = viewBox.split(/[\s,]+/).map(Number);
-    const k = Math.cos(REST.yaw);
     const cx = (vx + vw / 2 - 500) / 100;
     const cy = (330 - (vy + vh / 2)) / 100;
-    const hw = (vw / 200) * k;
-    const hh = (vh / 200) * k;
+    const hw = vw / 200;
+    const hh = vh / 200;
     const cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.1, 100);
     cam.position.set(cx, cy, 30);
     cam.lookAt(cx, cy, 0);
@@ -105,6 +108,7 @@ function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, on
 
   // Theme: tokens live on .bp; re-read when html[data-theme] changes.
   useEffect(() => {
+    setColors(model, readColors(host.current));
     const mo = new MutationObserver(() => { setColors(model, readColors(host.current)); invalidate(); });
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
     return () => mo.disconnect();
@@ -114,18 +118,20 @@ function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, on
 
   // Solid look: studio reflections from a generated room environment (no files, no extra package).
   const scene = useThree((s) => s.scene);
-  const env = useRef<THREE.Texture | null>(null);
+  const env = useRef<THREE.WebGLRenderTarget | null>(null);
   useEffect(() => {
     if (look === 'solid' && !env.current) {
       const pm = new THREE.PMREMGenerator(gl);
-      env.current = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+      const room = new RoomEnvironment();
+      env.current = pm.fromScene(room, 0.04);
+      room.dispose();
       pm.dispose();
     }
-    scene.environment = look === 'solid' ? env.current : null;
+    scene.environment = look === 'solid' ? env.current?.texture ?? null : null;
     setLook(model, look);
     invalidate();
   }, [look, gl, scene, model, invalidate]);
-  useEffect(() => () => { env.current?.dispose(); }, []);
+  useEffect(() => () => { env.current?.dispose(); env.current = null; }, []);
 
   const actions = useRef({
     setTurned: (t: boolean) => { if (t !== turned.current) { turned.current = t; cb.current.onTurned?.(t); } },
@@ -195,36 +201,28 @@ function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, on
     invalidate();
   }, [resetKey, actions, invalidate]);
 
-  const baseZ = useMemo(() => {
-    const m = new Map<THREE.Object3D, number>();
-    for (const g of [model.parts.frontWheel, model.parts.rearWheel]) g.children.forEach((w) => m.set(w, w.position.z));
-    return m;
-  }, [model]);
-
+  const labels = useRef<SVGGElement[]>([]);
+  const guides = useRef<SVGLineElement[]>([]);
+  const projected = useMemo(() => new THREE.Vector3(), []);
+  useEffect(() => {
+    labels.current = Array.from(keyTarget?.current?.querySelectorAll<SVGGElement>('[data-anchor]') ?? []);
+    guides.current = Array.from(keyTarget?.current?.querySelectorAll<SVGLineElement>('[data-guide]') ?? []);
+    return () => labels.current.forEach(label => label.style.removeProperty('--projected'));
+  }, [keyTarget]);
+  const ready = useRef(false);
   const holder = useRef<THREE.Group>(null);
   // The car turns around its own middle, not the ground origin.
   const tmp = useMemo(() => ({ e: new THREE.Euler(), m: new THREE.Matrix4(), t: new THREE.Matrix4(), pivot: new THREE.Vector3(-0.1, 1.0, 0) }), []);
 
-  useFrame(({ clock }) => {
+  useFrame(({ camera: activeCamera }) => {
+    if (activeCamera !== camera) return;
     let again = false;
-    if (draw) {
-      if (start.current === null) start.current = clock.elapsedTime;
-      const t = ((clock.elapsedTime - start.current) * 1000) / DRAW_MS;
-      const e = 1 - (1 - Math.min(1, t)) ** 3;
-      setReveal(model, t >= 1 ? 99 : -5.8 + 11.6 * e);
-      if (t < 1) again = true;
-    }
-
     const p = progress?.get() ?? 0;
-    const lift = smooth(p * 3);
-    const out = smooth(p * 3 - 1);
-    const down = smooth(p * 3 - 2);
+    const { lift, out, down } = explodePhases(p);
     model.parts.glass.position.y = 0.78 * lift;
     model.parts.internals.position.y = 0.12 * lift;
-    model.parts.frontWheel.position.set(-0.46 * out, -0.84 * down, 0);
-    model.parts.rearWheel.position.set(0.46 * out, -0.84 * down, 0);
-    for (const [w, z] of baseZ) w.position.z = z + Math.sign(z) * 0.55 * out;
-
+    model.parts.frontWheel.position.set(-0.92 * out, 0, 0);
+    model.parts.rearWheel.position.set(0, -0.84 * down, 0);
     // Ease toward the target view.
     const v = view.current;
     v.yaw += (v.ty - v.yaw) * 0.18;
@@ -237,15 +235,41 @@ function Scene({ viewBox, progress, draw, look = 'xray', resetKey, keyTarget, on
       // At rest the pivot offset cancels out of the resting view only approximately, so rotate about the
       // origin at rest (keeps the axles on the drawing) and blend toward the pivot as the view turns away.
       const away = Math.min(1, Math.hypot(v.yaw - REST.yaw, v.pitch - REST.pitch) * 2);
-      e.set(v.pitch, v.yaw, 0);
+      e.set(v.pitch + 0.24 * lift, v.yaw + 0.31 * lift, 0);
       m.makeTranslation(pivot.x * away, pivot.y * away, 0)
         .multiply(t.makeRotationFromEuler(e))
         .multiply(t.makeTranslation(-pivot.x * away, -pivot.y * away, 0));
+      // In the exploded cutaway, remove the far tires to expose each intact axle.
+      const facing = Math.cos(v.yaw + 0.31 * lift);
+      for (const axle of [model.parts.frontWheel, model.parts.rearWheel]) {
+        for (const wheel of axle.children) {
+          if (wheel instanceof THREE.Group) wheel.visible = look === 'solid' || p < 0.03 || facing * wheel.position.z >= 0;
+        }
+      }
       g.matrix.copy(m);
-      g.matrixWorldNeedsUpdate = true;
+      g.updateMatrixWorld(true);
+      anchors.forEach(({ x, y }, i) => {
+        const part = [model.parts.glass, model.parts.frontWheel, model.parts.rearWheel][i];
+        const project = (moved: boolean) => {
+          projected.set((x - 500) / 100, (330 - y) / 100, i === 0 ? 0.58 : Math.sign(facing) * part.children[0].position.z);
+          if (moved) projected.add(part.position);
+          projected.applyMatrix4(g.matrixWorld).project(camera);
+          return [(projected.x + 1) * 500, (1 - projected.y) * 270 - 60];
+        };
+        const [ox, oy] = project(false);
+        const [px, py] = project(true);
+        if (labels.current[i]) labels.current[i].style.setProperty('--projected', `translate(${px - x}px, ${py - y}px)`);
+        const guide = guides.current[i];
+        if (guide) for (const [attr, value] of Object.entries({ x1: ox, y1: oy, x2: px, y2: py })) guide.setAttribute(attr, String(value));
+      });
+    }
+    gl.render(scene, camera);
+    if (!ready.current) {
+      ready.current = true;
+      onReady?.();
     }
     if (again) invalidate();
-  });
+  }, 1);
 
   const onMove = (e: ThreeEvent<PointerEvent>) => {
     if (dragged.current) return;

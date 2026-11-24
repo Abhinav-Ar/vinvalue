@@ -4,6 +4,7 @@ import { CarDrawing, type Callout } from '@/views/components/CarDrawing';
 import { Car3D, useCan3D } from '@/views/components/car3d/useCan3D';
 import { PART_INFO, type PartId } from '@/views/components/car3d/parts';
 import { createProgressSource, EXPLODE_PARTS, ExplodeLabels, explodeVars, stepOf, type ProgressSource } from './ExplodeCar';
+import { STEPS } from './HowSection';
 import styles from './landing.module.css';
 
 /**
@@ -32,9 +33,10 @@ const EXPLODE_TO = 0.78;
  * number"). The 3D car can be turned and its parts selected; without WebGL the line drawing does
  * the same explode; under reduced motion nothing pins and the drawing stays assembled.
  */
-export function HeroStage({ plan }: { plan: ReactNode }) {
+export function HeroStage(_props: { plan?: ReactNode }) {
   const track = useRef<HTMLDivElement>(null);
   const art = useRef<HTMLDivElement>(null);
+  const [step, setStep] = useState(1);
   const source = useMemo(() => createProgressSource(), []);
 
   useEffect(() => {
@@ -50,11 +52,16 @@ export function HeroStage({ plan }: { plan: ReactNode }) {
       const raw = Math.min(1, Math.max(0, (top - el.getBoundingClientRect().top) / travel));
       source.set(Math.min(1, Math.max(0, (raw - EXPLODE_FROM) / (EXPLODE_TO - EXPLODE_FROM))));
     };
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure); };
+    motion.addEventListener('change', onScroll);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    const unsubscribe = source.subscribe(() => setStep(stepOf(source.get())));
     measure();
     return () => {
+      unsubscribe();
+      motion.removeEventListener('change', onScroll);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
       if (frame) cancelAnimationFrame(frame);
@@ -64,8 +71,13 @@ export function HeroStage({ plan }: { plan: ReactNode }) {
   return (
     <div ref={track} className={styles.heroTrack}>
       <div ref={art} className={styles.heroArt}>
-        <div className={`tilt ${styles.heroPlan}`}>{plan}</div>
+
         <div className={styles.heroCarSlot}><HeroCar progress={source} /></div>
+        <ol className={styles.rail} aria-label="How we get to the number">
+          {STEPS.map(({ title, body }, i) => <li key={title} aria-current={step === i + 1 ? 'step' : undefined}>
+            <span className="mono">0{i + 1}</span><div><h3>{title}</h3><p>{body}</p></div>
+          </li>)}
+        </ol>
       </div>
       {/* Scroll room for the pin (zero height under reduced motion). A sticky element cannot travel into padding. */}
       <div className={styles.heroSpacer} aria-hidden />
@@ -75,9 +87,11 @@ export function HeroStage({ plan }: { plan: ReactNode }) {
 
 function HeroCar({ progress }: { progress: ProgressSource }) {
   const box = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
   const can3d = useCan3D();
   const [failed, setFailed] = useState(false);
   const use3d = can3d && !failed;
+  useEffect(() => { if (!use3d) setReady(false); }, [use3d]);
   const [selected, setSelected] = useState<PartId | null>(null);
   const [turned, setTurned] = useState(false);
   const [resetKey, setResetKey] = useState(0);
@@ -115,6 +129,7 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
       ref={box}
       className={styles.carBox}
       style={{ aspectRatio: HERO_ASPECT, ...(explodeVars(0) as CSSProperties) }}
+      data-ready={ready && use3d}
       data-step="0"
       data-hud="on"
       {...(use3d
@@ -125,7 +140,7 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
         <Car3D
           viewBox={VIEWBOX}
           progress={progress}
-          draw
+          onReady={() => setReady(true)}
           look={look}
           resetKey={resetKey}
           keyTarget={box}
@@ -136,8 +151,7 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
       )}
       <CarDrawing
         variant="gt"
-        animate
-        bare={use3d}
+        ink={false}
         parts={EXPLODE_PARTS}
         viewBox={VIEWBOX}
         hudClassName={styles.hud}
@@ -174,7 +188,7 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
                 <p className="small" style={{ margin: '6px 0 0', color: 'var(--ink)' }}>{info.note}</p>
               </>
             ) : (
-              <p className="small" style={{ margin: 0 }}>Drag to turn the car. Click a part to see what it changes in the value.</p>
+              <p className="small" style={{ margin: 0 }}>Drag to rotate · Select a part to inspect</p>
             )}
           </div>
           <div className={styles.carActions}>
