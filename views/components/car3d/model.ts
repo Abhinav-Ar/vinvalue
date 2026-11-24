@@ -57,8 +57,13 @@ const POLY: P[] = OUTLINE.flatMap((s) => Array.from({ length: 40 }, (_, i) => be
 const XMIN = Math.min(...POLY.map((p) => p[0]));
 const XMAX = Math.max(...POLY.map((p) => p[0]));
 
+// All angular samples at one loft station share the same silhouette intersection.
+const spans = new Map<number, { top: number; bot: number }>();
+
 /** Top and bottom of the outline at SVG x (SVG y, so top < bottom). */
 function span(sx: number): { top: number; bot: number } {
+  const cached = spans.get(sx);
+  if (cached) return cached;
   let top = Infinity;
   let bot = -Infinity;
   for (let i = 0; i < POLY.length; i++) {
@@ -70,7 +75,9 @@ function span(sx: number): { top: number; bot: number } {
     bot = Math.max(bot, y);
   }
   if (top === Infinity) { const mid = (POLY[0][1] + 300) / 2; return { top: mid, bot: mid }; }
-  return { top, bot };
+  const bounds = { top, bot };
+  spans.set(sx, bounds);
+  return bounds;
 }
 
 /** Beltline: where the glass house meets the body, from the cowl (398) to the deck (860). */
@@ -78,7 +85,7 @@ const BELT = { x0: 398, x1: 860, y0: 158, y1: 152 };
 const belt = (sx: number) => BELT.y0 + ((sx - BELT.x0) / (BELT.x1 - BELT.x0)) * (BELT.y1 - BELT.y0);
 
 /** Plan-view half width in SVG units (74 in wide overall), narrow at the nose, widest over the rear wheels. */
-const WIDTH: P[] = [[54, 96], [80, 132], [150, 162], [233, 178], [400, 176], [560, 172], [743, 185], [880, 176], [938, 150]];
+const WIDTH: P[] = [[54, 65], [80, 118], [150, 154], [233, 180], [400, 160], [560, 154], [743, 188], [880, 158], [938, 124]];
 function halfWidth(sx: number) {
   for (let i = 1; i < WIDTH.length; i++) {
     const [x0, w0] = WIDTH[i - 1];
@@ -100,8 +107,10 @@ function bodySection(sx: number, a: number): P {
   const s = Math.sin(a);
   const up = Math.max(0, s);
   // Boxy superellipse, pulled in toward the top (tumblehome) and slightly at the sill.
-  const w = halfWidth(sx) * (1 - 0.3 * up ** 1.6) * (1 - 0.06 * Math.max(0, -s) ** 2);
-  return [w * spow(c, 0.5), mid - (h / 2) * spow(s, 0.62)];
+  const shoulder = Math.max(0, 1 - Math.abs(s - 0.42) * 1.8);
+  const flank = 0.81 + 0.19 * shoulder - 0.19 * up * up;
+  const ducktail = Math.max(0, Math.min(1, (sx - 869) / 54)) * up * 12;
+  return [halfWidth(sx) * flank * spow(c, 0.42), mid - (h / 2) * spow(s, 0.73) - ducktail];
 }
 
 function glassSection(sx: number, a: number): P {
@@ -110,7 +119,7 @@ function glassSection(sx: number, a: number): P {
   const h = Math.max(0, base - top);
   const c = Math.cos(a);
   const s = Math.sin(a);
-  const w = halfWidth(sx) * (0.7 - 0.18 * s);
+  const w = halfWidth(sx) * (0.71 - 0.16 * s);
   return [w * spow(c, 0.5), base - h * spow(s, 0.6)];
 }
 
@@ -314,7 +323,7 @@ function tube(a: THREE.Vector3, b: THREE.Vector3, r: number, seg = 16) {
 
 /* ---------- materials ---------- */
 
-export type CarColors = { ink: THREE.Color; accent: THREE.Color };
+export type CarColors = { ink: THREE.Color; accent: THREE.Color; paper: THREE.Color; mid: THREE.Color; grid: THREE.Color };
 
 const vert = /* glsl */ `
   varying vec3 vN; varying vec3 vV; varying float vX;
@@ -421,16 +430,16 @@ export function buildCar(colors: CarColors): CarModel {
   const paint = new THREE.MeshPhysicalMaterial({ color: acc, metalness: 0.45, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.06, side: THREE.DoubleSide });
   const s = {
     paint,
-    glass: new THREE.MeshPhysicalMaterial({ color: '#10151c', metalness: 0, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.1, side: THREE.DoubleSide }),
-    tire: new THREE.MeshStandardMaterial({ color: '#1b1d20', roughness: 0.88, metalness: 0 }),
-    rim: new THREE.MeshStandardMaterial({ color: '#d6dbe1', metalness: 1, roughness: 0.22 }),
-    disc: new THREE.MeshStandardMaterial({ color: '#7d838c', metalness: 1, roughness: 0.4 }),
-    caliper: new THREE.MeshStandardMaterial({ color: '#c8302a', roughness: 0.35, metalness: 0.2 }),
-    trim: new THREE.MeshStandardMaterial({ color: '#14161a', roughness: 0.55, metalness: 0.1, side: THREE.DoubleSide }),
-    chrome: new THREE.MeshStandardMaterial({ color: '#c9ced4', metalness: 1, roughness: 0.15 }),
-    head: new THREE.MeshPhysicalMaterial({ color: '#e9eef5', metalness: 0.3, roughness: 0.08, clearcoat: 1, emissive: '#dfe9ff', emissiveIntensity: 0.35 }),
-    tail: new THREE.MeshStandardMaterial({ color: '#5c0a0e', emissive: '#ff2d2d', emissiveIntensity: 0.7, roughness: 0.25 }),
-    seam: new THREE.LineBasicMaterial({ color: '#07090c', transparent: true, opacity: 0.55 }),
+    glass: new THREE.MeshPhysicalMaterial({ color: ink, metalness: 0, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.1, side: THREE.DoubleSide }),
+    tire: new THREE.MeshStandardMaterial({ color: ink, roughness: 0.88, metalness: 0 }),
+    rim: new THREE.MeshStandardMaterial({ color: ink, metalness: 1, roughness: 0.22 }),
+    disc: new THREE.MeshStandardMaterial({ color: ink, metalness: 1, roughness: 0.4 }),
+    caliper: new THREE.MeshStandardMaterial({ color: ink, roughness: 0.35, metalness: 0.2 }),
+    trim: new THREE.MeshStandardMaterial({ color: ink, roughness: 0.55, metalness: 0.1, side: THREE.DoubleSide }),
+    chrome: new THREE.MeshStandardMaterial({ color: ink, metalness: 1, roughness: 0.15 }),
+    head: new THREE.MeshPhysicalMaterial({ color: ink, metalness: 0.3, roughness: 0.08, clearcoat: 1, emissive: acc, emissiveIntensity: 0.35 }),
+    tail: new THREE.MeshStandardMaterial({ color: ink, emissive: acc, emissiveIntensity: 0.7, roughness: 0.25 }),
+    seam: new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: 0.55 }),
   };
 
   const root = new THREE.Group();
@@ -489,6 +498,7 @@ export function buildCar(colors: CarColors): CarModel {
   const detail = (geo: THREE.BufferGeometry, xm: THREE.Material, sm: THREE.Material, xl: THREE.Material = x.faint) => {
     bodyG.add(mesh(geo, xm, sm), line(new THREE.EdgesGeometry(geo, 25), xl, null));
   };
+  detail(patch(55, 133, at(Math.PI + 0.32), at(2 * Math.PI - 0.32), 1.065, 12, 18), x.trim, s.trim, x.line);
   // Headlights: a swept blade along each front corner.
   for (const [lo, hi] of both((t) => 0.2 + 0.12 * t, (t) => 0.52 - 0.1 * t)) detail(patch(76, 170, lo, hi, 1.008), x.rim, s.head, x.line);
   // Lower intake across the nose, plus a slim upper grille slot.
@@ -511,9 +521,9 @@ export function buildCar(colors: CarColors): CarModel {
     bodyG.add(mesh(tube(base, new THREE.Vector3(base.x + 0.06, base.y + 0.06, base.z + sd * 0.13), 0.02, 8), x.trim, s.trim));
   }
   // Rear diffuser: a plate and five fins under the tail.
-  bodyG.add(mesh(boxPart(872, 934, 0.17, 0.2, 0.95), x.trim, s.trim));
+  bodyG.add(mesh(boxPart(868, 929, 0.2, 0.28, 1.05), x.trim, s.trim));
   for (const z of [-0.6, -0.3, 0, 0.3, 0.6]) {
-    const fin = boxPart(884, 934, 0.04, 0.18, 0.012, z);
+    const fin = boxPart(881, 928, 0.16, 0.26, 0.012, z);
     bodyG.add(mesh(fin, x.trim, s.trim), line(new THREE.EdgesGeometry(fin), x.faint));
   }
   // Exhaust tips.
@@ -525,9 +535,10 @@ export function buildCar(colors: CarColors): CarModel {
   const seams: number[] = [];
   for (const sd of [1, -1]) {
     const A = (a: number) => (sd > 0 ? a : Math.PI - a);
-    seam(seams, 410, A(-0.72), 410, A(0.95));
-    seam(seams, 655, A(-0.72), 655, A(0.95));
-    seam(seams, 410, A(-0.72), 655, A(-0.72));
+    seam(seams, 420, A(-0.64), 397, A(0.9));
+    seam(seams, 613, A(-0.62), 651, A(0.93));
+    seam(seams, 420, A(-0.64), 613, A(-0.62));
+    seam(seams, 295, A(0.23), 832, A(0.5));
     seam(seams, 152, A(0.62), 392, A(0.66));
     seam(seams, 868, A(0.62), 922, A(0.5), 8);
   }
@@ -536,16 +547,28 @@ export function buildCar(colors: CarColors): CarModel {
   bodyG.add(line(lineGeo(seams), x.faint, s.seam));
 
   // Ground shadow.
-  const shadowG = new THREE.CircleGeometry(1, 48);
+  const shadowG = new THREE.PlaneGeometry(14, 10);
   shadowG.rotateX(-Math.PI / 2);
-  shadowG.scale(4.7, 1, 2.1);
-  shadowG.translate(-0.1, 0.002, 0);
   const shadow = new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    uniforms: { uColor: { value: ink }, uOpacity: { value: 1 }, uReveal: { value: 99 } },
-    vertexShader: 'varying vec2 vP; void main(){ vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-    fragmentShader: 'uniform vec3 uColor; uniform float uOpacity; varying vec2 vP; void main(){ float d = length(vP / vec2(4.7, 2.1)); gl_FragColor = vec4(uColor, 0.16 * (1.0 - smoothstep(0.2, 1.0, d)) * uOpacity); }',
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    uniforms: { uColor: { value: ink }, uGrid: { value: colors.grid.clone() }, uOpacity: { value: 1 }, uReveal: { value: 99 } },
+    vertexShader: `varying vec2 ground;
+      void main() {
+        ground = position.xz;
+        vec3 p = position;
+        p.y -= 0.16 * p.z + 0.22;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: `uniform vec3 uColor, uGrid;
+      uniform float uOpacity;
+      varying vec2 ground;
+      void main() {
+        vec2 uv = ground * 2.;
+        vec2 cell = abs(fract(uv - .5) - .5) / max(fwidth(uv), vec2(.001));
+        float grid = (1. - min(min(cell.x, cell.y), 1.)) * (1. - smoothstep(.45, 1., length(ground / vec2(6., 5.))));
+        float shade = (1. - smoothstep(.18, 1., length(ground / vec2(4.6, 1.9)))) * .17 * uOpacity;
+        gl_FragColor = vec4(mix(uGrid, uColor, smoothstep(.0,.16,shade)), shade + .18 * grid);
+      }`,
   });
   const shadowMesh = new THREE.Mesh(shadowG, shadow);
   shadowMesh.raycast = () => {};
@@ -608,13 +631,15 @@ export function buildCar(colors: CarColors): CarModel {
   };
   const winTop = (sx: number) => Math.max(0.08, angleAt(sx, dloY(sx) + 5));
   const windows = [
-    gpatch(420, 720, () => 0.05, winTop, 30, 8),
-    gpatch(420, 720, (sx) => Math.PI - winTop(sx), () => Math.PI - 0.05, 30, 8),
+    gpatch(420, 641, () => 0.04, winTop, 30, 8),
+    gpatch(420, 641, (sx) => Math.PI - winTop(sx), () => Math.PI - 0.05, 30, 8),
+    gpatch(650, 725, () => 0.06, winTop, 12, 8),
+    gpatch(650, 725, (sx) => Math.PI - winTop(sx), () => Math.PI - 0.06, 12, 8),
     gpatch(404, 512, () => 0.55, () => Math.PI - 0.55, 14, 16),
     gpatch(688, 852, () => 0.62, () => Math.PI - 0.62, 18, 14),
   ];
   glassG.children[0].userData.mat = { xray: x.glass, solid: paint } satisfies Pair;
-  for (const w of windows) glassG.add(mesh(w, null, s.glass));
+  for (const w of windows) glassG.add(mesh(w, null, s.glass), line(new THREE.EdgesGeometry(w, 50), x.line));
 
   /* Wheels: one group per axle, like the drawing's front and rear wheel. */
   const wheel = (sd: 1 | -1) => {
@@ -682,6 +707,8 @@ export function buildCar(colors: CarColors): CarModel {
       w.position.set(ax, WHEELS.r, sd * z);
       g.add(w);
     }
+    const shaft = tube(new THREE.Vector3(ax, WHEELS.r, -z), new THREE.Vector3(ax, WHEELS.r, z), 0.055);
+    g.add(mesh(shaft, x.trim, s.disc));
     return g;
   };
   const frontWheel = axle('frontWheel', WHEELS.front.x);
@@ -750,6 +777,7 @@ export function buildCar(colors: CarColors): CarModel {
     hoverLine: lines(acc, 0.8),
     solid: new THREE.MeshStandardMaterial({ color: acc, emissive: acc, emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.2, side: THREE.DoubleSide }),
   };
+  Object.entries(s).forEach(([name, material]) => { material.name = name; });
   const solidAll = [...Object.values(s)];
   const materials = [...Object.values(x), shadow];
   const model: CarModel = {
@@ -760,7 +788,7 @@ export function buildCar(colors: CarColors): CarModel {
     solid: { paint, all: solidAll },
     hi,
     shadow,
-    colors: { ink, accent: acc },
+    colors: { ...colors, ink, accent: acc },
     state: { fill: 1, dim: 1, look: 'xray', selected: null, hovered: null },
     dispose() {
       root.traverse((o) => { if ((o as THREE.Mesh).geometry) (o as THREE.Mesh).geometry.dispose(); });
@@ -819,10 +847,23 @@ export function setLook(model: CarModel, look: CarLook) {
 export function setColors(model: CarModel, colors: CarColors) {
   model.colors.ink.copy(colors.ink);
   model.colors.accent.copy(colors.accent);
-  // Paint follows the theme accent, a touch deeper so it reads as paint rather than a flat fill.
   const hsl = { h: 0, s: 0, l: 0 };
-  colors.accent.getHSL(hsl);
-  model.solid.paint.color.setHSL(hsl.h, Math.min(1, hsl.s * 0.95), hsl.l * 0.82);
+  model.solid.paint.color.copy(colors.ink).lerp(colors.mid, 0.22);
+  const dark = colors.ink.getHSL(hsl).l < 0.5 ? colors.ink : colors.paper;
+  for (const material of model.solid.all) {
+    if (!(material instanceof THREE.MeshStandardMaterial || material instanceof THREE.LineBasicMaterial)) continue;
+    switch (material.name) {
+      case 'glass': material.color.copy(dark).multiplyScalar(0.25); break;
+      case 'trim': case 'seam': case 'tire': material.color.copy(dark).multiplyScalar(0.42); break;
+      case 'rim': case 'chrome': case 'head': material.color.copy(colors.mid).lerp(colors.paper, 0.4); break;
+      case 'disc': material.color.copy(colors.mid); break;
+      case 'caliper': case 'tail': material.color.copy(colors.accent); break;
+    }
+    if (material instanceof THREE.MeshStandardMaterial && material.emissiveIntensity > 0) {
+      if (material.name === 'head' || material.name === 'tail') material.emissive.copy(material.color);
+    }
+  }
+  model.shadow.uniforms.uGrid.value.copy(colors.grid);
   model.hi.solid.color.copy(colors.accent);
   model.hi.solid.emissive.copy(colors.accent);
   // Dark ink on a light page stacks up fast across front and back faces: thin the fills there.

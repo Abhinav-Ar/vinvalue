@@ -87,6 +87,7 @@ export function CarDrawing({
           <stop offset="1" style={{ stopColor: 'var(--shade)', stopOpacity: 0 }} />
         </radialGradient>
       </defs>
+      <g data-car-art="">
       {!bare && <Shape e={car.shadow} id={id} />}
       {ink && !bare && (
         <g className={animate ? 'ink' : undefined} filter={`url(#${id}i)`} stroke="var(--blue)" fill="none" transform="translate(1.6 -1.2)">
@@ -100,6 +101,7 @@ export function CarDrawing({
         <g style={parts?.glass}>{car.glass.map(sh)}</g>
         <g style={parts?.frontWheel}>{car.front.map(sh)}</g>
         <g style={parts?.rearWheel}>{car.rear.map(sh)}</g>
+      </g>
       </g>
       <g className={hudClassName}>
       {markers?.map((m, i) => (

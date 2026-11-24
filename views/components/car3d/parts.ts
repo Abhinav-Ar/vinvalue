@@ -6,9 +6,9 @@ export type PartId = 'body' | 'glass' | 'frontWheel' | 'rearWheel' | 'engine' | 
 export const PART_INFO: Record<PartId, { name: string; note: string }> = {
   vin: { name: 'VIN plate', note: 'Step 1 reads these 17 characters and decodes year, make, model and trim.' },
   engine: { name: 'Engine', note: 'Displacement, cylinders and fuel type come from the NHTSA VIN decode.' },
-  drivetrain: { name: 'Drivetrain', note: 'FWD, RWD or AWD comes from the VIN decode and narrows which listings count as comparable.' },
+  drivetrain: { name: 'Drivetrain', note: 'FWD, RWD or AWD comes from the VIN decode and narrows which sales and models count as comparable.' },
   interior: { name: 'Interior', note: 'Seat, wheel and dash wear go into the condition grade you choose.' },
-  fuel: { name: 'Fuel and exhaust', note: 'Fuel type comes from the VIN decode and keeps gas, hybrid and electric comparables apart.' },
+  fuel: { name: 'Fuel and exhaust', note: 'Fuel type comes from the VIN decode and narrows which sales and models count as comparable.' },
   glass: { name: 'Glass and roof', note: 'Roof and glass options follow the trim the VIN decodes.' },
   frontWheel: { name: 'Front wheels and tires', note: 'Tread and wheel damage count toward condition. Mileage has its own adjustment.' },
   rearWheel: { name: 'Rear wheels and tires', note: 'Tread and wheel damage count toward condition. Mileage has its own adjustment.' },

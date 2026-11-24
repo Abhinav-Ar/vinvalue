@@ -3,10 +3,10 @@ import { useSyncExternalStore } from 'react';
 import { ExplodeCar, STILL_PROGRESS } from './ExplodeCar';
 import styles from './landing.module.css';
 
-const STEPS = [
-  { title: 'Identify the exact car', body: 'The VIN gives us year, make, model, trim and drivetrain from NHTSA records.' },
-  { title: 'Compare with local listings', body: 'Comparable listings near your ZIP, outliers removed, each weighted by how close its mileage sits to yours.' },
-  { title: 'Show each adjustment', body: 'Mileage, condition, title and accident history each change the number by an amount listed in the report.' },
+export const STEPS = [
+  { title: 'Decode the VIN', body: 'NHTSA vPIC decodes the year, make, model, trim and drivetrain.' },
+  { title: 'Weigh the market', body: 'We use recorded sales of the same model from Washington State title records when available. Otherwise, we model original MSRP, age, mileage and collector demand, calibrated against real asking prices.' },
+  { title: 'Adjust for your car', body: 'Mileage, condition, title and accident history each change the number by an amount listed in the report.' },
 ];
 
 /** Under reduced motion the hero car stays assembled, so this section shows the three stills instead. */
@@ -24,24 +24,7 @@ function useStill() {
 }
 
 export function HowSection() {
-  return useStill() ? <HowStill /> : <HowSteps />;
-}
-
-/** The car at the top of the page acts the steps out while scrolling; here they are spelled out. */
-function HowSteps() {
-  return (
-    <section className="wrap" aria-labelledby="how-h" style={{ marginTop: 96 }}>
-      <h2 id="how-h" className="h2">How we get to the number</h2>
-      <ol className={`g3 ${styles.steps}`} style={{ gap: 32 }}>
-        {STEPS.map((s, i) => (
-          <li key={s.title} className={styles.step}>
-            <span className={`mono ${styles.stepNum}`}>{i + 1}</span>
-            <div><h3>{s.title}</h3><p>{s.body}</p></div>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
+  return useStill() ? <HowStill /> : null;
 }
 
 function HowStill() {
