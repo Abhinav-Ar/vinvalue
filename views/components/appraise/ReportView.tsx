@@ -82,7 +82,7 @@ export function ReportView({ slug }: { slug: string }) {
             </div>
             <p className="small" style={{ marginTop: 12 }}>{r.confidence?.flags.includes('model_estimate') ? 'Wide model range from original MSRP, inflation, retention and mileage; limited market evidence.' : 'Likely range based on comparable listings'}</p>
           </div>
-          <div><CarDrawing variant={carVariant(r.vehicle.model)} /></div>
+          <div><CarDrawing variant={carVariant(r.vehicle.model, r.vehicle.body)} /></div>
         </div>
 
         <div className="g3" style={{ marginTop: 56 }}>

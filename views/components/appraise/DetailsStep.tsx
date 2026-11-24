@@ -353,7 +353,7 @@ export function DetailsStep() {
         <aside className="sheet" style={{ padding: 28, position: 'sticky', top: 24 }}>
           <h2 className="label" style={{ fontSize: 13 }}>Your inputs</h2>
           <div style={{ margin: '16px 0 12px' }}>
-            <CarDrawing variant={carVariant(d.model)} />
+            <CarDrawing variant={carVariant(d.model, d.specs.body)} />
           </div>
           <Row k="Trim" v={trimSummary} />
           <Row k="Condition" v={labelOf(CONDITIONS, condition)} />

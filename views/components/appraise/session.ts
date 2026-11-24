@@ -65,10 +65,21 @@ export function specLine(s: { body: string | null; drive: string | null; engine:
 }
 
 /** Pick the closest line drawing for a car. */
-export function carVariant(model: string): CarVariant {
+export function carVariant(model: string, body?: string | null): CarVariant {
+  const style = body ?? '';
+  if (/pickup/i.test(style)) return 'truck';
+  if (/utility|multi-purpose|\b(suv|cuv|mpv|minivan|van|wagon)\b/i.test(style)) return 'suv';
+  if (/hatchback|liftback|notchback/i.test(style)) return 'hatch';
+  if (/sedan|saloon/i.test(style)) return 'sedan';
+  if (/convertible|cabriolet/i.test(style)) return 'roadster';
   if (/mx-?5|miata|roadster|boxster|\bz4\b|s2000|spider|spyder|124/i.test(model)) return 'roadster';
   if (/challenger|charger|camaro|chevelle|nova/i.test(model)) return 'muscle';
-  return 'gt';
+  if (/coupe/i.test(style)) return 'gt';
+  if (/\b(f[- ]?[123]50|silverado|ram|tacoma|tundra|ranger|sierra|frontier|colorado|ridgeline)\b/i.test(model)) return 'truck';
+  if (/\b(rav[- ]?4|cr[- ]?v|explorer|wrangler|4runner|tahoe|model [xy]|highlander|outback|forester|pilot|escape|equinox|rogue|cx-?5|sienna|odyssey|pacifica|carnival|minivan)\b/i.test(model)) return 'suv';
+  if (/\b(hatchback|golf|gti|fit|prius|leaf)\b/i.test(model)) return 'hatch';
+  if (/\b(coupe|corvette|mustang|brz|gr86|911)\b/i.test(model)) return 'gt';
+  return 'sedan';
 }
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
