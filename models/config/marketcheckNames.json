@@ -61,11 +61,11 @@
   },
   "bmw/m3": {
     "make": "BMW",
-    "model": "M3"
+    "model": "M3 Sedan,M3"
   },
   "bmw/m4": {
     "make": "BMW",
-    "model": "M4"
+    "model": "M4 Coupe,M4"
   },
   "bmw/x1": {
     "make": "BMW",
@@ -161,7 +161,7 @@
   },
   "chevrolet/express": {
     "make": "CHEVROLET",
-    "model": "Express"
+    "model": "Express Cargo,Express Passenger"
   },
   "chevrolet/hhr": {
     "make": "CHEVROLET",
@@ -245,7 +245,7 @@
   },
   "chrysler/town and country": {
     "make": "CHRYSLER",
-    "model": "Town and Country"
+    "model": "Town & Country"
   },
   "dodge/avenger": {
     "make": "DODGE",
@@ -285,15 +285,15 @@
   },
   "dodge/ram 1500": {
     "make": "DODGE",
-    "model": "Ram 1500"
+    "model": "Ram 1500 Pickup,Ram Pickup"
   },
   "dodge/ram 2500": {
     "make": "DODGE",
-    "model": "Ram 2500"
+    "model": "Ram 2500 Pickup"
   },
   "dodge/ram 3500": {
     "make": "DODGE",
-    "model": "Ram 3500"
+    "model": "Ram 3500 Pickup"
   },
   "dodge/viper": {
     "make": "DODGE",
@@ -305,7 +305,7 @@
   },
   "ford/bronco": {
     "make": "FORD",
-    "model": "Bronco"
+    "model": "Bronco,Bronco 4-Door"
   },
   "ford/bronco sport": {
     "make": "FORD",
@@ -353,11 +353,11 @@
   },
   "ford/f-250": {
     "make": "FORD",
-    "model": "F-250"
+    "model": "F-250 Super Duty"
   },
   "ford/f-350": {
     "make": "FORD",
-    "model": "F-350"
+    "model": "F-350 Super Duty"
   },
   "ford/fiesta": {
     "make": "FORD",
@@ -397,7 +397,7 @@
   },
   "ford/transit": {
     "make": "FORD",
-    "model": "Transit"
+    "model": "Transit Van"
   },
   "ford/transit connect": {
     "make": "FORD",
@@ -829,15 +829,15 @@
   },
   "ram/1500": {
     "make": "RAM",
-    "model": "1500"
+    "model": "Ram 1500 Pickup,Ram 1500 Classic,Ram 1500"
   },
   "ram/2500": {
     "make": "RAM",
-    "model": "2500"
+    "model": "Ram 2500 Pickup,Ram 2500"
   },
   "ram/3500": {
     "make": "RAM",
-    "model": "3500"
+    "model": "Ram 3500 Pickup"
   },
   "saturn/vue": {
     "make": "SATURN",
@@ -973,7 +973,7 @@
   },
   "toyota/supra": {
     "make": "TOYOTA",
-    "model": "Supra"
+    "model": "GR Supra,Supra"
   },
   "toyota/tacoma": {
     "make": "TOYOTA",
