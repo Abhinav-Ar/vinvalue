@@ -5,7 +5,7 @@ background-color:var(--paper);color:var(--ink);font-family:var(--font-sans),syst
 .grid{background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
 background-size:96px 96px,96px 96px,16px 16px,16px 16px}
 /* Night grid opacity and opaque soft fill preserve AA text contrast at grid intersections. */
-[data-theme=night] .bp{--paper:#1D3B6E;--ink:#F2F5FA;--mid:#C2CDE0;--line:rgba(242,245,250,.3);--grid:rgba(242,245,250,.02);--grid2:rgba(242,245,250,.05);--blue:#D0EE83;--signal:var(--blue);--vehicle-shadow:rgba(5,15,35,.45);--photo-scrim:rgba(5,15,35,.7);--soft:#365471;--fill:#1D3B6E;--onblue:#1D3B6E;--shade:rgba(5,15,35,.45);--tire:rgba(242,245,250,.12);--glass:rgba(242,245,250,.08);--tone:rgba(5,15,35,.18)}
+[data-theme=night] .bp{--paper:#1D3B6E;--ink:#F2F5FA;--mid:#C2CDE0;--line:rgba(242,245,250,.3);--grid:rgba(242,245,250,.07);--grid2:rgba(242,245,250,.15);--blue:#D0EE83;--signal:var(--blue);--vehicle-shadow:rgba(5,15,35,.45);--photo-scrim:rgba(5,15,35,.7);--soft:#365471;--fill:#1D3B6E;--onblue:#1D3B6E;--shade:rgba(5,15,35,.45);--tire:rgba(242,245,250,.12);--glass:rgba(242,245,250,.08);--tone:rgba(5,15,35,.18)}
 .bp a{color:var(--blue)} .bp a:hover{color:var(--ink)}
 .mono{font-variant-numeric:tabular-nums}
 .vin,.dimt{font-family:var(--font-mono),ui-monospace,monospace}

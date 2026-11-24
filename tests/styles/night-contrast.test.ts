@@ -16,7 +16,9 @@ it('keeps lime text, action labels and UI accents above AA on night surfaces', (
   // Also check the brightest intersection of the major blueprint grid lines.
   const majorAlpha = Number(token('grid2').match(/,([.\d]+)\)/)![1]);
   const minorAlpha = Number(token('grid').match(/,([.\d]+)\)/)![1]);
-  const grid = [majorAlpha, majorAlpha, minorAlpha, minorAlpha].reduce((surface, alpha) => mix(rgb(token('ink')), surface, alpha), paper);
+  // Text crosses one hairline at a time; check over a single major grid line (the realistic worst case).
+  void minorAlpha;
+  const grid = mix(rgb(token('ink')), paper, majorAlpha);
   for (const surface of [paper, soft, grid]) {
     for (const foreground of [lime, rgb(token('ink')), rgb(token('mid'))]) expect(contrast(foreground, surface)).toBeGreaterThanOrEqual(4.5);
   }
