@@ -3,10 +3,11 @@
  * the engine run BEFORE any write, so a failed appraisal never burns a report
  * number. Writes happen in one transaction.
  */
+import { outcomeSchema } from './outcomeValidation';
 import { randomBytes } from 'node:crypto';
 import { and, asc, desc, eq, isNotNull, isNull, lt, sql } from 'drizzle-orm';
 import type { Db } from '@/models/db';
-import { appraisals, comps as compsTable, odometerReadings, saleOutcomes, users, vehicles } from '@/models/db/schema';
+import { appraisals, comps as compsTable, odometerReadings, saleOutcomes, saleFeedback, users, vehicles } from '@/models/db/schema';
 import type { AppraisalInputs, DecodedSpecs } from '@/models/db/schema';
 import type { Providers } from '@/models/providers/types';
 import { AppError, TooFewCompsError, badRequest, conflict, notFound, unauthorized } from '@/models/errors';
@@ -356,7 +357,7 @@ export function vehicleLabel(specs: Pick<DecodedSpecs, 'year' | 'make' | 'model'
   return [specs.year, specs.make, specs.model, trim].filter(Boolean).join(' ');
 }
 
-export type SaleOutcomeInput = { soldPrice: number; route: SaleRoute; soldOn: string };
+export type SaleOutcomeInput = { soldPrice: number; route: typeof saleOutcomes.$inferSelect.route; soldOn: string };
 
 /**
  * Record what the car actually sold for (calibration data for spreads and the
@@ -364,18 +365,28 @@ export type SaleOutcomeInput = { soldPrice: number; route: SaleRoute; soldOn: st
  * Appraisals without a vehicle get one outcome per appraisal.
  */
 export async function recordSaleOutcome(db: Db, userId: string, appraisalId: string, input: SaleOutcomeInput) {
-  const [a] = await db.select().from(appraisals).where(and(eq(appraisals.id, appraisalId), eq(appraisals.userId, userId))).limit(1);
-  if (!a) throw notFound('Appraisal');
-  const values = { userId, vehicleId: a.vehicleId, appraisalId: a.id, ...input };
-  if (a.vehicleId) {
-    const [row] = await db
-      .insert(saleOutcomes)
-      .values(values)
-      .onConflictDoUpdate({ target: saleOutcomes.vehicleId, set: { appraisalId: a.id, soldPrice: input.soldPrice, route: input.route, soldOn: input.soldOn } })
-      .returning();
+  input = outcomeSchema.parse(input);
+  let [a] = await db.select().from(appraisals).where(and(eq(appraisals.id, appraisalId), eq(appraisals.userId, userId))).limit(1);
+  const [feedback] = await db.select().from(saleFeedback).where(and(eq(saleFeedback.userId, userId), a ? (a.vehicleId ? eq(saleFeedback.vehicleKey, a.vehicleId) : eq(saleFeedback.appraisalId, a.id)) : eq(saleFeedback.id, appraisalId))).limit(1);
+  if (!a && feedback) [a] = await db.select().from(appraisals).where(and((feedback.appraisalId ? eq(appraisals.id, feedback.appraisalId) : eq(appraisals.vehicleId, feedback.vehicleKey)), eq(appraisals.userId, userId))).orderBy(desc(appraisals.createdAt)).limit(1);
+  if (!a && !feedback) throw notFound('Appraisal');
+  if (a?.vehicleId) await requireVehicle(db, userId, a.vehicleId);
+  const snapshot = feedback?.snapshot ?? (a ? { make: a.specs.make, model: a.specs.model, year: a.specs.year, trim: a.inputs.trim, miles: a.inputs.mileage } : null);
+  // Feedback IDs also work for vehicles with no appraisal, including removed vehicles.
+  const [vehicle] = feedback ? await db.select({ id: vehicles.id }).from(vehicles).where(and(eq(vehicles.id, feedback.vehicleKey), eq(vehicles.userId, userId))).limit(1) : [];
+  const values = { userId, vehicleId: a?.vehicleId ?? vehicle?.id ?? null, appraisalId: a?.id ?? null, feedbackId: feedback?.id ?? null, snapshot, ...input };
+  return db.transaction(async tx => {
+    const target = feedback ? saleOutcomes.feedbackId : values.vehicleId ? saleOutcomes.vehicleId : null;
+    let row;
+    if (target) {
+      // Link a pre-existing vehicle outcome before upserting by its prompt.
+      if (feedback && values.vehicleId) await tx.update(saleOutcomes).set({ feedbackId: feedback.id }).where(eq(saleOutcomes.vehicleId, values.vehicleId!));
+      [row] = await tx.insert(saleOutcomes).values(values).onConflictDoUpdate({ target, set: values }).returning();
+    } else {
+      await tx.delete(saleOutcomes).where(and(eq(saleOutcomes.appraisalId, a!.id), eq(saleOutcomes.userId, userId)));
+      [row] = await tx.insert(saleOutcomes).values(values).returning();
+    }
+    if (feedback) await tx.update(saleFeedback).set({ completed: true }).where(eq(saleFeedback.id, feedback.id));
     return row!;
-  }
-  await db.delete(saleOutcomes).where(and(eq(saleOutcomes.appraisalId, a.id), eq(saleOutcomes.userId, userId)));
-  const [row] = await db.insert(saleOutcomes).values(values).returning();
-  return row!;
+  });
 }

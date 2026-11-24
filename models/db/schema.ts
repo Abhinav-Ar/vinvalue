@@ -19,6 +19,7 @@ export const accidentEnum = pgEnum('accident_history', ['none', 'minor', 'major'
 export const serviceHistoryEnum = pgEnum('service_history', ['full', 'partial', 'none']);
 export const keysEnum = pgEnum('key_sets', ['two', 'one']);
 export const warningLightsEnum = pgEnum('warning_lights', ['none', 'check_engine', 'other']);
+export const outcomeRouteEnum = pgEnum('outcome_route', ['instant', 'private', 'retail', 'trade', 'auction']);
 export const saleRouteEnum = pgEnum('sale_route', ['instant', 'private', 'retail', 'trade']);
 export const serviceStatusEnum = pgEnum('service_status', ['scheduled', 'done', 'skipped']);
 export const documentKindEnum = pgEnum('document_kind', ['title', 'registration', 'insurance', 'receipt', 'inspection', 'other']);
@@ -210,13 +211,28 @@ export const comps = pgTable('comps', {
 }, (t) => [index('comps_appraisal_idx').on(t.appraisalId)]);
 
 /** What a user actually got when they sold; feeds calibration of spreads and the asking-to-sale discount. */
+export const saleFeedback = pgTable('sale_feedback', {
+  id: id(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  // Deliberately retained after removal; no vehicle FK.
+  vehicleKey: text('vehicle_key').notNull(),
+  appraisalId: text('appraisal_id').references(() => appraisals.id, { onDelete: 'set null' }),
+  snapshot: jsonb('snapshot').$type<{ make: string; model: string; year: number; trim: string | null; miles: number }>().notNull(),
+  reason: text('reason').notNull(),
+  dismissed: boolean('dismissed').notNull().default(false),
+  completed: boolean('completed').notNull().default(false),
+  createdAt: createdAt(),
+}, (t) => [uniqueIndex('sale_feedback_vehicle_uq').on(t.vehicleKey)]);
+
 export const saleOutcomes = pgTable('sale_outcomes', {
   id: id(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   vehicleId: text('vehicle_id').references(() => vehicles.id, { onDelete: 'set null' }),
   appraisalId: text('appraisal_id').references(() => appraisals.id, { onDelete: 'set null' }),
+  feedbackId: text('feedback_id').references(() => saleFeedback.id, { onDelete: 'set null' }).unique(),
+  snapshot: jsonb('snapshot').$type<{ make: string; model: string; year: number; trim: string | null; miles: number }>(),
   soldPrice: integer('sold_price').notNull(),
-  route: saleRouteEnum('route').notNull(),
+  route: outcomeRouteEnum('route').notNull(),
   soldOn: date('sold_on', { mode: 'string' }).notNull(),
   createdAt: createdAt(),
 }, (t) => [uniqueIndex('sale_outcome_vehicle_uq').on(t.vehicleId)]);

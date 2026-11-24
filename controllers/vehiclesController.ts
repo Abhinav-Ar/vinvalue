@@ -1,3 +1,4 @@
+import { ensureFeedback } from '@/models/appraisals/feedback';
 import { z } from 'zod';
 import { json, parse, route, parseJson, parseQuery } from '@/models/http';
 import { getDb } from '@/models/db';
@@ -117,6 +118,7 @@ export const updateVehicle = route<P, true>({ auth: true, name: 'vehicles.update
 export const deleteVehicle = route<P, true>({ auth: true, name: 'vehicles.delete' }, async ({ params, userId }) => {
   const db = getDb();
   const v = await requireVehicle(db, userId, params.id);
+  await ensureFeedback(db, userId, v.id, 'removed');
   await deleteVehicleFiles(db, v.id);
   await db.delete(vehicles).where(eq(vehicles.id, v.id));
   return new Response(null, { status: 204 });

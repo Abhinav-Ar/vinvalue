@@ -1,9 +1,10 @@
+import { outcomeSchema } from '@/models/appraisals/outcomeValidation';
 import { z } from 'zod';
 import { json, parseJson, parseQuery, route } from '@/models/http';
 import { RULES } from '@/models/ratelimit';
 import { getDb } from '@/models/db';
 import { getProviders } from '@/models/providers';
-import { idSchema, mileageSchema, vinSchema, zipSchema, dollarsSchema, isoDateSchema } from '@/models/validation';
+import { idSchema, mileageSchema, vinSchema, zipSchema } from '@/models/validation';
 import { requireVehicle } from '@/models/ownership';
 import { appraiseAndSave, listAppraisals as listAppraisalsModel, recordSaleOutcome } from '@/models/appraisals';
 const CreateAppraisalBody = z.object({
@@ -70,15 +71,9 @@ export const listAppraisals = route({ auth: true, name: 'appraisals.list' }, asy
   if (q.vehicleId) await requireVehicle(db, userId, q.vehicleId);
   return json({ items: await listAppraisalsModel(db, userId, { vehicleId: q.vehicleId }) });
 });
-const OutcomeBody = z.object({
-  soldPrice: dollarsSchema(),
-  route: z.enum(['instant', 'private', 'retail', 'trade'], { error: 'Pick how you sold it.' }),
-  soldOn: isoDateSchema,
-});
-
-/** POST /api/appraisals/[id]/outcome: record the actual sale price (owner only). */
+/** POST /api/appraisals/[id]/outcome: owner-only. id may also be a durable sale-feedback ID for a removed/unappraised vehicle. */
 export const recordAppraisalOutcome = route<{ id: string }, true>({ auth: true, name: 'appraisals.outcome' }, async ({ req, params, userId }) => {
-  const body = await parseJson(req, OutcomeBody);
+  const body = await parseJson(req, outcomeSchema);
   const o = await recordSaleOutcome(getDb(), userId, params.id, body);
   return json({ id: o.id, soldPrice: o.soldPrice, route: o.route, soldOn: o.soldOn }, { status: 201 });
 });
