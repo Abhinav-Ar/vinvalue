@@ -5,6 +5,7 @@ import { getDb } from '@/models/db';
 import { getProviders } from '@/models/providers';
 import { vinSchema } from '@/models/validation';
 import { decodeVin as decodeVinModel } from '@/models/vin-decode';
+import { allowedTrims } from '@/models/reference';
 const Body = z.object({ vin: vinSchema, importedVehicle: z.boolean().optional() });
 
 /** POST /api/vin/decode { vin, importedVehicle? } -> decoded vehicle + trim candidates. */
@@ -12,13 +13,15 @@ export const decodeVin = route({ auth: false, name: 'vin.decode', rateLimit: RUL
   const { vin, importedVehicle } = await parseJson(req, Body);
   const d = await decodeVinModel(getDb(), getProviders(), vin, { importedVehicle });
   const { vin: _vin, warnings, raw: _raw, ...specs } = d as typeof d & { raw?: unknown };
+  const trimCandidates = allowedTrims(d);
   return json({
     vin,
     year: d.year,
     make: d.make,
     model: d.model,
-    trimCandidates: d.trimCandidates,
-    needsTrimChoice: d.trimCandidates.length > 1,
+    trimCandidates,
+    trimSource: d.trimCandidates.length ? 'vpic' : trimCandidates.length ? 'reference' : null,
+    needsTrimChoice: trimCandidates.length > 1,
     decodeStatus: d.decodeStatus ?? 'clean',
     /** Partial vPIC decode: the UI must ask the user to confirm the details. */
     needsConfirmation: d.decodeStatus === 'partial',

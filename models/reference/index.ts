@@ -13,11 +13,31 @@ export function loadReferences(directory = join(process.cwd(), 'models/reference
 }
 export const exactName = (s: string) => s.trim().toLocaleLowerCase('en-US').replace(/\s+/g, ' ');
 export type ReferenceIdentity = { year: number; make: string; model: string; transmission?: string | null };
+/** Keep picker and anchor resolution on the same make/model/year/transmission rules. */
+function matchesMsrpFamily(r: MsrpRow, specs: ReferenceIdentity) {
+  return exactName(r.make) === exactName(specs.make)
+    && [r.model, ...(r.modelAliases ?? [])].some(m => exactName(m) === exactName(specs.model))
+    && specs.year >= r.yearFrom && specs.year <= r.yearTo
+    && (r.transmission === 'any' || !specs.transmission || exactName(specs.transmission) === r.transmission);
+}
+
+/** vPIC is authoritative when it supplies trims; otherwise offer curated anchor names by tier. */
+export function allowedTrims(specs: ReferenceIdentity & { trimCandidates: string[] }, data?: ReferenceData): string[] {
+  if (specs.trimCandidates.length) return specs.trimCandidates;
+  const rows = (data ?? loadReferences()).msrp.filter(r => matchesMsrpFamily(r, specs)).sort((a, b) => a.tier - b.tier);
+  const seen = new Set<string>();
+  return rows.filter(r => {
+    const key = exactName(r.trim);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(r => r.trim);
+}
+
 export function resolveReference(data: ReferenceData, specs: ReferenceIdentity, trim: string | null) {
   const family = (r: { make: string; model: string }) => exactName(r.make) === exactName(specs.make) && exactName(r.model) === exactName(specs.model);
   // MSRP rows may also match on vPIC model aliases; the canonical model then links generation/variant refs.
-  const msrpFamily = (r: MsrpRow) => exactName(r.make) === exactName(specs.make) && [r.model, ...(r.modelAliases ?? [])].some(m => exactName(m) === exactName(specs.model));
-  const candidates = data.msrp.filter(r => msrpFamily(r) && specs.year >= r.yearFrom && specs.year <= r.yearTo && trim != null && [r.trim, ...r.trimAliases].some(t => exactName(t) === exactName(trim)) && (r.transmission === 'any' || !specs.transmission || exactName(specs.transmission) === r.transmission));
+  const candidates = data.msrp.filter(r => matchesMsrpFamily(r, specs) && trim != null && [r.trim, ...r.trimAliases].some(t => exactName(t) === exactName(trim)));
   const msrpRow = candidates.length === 1 ? candidates[0]! : null;
   const canonical = msrpRow ? { make: msrpRow.make, model: msrpRow.model } : null;
   const sameFamily = (r: { make: string; model: string }) => canonical ? exactName(r.make) === exactName(canonical.make) && exactName(r.model) === exactName(canonical.model) : family(r);

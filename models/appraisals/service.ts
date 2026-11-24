@@ -15,6 +15,7 @@ import { valuationConfig } from '@/models/config/valuation';
 import { computeValuation } from '@/models/valuation';
 import { fetchCompsTiered } from '@/models/valuation/comps';
 import { loadEnrichments } from '@/models/providers/enrichment';
+import { allowedTrims } from '@/models/reference';
 import { decodeVin } from '@/models/vin-decode';
 import { buildReport, type AppraisalReport } from './report';
 
@@ -88,16 +89,17 @@ export async function appraiseAndSave(db: Db, providers: Providers, args: Apprai
 
   const specs = args.specs ? specsOnly(args.specs) : specsOnly(await decodeVin(db, providers, args.inputs.vin, { importedVehicle: args.importedVehicle, now }));
 
+  const trimCandidates = allowedTrims(specs);
   let trim = args.inputs.trim?.trim() || null;
   if (!trim) {
-    if (specs.trimCandidates.length === 1) trim = specs.trimCandidates[0]!;
-    else if (specs.trimCandidates.length > 1 && !args.allowUnknownTrim) throw trimRequiredError(specs.trimCandidates);
-  } else if (specs.trimCandidates.length > 0 && !args.allowUnknownTrim) {
+    if (trimCandidates.length === 1) trim = trimCandidates[0]!;
+    else if (trimCandidates.length > 1 && !args.allowUnknownTrim) throw trimRequiredError(trimCandidates);
+  } else if (trimCandidates.length > 0 && !args.allowUnknownTrim) {
     // In model mode the trim selects the MSRP anchor, so a trim the VIN contradicts (e.g. "Shelby GT500"
     // on a GT VIN) would silently price a different car. Ask the user to pick one the VIN supports.
     const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
-    if (!specs.trimCandidates.some((c) => norm(c) === norm(trim!))) {
-      throw new AppError(400, 'invalid_input', "That trim doesn't match this VIN. Pick one of the trims it decodes to.", { trim: ['Choose a trim this VIN supports.'] }, { trimCandidates: specs.trimCandidates });
+    if (!trimCandidates.some((c) => norm(c) === norm(trim!))) {
+      throw new AppError(400, 'invalid_input', "That trim doesn't match this VIN. Pick one of the trims it decodes to.", { trim: ['Choose a trim this VIN supports.'] }, { trimCandidates: trimCandidates });
     }
   }
   const inputs: AppraisalInputs = { ...args.inputs, trim };
