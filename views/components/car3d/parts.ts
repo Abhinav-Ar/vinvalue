@@ -1,9 +1,10 @@
 /** Selectable parts of the AIQ-01 model and what each means for the value. No three.js import, so the page can use it without loading WebGL code. */
 
-export type PartId = 'body' | 'glass' | 'frontWheel' | 'rearWheel' | 'engine' | 'drivetrain' | 'interior' | 'fuel' | 'vin';
+export type PartId = 'body' | 'chassis' | 'glass' | 'frontWheel' | 'rearWheel' | 'engine' | 'drivetrain' | 'interior' | 'fuel' | 'vin';
 
 /** What each part means for the number. Shown when a part is selected. */
 export const PART_INFO: Record<PartId, { name: string; note: string }> = {
+  chassis: { name: 'Chassis and suspension', note: 'The floor, subframes and suspension carry the car. Their condition matters when inspecting damage or repairs.' },
   vin: { name: 'VIN plate', note: 'Step 1 reads these 17 characters and decodes year, make, model and trim.' },
   engine: { name: 'Engine', note: 'Displacement, cylinders and fuel type come from the NHTSA VIN decode.' },
   drivetrain: { name: 'Drivetrain', note: 'FWD, RWD or AWD comes from the VIN decode and narrows which sales and models count as comparable.' },

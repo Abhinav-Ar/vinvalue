@@ -17,7 +17,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { anchors, explodePhases, type ProgressSource } from '@/views/components/landing/ExplodeCar';
 import { buildCar, highlight, pickPart, setColors, setLook, type CarColors, type CarLook, type CarModel, type PartId } from './model';
 
-export const REST = { yaw: 0, pitch: 0 };
+export const REST = { yaw: 0.43, pitch: 0.14 };
 
 const PITCH_RANGE = [-0.05, 0.85] as const;
 
@@ -46,7 +46,7 @@ export default function CarCanvas(props: CarCanvasProps) {
     <div ref={host} style={{ position: 'absolute', inset: 0 }}>
       <Boundary onFail={props.onFail}>
         <Canvas
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           frameloop="demand"
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
           style={{ position: 'absolute', inset: 0, touchAction: 'pan-y', cursor: 'grab' }}
@@ -203,6 +203,7 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
 
   const labels = useRef<SVGGElement[]>([]);
   const guides = useRef<SVGLineElement[]>([]);
+  const up = useMemo(() => new THREE.Vector3(0,1,0), []);
   const projected = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
     labels.current = Array.from(keyTarget?.current?.querySelectorAll<SVGGElement>('[data-anchor]') ?? []);
@@ -219,10 +220,21 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
     let again = false;
     const p = progress?.get() ?? 0;
     const { lift, out, down } = explodePhases(p);
-    model.parts.glass.position.y = 0.78 * lift;
-    model.parts.internals.position.y = 0.12 * lift;
-    model.parts.frontWheel.position.set(-0.92 * out, 0, 0);
-    model.parts.rearWheel.position.set(0, -0.84 * down, 0);
+    const phases = {lift,out,down};
+    for(const {group,home,offset,phase,guide} of model.motions) {
+      group.position.copy(home).addScaledVector(offset,phases[phase]);
+      projected.copy(group.position).sub(home);
+      if (group.parent === model.parts.body) projected.add(model.parts.body.position);
+      const length = projected.length();
+      guide.visible = length > .02;
+      if (guide.visible) {
+        guide.quaternion.setFromUnitVectors(up,projected.divideScalar(length));
+        guide.scale.y = length;
+        const distances = guide.geometry.getAttribute('lineDistance');
+        distances.setX(1,length);
+        distances.needsUpdate = true;
+      }
+    }
     // Ease toward the target view.
     const v = view.current;
     v.yaw += (v.ty - v.yaw) * 0.18;
@@ -239,20 +251,20 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
       m.makeTranslation(pivot.x * away, pivot.y * away, 0)
         .multiply(t.makeRotationFromEuler(e))
         .multiply(t.makeTranslation(-pivot.x * away, -pivot.y * away, 0));
-      // In the exploded cutaway, remove the far tires to expose each intact axle.
-      const facing = Math.cos(v.yaw + 0.31 * lift);
-      for (const axle of [model.parts.frontWheel, model.parts.rearWheel]) {
-        for (const wheel of axle.children) {
-          if (wheel instanceof THREE.Group) wheel.visible = look === 'solid' || p < 0.03 || facing * wheel.position.z >= 0;
-        }
-      }
+      const facing = Math.cos(e.y);
+      m.scale(projected.setScalar(1 - .10*lift));
       g.matrix.copy(m);
       g.updateMatrixWorld(true);
       anchors.forEach(({ x, y }, i) => {
-        const part = [model.parts.glass, model.parts.frontWheel, model.parts.rearWheel][i];
+        const wheel = model.parts.frontWheel.children[facing>=0?0:1];
         const project = (moved: boolean) => {
-          projected.set((x - 500) / 100, (330 - y) / 100, i === 0 ? 0.58 : Math.sign(facing) * part.children[0].position.z);
-          if (moved) projected.add(part.position);
+          if(i===0) projected.set(.6,2.47,.7);
+          else if(i===1) projected.set(-2.67,.69,Math.sign(facing)*1.44);
+          else projected.set(2.43,.69,.18);
+          if(moved) {
+            if(i===1) projected.copy(wheel.position);
+            else projected.add(i===0 ? model.parts.glass.position : model.selectable.get('drivetrain')!.position);
+          }
           projected.applyMatrix4(g.matrixWorld).project(camera);
           return [(projected.x + 1) * 500, (1 - projected.y) * 270 - 60];
         };

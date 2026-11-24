@@ -57,8 +57,8 @@ export const anchors = [
 export function ExplodeLabels() {
   return <g stroke="var(--blue)" fill="var(--blue)">
     {anchors.map(({ x, y, label }, i) => {
-      const dx = i === 0 ? 36 : i === 1 ? 18 : -30;
-      const dy = i === 0 ? -54 : 78;
+      const dx = i === 0 ? 36 : i === 1 ? 18 : 114;
+      const dy = i === 0 ? -54 : i === 2 ? 112 : 70;
       return <g key={label} className={`${styles.lab} ${[styles.l1, styles.l2, styles.l3][i]}`}>
         <g className={styles.svgGuide} transform={`translate(${x} ${y})`}>
           <line x2={i === 1 ? -92 : 0} y2={i === 0 ? -78 : i === 2 ? 84 : 0}
@@ -69,7 +69,7 @@ export function ExplodeLabels() {
         <g data-anchor={i} style={EXPLODE_PARTS[(['glass','frontWheel','rearWheel'] as const)[i]]}>
           <g transform={`translate(${x} ${y})`}>
             <path d={`M0 0 l${dx} ${dy} h${i === 2 ? -4 : 14}`} fill="none" /><circle r="2.8" />
-            <text textAnchor={i === 2 ? 'end' : 'start'} x={i === 2 ? dx - 4 : dx + 18} y={dy + 4} stroke="none" fontFamily="var(--font-mono), monospace" fontSize="16">{label}</text>
+            <text textAnchor={i === 2 ? 'middle' : 'start'} x={i === 2 ? dx - 4 : dx + 18} y={dy + 4} stroke="none" style={{letterSpacing: 0, fontFamily: "var(--font-sans), sans-serif"}} fontSize="16">{label}</text>
           </g>
         </g>
       </g>;
