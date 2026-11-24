@@ -1,3 +1,4 @@
+import { readCorrections } from '@/models/jobs/valuationCalibration';
 /**
  * Price check (providers) + saved buy checks (DB).
  *
@@ -77,7 +78,7 @@ export async function runPriceCheck(
     serviceHistory: null, owners: null, keys: null, warningLights: null,
   };
   const { listings, searchTier } = await fetchCompsTiered(providers, { specs, trim, zip: input.zip });
-  const val = computeValuation({ specs, inputs, listings, searchTier, trimConfirmedByUser, now: new Date(`${today}T12:00:00Z`) });
+  const val = computeValuation({ specs, inputs, corrections:await readCorrections(db), listings, searchTier, trimConfirmedByUser, now: new Date(`${today}T12:00:00Z`) });
   const snapshot = buildVerdict({
     askingPrice: input.askingPrice,
     sellerType: input.sellerType,
@@ -235,7 +236,7 @@ export async function revalueWatchedBuyChecks(
         serviceHistory: null, owners: null, keys: null, warningLights: null,
       };
       const { listings, searchTier } = await fetchCompsTiered(providers, { specs: b.specs, trim: b.trim, zip: b.zip });
-      const val = computeValuation({ specs: b.specs, inputs, listings, searchTier, trimConfirmedByUser: !!b.trim, now: new Date(`${today}T12:00:00Z`) });
+      const val = computeValuation({ specs: b.specs, inputs, corrections:await readCorrections(db), listings, searchTier, trimConfirmedByUser: !!b.trim, now: new Date(`${today}T12:00:00Z`) });
       const verdict = buildVerdict({
         askingPrice: b.askingPrice, sellerType: b.sellerType,
         privateRange: val.private, retailRange: val.retail, compCount: val.stats.used, computedAt: today,

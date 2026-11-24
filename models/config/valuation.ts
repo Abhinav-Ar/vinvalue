@@ -5,7 +5,7 @@ import { familySegments } from './familySegments';
  * comp adjustments and route spreads remain assumptions.
  */
 export const valuationConfig = {
-  methodVersion: '2.1.0',
+  methodVersion: '2.2.0',
   /** Calibrated 2026-11-17: 269/271 usable approximate references and 2026 WA EV medians.
    * 50/50 family split: refs holdout median/p80/p90 APE 16.4/32.7/46.4%;
    * WA EV cells 18.7/48.0/82.2%. Fullsize has no labels: retains neutral defaults.

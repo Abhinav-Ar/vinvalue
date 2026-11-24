@@ -480,3 +480,17 @@ export const marketSampleUsage = pgTable('market_sample_usage', {
   stopped: text('stopped'), quotaRemaining: integer('quota_remaining'), rateRemaining: integer('rate_remaining'),
   rateReset: text('rate_reset'), leaseUntil: timestamp('lease_until', { withTimezone: true }), leaseToken: text('lease_token'),
 });
+
+/** One active snapshot, atomically replaced only after holdout guards pass. */
+export const valuationCorrections=pgTable('valuation_corrections',{
+  id:text('id').primaryKey(),
+  snapshot:jsonb('snapshot').$type<import('@/models/valuation/biasCorrections').Corrections>().notNull(),
+  updatedAt:updatedAt(),
+});
+export const valuationAccuracyReports=pgTable('valuation_accuracy_reports',{
+  month:text('month').primaryKey(),
+  report:jsonb('report').$type<import('@/models/valuation/biasCalibration').AccuracyReport>().notNull(),
+  markdown:text('markdown').notNull(),
+  drift:jsonb('drift').$type<Array<{bucket:string;medianDelta:number|null;p80Delta:number|null}>>().notNull(),
+  createdAt:createdAt(),
+});

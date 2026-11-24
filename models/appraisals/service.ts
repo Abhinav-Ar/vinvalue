@@ -1,3 +1,4 @@
+import { readCorrections } from '@/models/jobs/valuationCalibration';
 /**
  * Appraisal service: decode -> comps -> engine -> persist. All provider work and
  * the engine run BEFORE any write, so a failed appraisal never burns a report
@@ -104,15 +105,16 @@ export async function appraiseAndSave(db: Db, providers: Providers, args: Apprai
 
   const trimConfirmedByUser = args.trimConfirmedByUser ?? !!args.inputs.trim?.trim();
   let compsSearch: Awaited<ReturnType<typeof fetchCompsTiered>> | null = null;
+  const corrections=await readCorrections(db);
   let result: ReturnType<typeof computeValuation>;
   try {
     compsSearch = await fetchCompsTiered(providers, { specs, trim, zip: inputs.zip, radiusMiles: config.radiusMiles });
     const { listings, searchTier } = compsSearch;
-    result = computeValuation({ specs, inputs, listings, radiusMiles: config.radiusMiles, searchTier, trimConfirmedByUser, now });
+    result = computeValuation({ specs, inputs, corrections, listings, radiusMiles: config.radiusMiles, searchTier, trimConfirmedByUser, now });
     result.stats.comparisonBasis = compsSearch.comparisonBasis; result.stats.searchStages = compsSearch.searchStages;
   } catch (err) {
     if (!(err instanceof TooFewCompsError) && !(err instanceof AppError && ['not_configured', 'upstream_failed'].includes(err.code))) throw err;
-    result = computeValuation({ specs, inputs, listings: [], trimConfirmedByUser, now });
+    result = computeValuation({ specs, inputs, corrections, listings: [], trimConfirmedByUser, now });
   }
 
   const id = await db.transaction(async (tx) => {

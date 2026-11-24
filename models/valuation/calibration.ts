@@ -1,5 +1,5 @@
 import { evaluateSurface, NotEnoughDataError } from './surface';
-import { resolveReference, exactName, type ReferenceData } from '@/models/reference';
+import { resolveReference, exactName, referenceCandidates, type ReferenceData } from '@/models/reference';
 import { valuationConfig, type ValuationConfig } from '@/models/config/valuation';
 export type LabeledSale = { id:string; groupId:string; source:'sale_outcome'|'wa_record'|'reference'|'market_sample'; soldOn:string; soldPrice:number; year:number; make:string; model:string; trim:string|null; miles:number; transmission?:string|null };
 export function scoreSales(rows:LabeledSale[], data:ReferenceData, config:ValuationConfig=valuationConfig) {
@@ -7,14 +7,14 @@ export function scoreSales(rows:LabeledSale[], data:ReferenceData, config:Valuat
   for (const r of rows) {
     try {
       if (!(r.soldPrice>0)) throw new NotEnoughDataError('invalid sale price');
-      const anchors=data.msrp.filter(m=>exactName(m.make)===exactName(r.make)&&exactName(m.model)===exactName(r.model)&&r.year>=m.yearFrom&&r.year<=m.yearTo);
+      const anchors=referenceCandidates(data,r.make,r.model).filter(m=>exactName(m.make)===exactName(r.make)&&exactName(m.model)===exactName(r.model)&&r.year>=m.yearFrom&&r.year<=m.yearTo);
       const unambiguousTrim=anchors.length===1 ? anchors[0]!.trim : null;
       const s=evaluateSurface(r,r.trim ?? unambiguousTrim,r.miles,new Date(r.soldOn),data,config);
       scores.push({id:r.id,segment:s.segment,ageBucket:s.age<=5?'0-5':s.age<=10?'6-10':s.age<=20?'11-20':'21+',ape:Math.abs(s.H/r.soldPrice-1)*100,signed:(s.H/r.soldPrice-1)*100});
     } catch(e) { if(e instanceof NotEnoughDataError) skips.push({id:r.id,reason:e.message}); else throw e; }
   }
   const groups=new Map<string,typeof scores>();
-  for(const s of scores) {const key=`${s.segment}/${s.ageBucket}`; groups.set(key,[...(groups.get(key)??[]),s]);}
+  for(const s of scores) {const key=`${s.segment}/${s.ageBucket}`; const group=groups.get(key)??[]; group.push(s); groups.set(key,group);}
   return {predicted:scores.length,skipped:skips,metrics:[...groups].map(([bucket,ss])=>({bucket,n:ss.length,MAPE:ss.reduce((a,s)=>a+s.ape,0)/ss.length,signedPct:ss.reduce((a,s)=>a+s.signed,0)/ss.length})),MAPE:scores.length?scores.reduce((a,s)=>a+s.ape,0)/scores.length:null};
 }
 /** Grouped temporal holdout: repeat vehicle observations never enter both partitions. */

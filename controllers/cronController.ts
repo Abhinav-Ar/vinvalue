@@ -27,3 +27,10 @@ export const runMarketSampler = route({ auth: false, name: 'cron.marketSampler' 
   const { runMarketSampler } = await import('@/models/jobs/marketSampler');
   return json(await runMarketSampler(getDb()));
 });
+
+export const runValuationCalibration = route({auth:false,name:'cron.valuationCalibration'},async ({req})=>{
+  requireCronSecret(req);
+  const {runValuationCalibration}=await import('@/models/jobs/valuationCalibration');
+  const result=await runValuationCalibration(getDb());
+  return json(result);
+});

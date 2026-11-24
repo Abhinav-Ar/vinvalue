@@ -1,392 +1,650 @@
 {
   "label": "PROPOSALS ONLY — human review required",
   "matching": {
-    "received": 0,
-    "matched": 0,
-    "unmatched": 0,
-    "matchRate": null,
+    "received": 4714,
+    "matched": 3640,
+    "unmatched": 1074,
+    "matchRate": 0.7721680101824353,
     "factor": 0.9,
     "factorBasis": "Configured 0.90 dealer asking to private-party equivalent; not fitted. Sensitivity required before adoption."
   },
   "split": {
-    "nissan/frontier": "train",
+    "chevrolet/ss": "train",
+    "nissan/frontier": "holdout",
+    "alfa romeo/tonale": "train",
     "chevrolet/suburban": "holdout",
     "toyota/supra": "train",
     "mazda/mazda3": "holdout",
+    "chevrolet/cobalt": "train",
+    "toyota/bz": "holdout",
+    "nissan/leaf": "train",
+    "volvo/ex40": "holdout",
     "toyota/sienna": "train",
+    "cadillac/elr": "holdout",
+    "hyundai/sonata": "train",
+    "volvo/ex90": "holdout",
+    "ford/c-max": "train",
+    "chevrolet/astro": "holdout",
+    "mullen automotive inc./one": "train",
     "toyota/4runner": "holdout",
-    "toyota/matrix": "train",
-    "dodge/ram 2500": "holdout",
+    "volvo/ex30": "train",
+    "toyota/matrix": "holdout",
+    "lucid/air": "train",
+    "jaguar/i-pace": "holdout",
+    "mitsubishi/outlander": "train",
+    "smart/eq fortwo": "holdout",
+    "rivian/r2": "train",
+    "hyundai/ioniq 6": "holdout",
+    "brightdrop/zevo": "train",
+    "nissan/titan": "holdout",
+    "hyundai/ioniq 5": "train",
+    "mercedes-benz/sl-class": "holdout",
+    "dodge/ram 2500": "train",
+    "lincoln/aviator": "holdout",
+    "rivian/edv": "train",
+    "subaru/crosstrek": "holdout",
+    "hyundai/ioniq 9": "train",
+    "smart/fortwo electric drive": "holdout",
     "bmw/3 series": "train",
     "toyota/camry": "holdout",
+    "lamborghini/urus": "train",
+    "dodge/charger": "holdout",
     "subaru/forester": "train",
-    "ford/f-150": "holdout",
+    "hyundai/ioniq 5 n": "holdout",
+    "toyota/mirai": "train",
+    "kia/sorento": "holdout",
+    "ford/f-150": "train",
+    "buick/lesabre": "holdout",
     "tesla/model s": "train",
     "mercedes-benz/e-class": "holdout",
+    "kia/ev6": "train",
+    "polestar/polestar 4": "holdout",
     "acura/tlx": "train",
-    "chrysler/pacifica": "holdout",
-    "toyota/tacoma": "train",
-    "tesla/model y": "holdout",
-    "acura/mdx": "train",
-    "jeep/cherokee": "holdout",
-    "gmc/yukon": "train",
+    "rivian/r1t": "holdout",
+    "polestar/polestar 2": "train",
+    "chevrolet/brightdrop": "holdout",
+    "polestar/polestar 3": "train",
+    "mercedes-benz/eqe-class suv": "holdout",
+    "chrysler/pacifica": "train",
+    "toyota/tacoma": "holdout",
+    "rivian/r1s": "train",
+    "chevrolet/aveo": "holdout",
+    "subaru/solterra": "train",
+    "kia/ev9": "holdout",
+    "tesla/model x": "train",
+    "mazda/mx-30": "holdout",
+    "tesla/model y": "train",
+    "acura/mdx": "holdout",
+    "audi/e-tron sportback": "train",
+    "volvo/v60": "holdout",
+    "jeep/cherokee": "train",
+    "cadillac/lyriq": "holdout",
+    "gmc/terrain": "train",
+    "bmw/550e": "holdout",
+    "chevrolet/bolt euv": "train",
+    "gmc/yukon": "holdout",
+    "hyundai/nexo": "train",
+    "chevrolet/camaro": "holdout",
+    "audi/a3": "train",
     "honda/civic": "holdout",
+    "toyota/prius": "train",
+    "mercedes-benz/esprinter": "holdout",
     "audi/a4": "train",
     "lincoln/navigator": "holdout",
-    "volkswagen/tiguan": "train",
+    "azure dynamics/transit connect electric": "train",
+    "volkswagen/tiguan": "holdout",
+    "audi/e-tron": "train",
+    "bmw/530e": "holdout",
+    "audi/s6": "train",
+    "audi/a6": "holdout",
+    "honda/ridgeline": "train",
     "chevrolet/equinox": "holdout",
-    "dodge/grand caravan": "train",
+    "mercedes-benz/eqb-class": "train",
+    "dodge/grand caravan": "holdout",
+    "bmw/745le": "train",
     "kia/forte": "holdout",
-    "nissan/altima": "train",
+    "bentley/bentayga": "train",
+    "nissan/altima": "holdout",
+    "chevrolet/cruze": "train",
     "ford/escape": "holdout",
     "volvo/xc90": "train",
-    "kia/soul": "holdout",
+    "audi/a8 e": "holdout",
+    "kia/soul": "train",
+    "jeep/grand cherokee": "holdout",
+    "ford/flex": "train",
+    "honda/clarity": "holdout",
     "mercedes-benz/c-class": "train",
     "honda/odyssey": "holdout",
+    "ford/focus": "train",
+    "bmw/750e": "holdout",
     "jeep/wrangler": "train",
     "gmc/sierra 1500": "holdout",
-    "mitsubishi/lancer evolution": "train",
-    "cadillac/escalade": "holdout",
-    "tesla/model 3": "train",
-    "hyundai/santa fe": "holdout",
+    "acura/zdx": "train",
+    "bmw/i8": "holdout",
+    "mercedes-benz/eqe-class sedan": "train",
+    "mitsubishi/lancer evolution": "holdout",
+    "bmw/i5": "train",
+    "kia/niro": "holdout",
+    "cadillac/escalade": "train",
+    "bmw/i4": "holdout",
+    "porsche/panamera": "train",
+    "genesis/g80": "holdout",
+    "bmw/i7": "train",
+    "tesla/model 3": "holdout",
+    "hyundai/santa fe": "train",
+    "bmw/i3": "holdout",
     "subaru/outback": "train",
-    "gmc/yukon xl": "holdout",
-    "chevrolet/malibu": "train",
-    "chevrolet/tahoe": "holdout",
+    "volvo/s90": "holdout",
+    "gmc/yukon xl": "train",
+    "nissan/ariya hatchback": "holdout",
+    "fisker/karma": "train",
+    "chevrolet/malibu": "holdout",
+    "chevrolet/tahoe": "train",
+    "ford/transit": "holdout",
     "jeep/gladiator": "train",
     "lexus/es": "holdout",
-    "jeep/compass": "train",
-    "acura/integra": "holdout",
-    "toyota/tundra": "train",
-    "cadillac/cts": "holdout",
-    "hyundai/tucson": "train",
-    "honda/s2000": "holdout",
-    "kia/sportage": "train",
-    "toyota/rav4": "holdout",
-    "lexus/rx": "train",
-    "lexus/gx": "holdout",
+    "kia/optima": "train",
+    "jeep/compass": "holdout",
+    "acura/integra": "train",
+    "toyota/tundra": "holdout",
+    "cadillac/cts": "train",
+    "hyundai/tucson": "holdout",
+    "honda/s2000": "train",
+    "kia/sportage": "holdout",
+    "lexus/rz": "train",
+    "toyota/prius prime (phev)": "holdout",
+    "toyota/rav4": "train",
+    "lexus/rx": "holdout",
+    "lexus/gx": "train",
+    "mini/countryman": "holdout",
+    "lexus/tx": "train",
+    "hyundai/ioniq": "holdout",
     "land rover/range rover": "train",
-    "mercedes-benz/s-class": "holdout",
-    "lexus/is": "train",
-    "lexus/ls": "holdout",
+    "porsche/taycan": "holdout",
+    "dodge/hornet": "train",
+    "lexus/nx": "holdout",
+    "ford/mustang mach-e": "train",
+    "audi/e-tron gt": "holdout",
+    "mercedes-benz/s-class": "train",
+    "lexus/is": "holdout",
+    "lexus/ls": "train",
+    "vinfast/vf 8": "holdout",
+    "bmw/xm": "train",
+    "volkswagen/e-golf": "holdout",
+    "toyota/rav4 prime (phev)": "train",
+    "ram/promaster 3500": "holdout",
     "mercedes-benz/gle-class": "train",
-    "honda/pilot": "holdout",
-    "dodge/ram 1500": "train",
+    "th!nk/city": "holdout",
+    "honda/pilot": "train",
+    "dodge/ram 1500": "holdout",
+    "audi/q5 e": "train",
+    "dodge/challenger": "holdout",
+    "buick/lacrosse": "train",
+    "chevrolet/bolt ev": "holdout",
+    "gmc/hummer ev pickup": "train",
     "mazda/rx-7": "holdout",
     "toyota/land cruiser": "train",
-    "chevrolet/trax": "holdout",
-    "toyota/sequoia": "train",
+    "karma/revero": "holdout",
+    "chevrolet/spark": "train",
+    "fiat/500e": "holdout",
+    "mitsubishi/i-miev": "train",
+    "bmw/ix": "holdout",
+    "chevrolet/trax": "train",
+    "toyota/sequoia": "holdout",
+    "genesis/gv70": "train",
     "porsche/911": "holdout",
+    "mercedes-benz/eqs-class sedan": "train",
+    "chevrolet/cavalier": "holdout",
     "mazda/cx-5": "train",
-    "volkswagen/jetta": "holdout",
+    "fiat/500": "holdout",
+    "volkswagen/jetta": "train",
+    "genesis/gv60": "holdout",
     "honda/accord": "train",
     "nissan/rogue": "holdout",
     "porsche/macan": "train",
-    "hyundai/elantra": "holdout",
+    "cadillac/optiq": "holdout",
+    "hyundai/elantra": "train",
+    "mini/hardtop": "holdout",
+    "audi/q8": "train",
+    "audi/a7 e": "holdout",
+    "cadillac/ct6": "train",
+    "tesla/cybertruck": "holdout",
+    "mercedes-benz/eqs-class suv": "train",
+    "volkswagen/id.4": "holdout",
     "ford/ranger": "train",
-    "honda/cr-v": "holdout",
+    "audi/rs e-tron gt": "holdout",
+    "honda/cr-v": "train",
+    "buick/century": "holdout",
     "audi/q3": "train",
     "chevrolet/colorado": "holdout",
-    "ford/bronco": "train",
-    "audi/q5": "holdout",
-    "audi/q7": "train",
-    "nissan/sentra": "holdout",
+    "audi/q4": "train",
+    "ford/bronco": "holdout",
+    "audi/q5": "train",
+    "audi/q6": "holdout",
+    "chevrolet/volt": "train",
+    "audi/q7": "holdout",
+    "nissan/sentra": "train",
+    "fisker/ocean": "holdout",
+    "mercedes-benz/g-class": "train",
+    "audi/sq8": "holdout",
     "chevrolet/corvette": "train",
+    "gmc/acadia": "holdout",
+    "wheego electric cars/wheego": "train",
+    "karma/gs-6": "holdout",
+    "hyundai/kona": "train",
+    "mercedes-benz/glc-class": "holdout",
+    "land rover/range rover sport": "train",
     "mazda/mx-5 miata": "holdout",
-    "porsche/cayenne": "train",
+    "volvo/c40": "train",
+    "audi/sq6": "holdout",
+    "gmc/envoy": "train",
+    "volvo/xc40": "holdout",
+    "chevrolet/bolt": "train",
+    "porsche/cayenne": "holdout",
+    "lincoln/corsair": "train",
+    "dodge/viper": "holdout",
+    "lucid/gravity": "train",
     "bmw/m3": "holdout",
-    "bmw/m4": "train",
+    "bmw/m5": "train",
+    "bmw/m4": "holdout",
+    "tesla/roadster": "train",
     "ford/expedition": "holdout",
     "toyota/corolla": "train",
-    "honda/fit": "holdout",
-    "acura/nsx": "train",
-    "subaru/impreza": "holdout",
-    "bmw/x3": "train",
-    "volkswagen/golf": "holdout",
-    "volkswagen/passat": "train",
+    "bmw/740e": "holdout",
+    "honda/fit": "train",
+    "toyota/c-hr": "holdout",
+    "jeep/wagoneer s": "train",
+    "gmc/hummer ev suv": "holdout",
+    "nissan/ariya mpv": "train",
+    "acura/nsx": "holdout",
+    "volvo/xc60": "train",
+    "smart/fortwo": "holdout",
+    "subaru/impreza": "train",
+    "bmw/x3": "holdout",
+    "cadillac/vistiq": "train",
+    "mazda/cx-90": "holdout",
+    "volkswagen/golf": "train",
+    "volkswagen/passat": "holdout",
+    "honda/prologue": "train",
+    "bmw/745e": "holdout",
+    "ford/fusion": "train",
     "bmw/x5": "holdout",
     "chevrolet/silverado 1500": "train",
-    "volkswagen/golf r": "holdout"
+    "volkswagen/golf r": "holdout",
+    "mazda/cx-70": "train",
+    "toyota/bz4x": "holdout",
+    "mercedes-benz/b-class": "train",
+    "volvo/s60": "holdout",
+    "volkswagen/id. buzz": "train",
+    "chevrolet/blazer": "holdout"
   },
   "counts": {
-    "train": 127,
-    "holdout": 144,
-    "trainFamilies": 49,
-    "holdoutFamilies": 49
+    "train": 86096,
+    "holdout": 60168,
+    "trainFamilies": 134,
+    "holdoutFamilies": 134
   },
   "baseline": {
     "all": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 37075,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 25.764566616921325,
+          "signedPct": 21.18310034919655
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7852,
+          "MAPE": 19.21527124551269,
+          "signedPct": 4.496569384473331
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18725,
+          "MAPE": 31.90393274745674,
+          "signedPct": 11.875781325668969
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 70.33409305614802,
+          "signedPct": 66.82061924702454
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 1007,
+          "MAPE": 44.246329680612604,
+          "signedPct": 40.85384374141451
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 16.079787606292978,
+          "signedPct": -8.554937274131506
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 25.946071180308095,
+          "signedPct": -5.950609000776453
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5716,
+          "MAPE": 31.08815792254216,
+          "signedPct": 1.9075503110041792
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 62,
+          "MAPE": 82.30408312230573,
+          "signedPct": 80.28381934794228
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 11.97159750029152,
+          "signedPct": -11.97159750029152
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 107,
+          "MAPE": 23.071874403304488,
+          "signedPct": -10.966830848341141
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 384,
+          "MAPE": 16.95975443361028,
+          "signedPct": 2.203691009454515
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 5.8252074168510815,
+          "signedPct": 3.080916511953388
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 13.99644897572046,
+          "signedPct": 0.903512047626157
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 9,
+          "MAPE": 86.6466759594322,
+          "signedPct": 84.41638171175249
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 5.137885223265448,
+          "signedPct": 0.7885820351757666
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 16.37533373260441,
+          "signedPct": 7.495094086059908
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.117357806883312,
-          "signedPct": -3.2506178085013686
+          "bucket": "suv/11-20",
+          "n": 206,
+          "MAPE": 60.014121170564906,
+          "signedPct": 58.99338969208374
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 20.49713624073519,
-          "signedPct": -16.274829159425916
+          "n": 134,
+          "MAPE": 30.422813913878514,
+          "signedPct": 14.555257381196428
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 11.887179523708852,
-          "signedPct": 6.178257781494527
+          "n": 112,
+          "MAPE": 35.44024800645838,
+          "signedPct": -22.943950358605203
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 8.733503977057955,
-          "signedPct": 8.733503977057955
+          "n": 27,
+          "MAPE": 40.378607167394584,
+          "signedPct": -15.405276620877547
         },
         {
           "bucket": "suv/21+",
-          "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "n": 21,
+          "MAPE": 83.81237151905795,
+          "signedPct": 75.13611267712693
         },
         {
           "bucket": "sports/6-10",
-          "n": 2,
-          "MAPE": 24.716446460859437,
-          "signedPct": -24.716446460859437
-        },
-        {
-          "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
-        },
-        {
-          "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
-          "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
-        },
-        {
-          "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
+          "n": 89,
+          "MAPE": 32.57018097759,
+          "signedPct": -30.875698974283612
         },
         {
           "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 125,
+          "MAPE": 46.702463129367345,
+          "signedPct": -44.56238917166552
+        },
+        {
+          "bucket": "luxury/21+",
+          "n": 1,
+          "MAPE": 15.815953718022191,
+          "signedPct": -15.815953718022191
+        },
+        {
+          "bucket": "luxury/11-20",
+          "n": 1,
+          "MAPE": 11.362343276036647,
+          "signedPct": 11.362343276036647
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 11,
+          "MAPE": 26.322232186031105,
+          "signedPct": 0.2541927916164607
         },
         {
           "bucket": "sports/0-5",
+          "n": 86,
+          "MAPE": 17.69413555608414,
+          "signedPct": -5.298854339184695
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 116.32128782829693,
+          "signedPct": 116.32128782829693
+        },
+        {
+          "bucket": "fullsize/21+",
           "n": 4,
-          "MAPE": 15.072338915553992,
-          "signedPct": -7.440392693333883
+          "MAPE": 67.46727277246156,
+          "signedPct": 67.46727277246156
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 32.495128508075226,
+          "signedPct": -18.44541122364591
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 31.110316271346232,
+          "signedPct": -24.03523302435605
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 26.887816660113536,
+          "signedPct": -12.888113319139512
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 22.590971717149223,
+          "signedPct": -22.590971717149223
         }
       ],
-      "MAPE": 17.100934097702446
+      "MAPE": 29.725636569709284
     },
     "transactionsAndReferences": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 35097,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 25.764566616921325,
+          "signedPct": 21.18310034919655
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7488,
+          "MAPE": 19.079966203700746,
+          "signedPct": 3.6993904268826645
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18716,
+          "MAPE": 31.903705688864296,
+          "signedPct": 11.865923290222716
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 70.33409305614802,
+          "signedPct": 66.82061924702454
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 763,
+          "MAPE": 45.50110492362439,
+          "signedPct": 41.121287073130524
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 16.079787606292978,
+          "signedPct": -8.554937274131506
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 25.946071180308095,
+          "signedPct": -5.950609000776453
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5703,
+          "MAPE": 31.129490322422324,
+          "signedPct": 1.8999334743488314
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 60,
+          "MAPE": 84.53414315868159,
+          "signedPct": 83.47335606057469
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 11.97159750029152,
+          "signedPct": -11.97159750029152
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 17,
+          "MAPE": 23.147120781572283,
+          "signedPct": 16.602431388963417
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 35,
+          "MAPE": 44.127924462777976,
+          "signedPct": -34.44566279495718
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 5.8252074168510815,
+          "signedPct": 3.080916511953388
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 13.99644897572046,
+          "signedPct": 0.903512047626157
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 6,
+          "MAPE": 40.649027199940036,
+          "signedPct": 37.30358582842047
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 5.137885223265448,
+          "signedPct": 0.7885820351757666
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 16.37533373260441,
+          "signedPct": 7.495094086059908
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.117357806883312,
-          "signedPct": -3.2506178085013686
+          "bucket": "suv/11-20",
+          "n": 14,
+          "MAPE": 28.904264469108323,
+          "signedPct": 20.477831137512663
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 20.49713624073519,
-          "signedPct": -16.274829159425916
+          "n": 6,
+          "MAPE": 20.17772060723291,
+          "signedPct": -20.17772060723291
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 11.887179523708852,
-          "signedPct": 6.178257781494527
+          "n": 11,
+          "MAPE": 14.595075752626904,
+          "signedPct": 3.5997987514580028
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 8.733503977057955,
-          "signedPct": 8.733503977057955
+          "n": 3,
+          "MAPE": 18.94146619817672,
+          "signedPct": -18.94146619817672
         },
         {
           "bucket": "suv/21+",
           "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "MAPE": 9.84721190813959,
+          "signedPct": -9.84721190813959
         },
         {
           "bucket": "sports/6-10",
@@ -395,40 +653,28 @@
           "signedPct": -24.716446460859437
         },
         {
+          "bucket": "sports/11-20",
+          "n": 5,
+          "MAPE": 34.53759872332713,
+          "signedPct": 9.085843833930436
+        },
+        {
           "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
+          "n": 1,
+          "MAPE": 15.815953718022191,
+          "signedPct": -15.815953718022191
         },
         {
           "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
           "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
+          "MAPE": 11.362343276036647,
+          "signedPct": 11.362343276036647
         },
         {
           "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
-        },
-        {
-          "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 10,
+          "MAPE": 28.320150546616038,
+          "signedPct": 0.9139169287962844
         },
         {
           "bucket": "sports/0-5",
@@ -437,288 +683,518 @@
           "signedPct": -7.440392693333883
         }
       ],
-      "MAPE": 17.100934097702446
+      "MAPE": 29.59613049289265
     },
     "dealerAsks": {
-      "predicted": 0,
-      "skipped": [],
-      "metrics": [],
-      "MAPE": null
+      "predicted": 1978,
+      "skipped": {
+        "count": 0,
+        "reasons": {}
+      },
+      "metrics": [
+        {
+          "bucket": "truck/11-20",
+          "n": 101,
+          "MAPE": 37.71051429152914,
+          "signedPct": -25.834853727027927
+        },
+        {
+          "bucket": "sports/11-20",
+          "n": 120,
+          "MAPE": 47.209332479619015,
+          "signedPct": -46.79773221356535
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 116.32128782829693,
+          "signedPct": 116.32128782829693
+        },
+        {
+          "bucket": "suv/0-5",
+          "n": 364,
+          "MAPE": 21.998689248500366,
+          "signedPct": 20.895679369195673
+        },
+        {
+          "bucket": "sports/6-10",
+          "n": 87,
+          "MAPE": 32.75072659866426,
+          "signedPct": -31.017290986086465
+        },
+        {
+          "bucket": "suv/6-10",
+          "n": 244,
+          "MAPE": 40.322585785456745,
+          "signedPct": 40.01753529018757
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 3,
+          "MAPE": 178.6419734784165,
+          "signedPct": 178.6419734784165
+        },
+        {
+          "bucket": "suv/11-20",
+          "n": 192,
+          "MAPE": 62.282548221712794,
+          "signedPct": 61.8018158366879
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 349,
+          "MAPE": 14.235152854753926,
+          "signedPct": 5.8791276374041095
+        },
+        {
+          "bucket": "truck/21+",
+          "n": 24,
+          "MAPE": 43.05824978854682,
+          "signedPct": -14.963252923715148
+        },
+        {
+          "bucket": "truck/6-10",
+          "n": 128,
+          "MAPE": 30.903052662627534,
+          "signedPct": 16.18336572440406
+        },
+        {
+          "bucket": "sports/0-5",
+          "n": 82,
+          "MAPE": 17.822028075134394,
+          "signedPct": -5.19438905361644
+        },
+        {
+          "bucket": "fullsize/21+",
+          "n": 4,
+          "MAPE": 67.46727277246156,
+          "signedPct": 67.46727277246156
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 32.495128508075226,
+          "signedPct": -18.44541122364591
+        },
+        {
+          "bucket": "suv/21+",
+          "n": 18,
+          "MAPE": 96.13989812087766,
+          "signedPct": 89.30000010800468
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 2,
+          "MAPE": 15.402282031029852,
+          "signedPct": -15.402282031029852
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 90,
+          "MAPE": 23.057661198520574,
+          "signedPct": -16.174358159831996
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 31.110316271346232,
+          "signedPct": -24.03523302435605
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 26.887816660113536,
+          "signedPct": -12.888113319139512
+        },
+        {
+          "bucket": "ev/0-5",
+          "n": 9,
+          "MAPE": 32.37611370479166,
+          "signedPct": 32.37611370479166
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 13,
+          "MAPE": 12.95595203665027,
+          "signedPct": 5.248997960654277
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 22.590971717149223,
+          "signedPct": -22.590971717149223
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 1,
+          "MAPE": 6.343048580181776,
+          "signedPct": -6.343048580181776
+        }
+      ],
+      "MAPE": 32.02355101765254
     }
   },
   "beforeAddingSamples": {
     "all": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 37075,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 25.144895756147537,
+          "signedPct": 19.182983642123922
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7852,
+          "MAPE": 19.959527275382154,
+          "signedPct": 6.471410767866682
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18725,
+          "MAPE": 72.12935525719195,
+          "signedPct": 67.56382621078006
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 65.36814059208675,
+          "signedPct": 60.71405200411289
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 1007,
+          "MAPE": 46.612006569051786,
+          "signedPct": 43.67092061624281
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 16.935939429205835,
+          "signedPct": -10.383838528648889
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 32.19018261902211,
+          "signedPct": 14.740257019052716
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5716,
+          "MAPE": 55.69851596655328,
+          "signedPct": 54.899476472726406
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 62,
+          "MAPE": 75.78611334580057,
+          "signedPct": 73.07246657402457
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 13.732165550285696,
+          "signedPct": -13.732165550285696
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 107,
+          "MAPE": 23.071874403304488,
+          "signedPct": -10.966830848341141
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 384,
+          "MAPE": 41.637397465891006,
+          "signedPct": 36.95294595266905
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 21.635481484104982,
+          "signedPct": 21.635481484104982
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 19.066144216198854,
+          "signedPct": 19.066144216198854
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 9,
+          "MAPE": 117.61133041986793,
+          "signedPct": 117.61133041986793
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 22.96207008291445,
+          "signedPct": 22.96207008291445
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 31.144014784993082,
+          "signedPct": 31.144014784993082
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.596863016300837,
-          "signedPct": 2.5543451229885417
+          "bucket": "suv/11-20",
+          "n": 206,
+          "MAPE": 62.98663260387951,
+          "signedPct": 62.1732574859254
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 21.7269644151793,
-          "signedPct": -11.251318908991475
+          "n": 134,
+          "MAPE": 54.70494047502464,
+          "signedPct": 53.50404489080319
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 14.60041029513138,
-          "signedPct": 12.548953248384187
+          "n": 112,
+          "MAPE": 30.064464323273576,
+          "signedPct": 3.2551065194690265
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 15.257514215681432,
-          "signedPct": 15.257514215681432
+          "n": 27,
+          "MAPE": 40.612733362907974,
+          "signedPct": 13.35692932802408
         },
         {
           "bucket": "suv/21+",
-          "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "n": 21,
+          "MAPE": 86.53623799705812,
+          "signedPct": 78.63883493066945
         },
         {
           "bucket": "sports/6-10",
-          "n": 2,
-          "MAPE": 24.716446460859437,
-          "signedPct": -24.716446460859437
-        },
-        {
-          "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
-        },
-        {
-          "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
-          "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
-        },
-        {
-          "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
+          "n": 89,
+          "MAPE": 32.57018097759,
+          "signedPct": -30.875698974283612
         },
         {
           "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 125,
+          "MAPE": 46.702463129367345,
+          "signedPct": -44.56238917166552
+        },
+        {
+          "bucket": "luxury/21+",
+          "n": 1,
+          "MAPE": 17.499634643661754,
+          "signedPct": -17.499634643661754
+        },
+        {
+          "bucket": "luxury/11-20",
+          "n": 1,
+          "MAPE": 9.135096410515908,
+          "signedPct": 9.135096410515908
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 11,
+          "MAPE": 26.322232186031105,
+          "signedPct": 0.2541927916164607
         },
         {
           "bucket": "sports/0-5",
+          "n": 86,
+          "MAPE": 17.69413555608414,
+          "signedPct": -5.298854339184695
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 155.2591196373904,
+          "signedPct": 155.2591196373904
+        },
+        {
+          "bucket": "fullsize/21+",
           "n": 4,
-          "MAPE": 15.072338915553992,
-          "signedPct": -7.440392693333883
+          "MAPE": 67.46727277246156,
+          "signedPct": 67.46727277246156
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 39.644056779851766,
+          "signedPct": -0.5034016928480156
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 31.110316271346232,
+          "signedPct": -24.03523302435605
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 26.887816660113536,
+          "signedPct": -12.888113319139512
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 25.687332848463264,
+          "signedPct": -25.687332848463264
         }
       ],
-      "MAPE": 17.357187551203467
+      "MAPE": 54.346970659437126
     },
     "transactionsAndReferences": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 35097,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 25.144895756147537,
+          "signedPct": 19.182983642123922
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7488,
+          "MAPE": 19.759960178715396,
+          "signedPct": 5.652693578137586
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18716,
+          "MAPE": 72.11537037590499,
+          "signedPct": 67.54764589449536
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 65.36814059208675,
+          "signedPct": 60.71405200411289
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 763,
+          "MAPE": 47.76413076711492,
+          "signedPct": 43.94371281459325
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 16.935939429205835,
+          "signedPct": -10.383838528648889
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 32.19018261902211,
+          "signedPct": 14.740257019052716
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5703,
+          "MAPE": 55.688759786974586,
+          "signedPct": 54.88789888101028
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 60,
+          "MAPE": 77.68611076566764,
+          "signedPct": 76.13442181815168
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 13.732165550285696,
+          "signedPct": -13.732165550285696
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 17,
+          "MAPE": 23.147120781572283,
+          "signedPct": 16.602431388963417
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 35,
+          "MAPE": 37.396662004019504,
+          "signedPct": -12.157188145242628
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 21.635481484104982,
+          "signedPct": 21.635481484104982
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 19.066144216198854,
+          "signedPct": 19.066144216198854
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 6,
+          "MAPE": 62.01823127753615,
+          "signedPct": 62.01823127753615
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 22.96207008291445,
+          "signedPct": 22.96207008291445
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 31.144014784993082,
+          "signedPct": 31.144014784993082
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.596863016300837,
-          "signedPct": 2.5543451229885417
+          "bucket": "suv/11-20",
+          "n": 14,
+          "MAPE": 30.00003846440029,
+          "signedPct": 22.887387760262904
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 21.7269644151793,
-          "signedPct": -11.251318908991475
+          "n": 6,
+          "MAPE": 17.144810143785154,
+          "signedPct": 6.961854386307898
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 14.60041029513138,
-          "signedPct": 12.548953248384187
+          "n": 11,
+          "MAPE": 38.82373032695372,
+          "signedPct": 38.82373032695372
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 15.257514215681432,
-          "signedPct": 15.257514215681432
+          "n": 3,
+          "MAPE": 23.3799277795578,
+          "signedPct": 8.618435294443186
         },
         {
           "bucket": "suv/21+",
           "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "MAPE": 8.044156146302399,
+          "signedPct": -8.044156146302399
         },
         {
           "bucket": "sports/6-10",
@@ -727,40 +1203,28 @@
           "signedPct": -24.716446460859437
         },
         {
+          "bucket": "sports/11-20",
+          "n": 5,
+          "MAPE": 34.53759872332713,
+          "signedPct": 9.085843833930436
+        },
+        {
           "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
+          "n": 1,
+          "MAPE": 17.499634643661754,
+          "signedPct": -17.499634643661754
         },
         {
           "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
           "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
+          "MAPE": 9.135096410515908,
+          "signedPct": 9.135096410515908
         },
         {
           "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
-        },
-        {
-          "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 10,
+          "MAPE": 28.320150546616038,
+          "signedPct": 0.9139169287962844
         },
         {
           "bucket": "sports/0-5",
@@ -769,288 +1233,518 @@
           "signedPct": -7.440392693333883
         }
       ],
-      "MAPE": 17.357187551203467
+      "MAPE": 55.15780907825884
     },
     "dealerAsks": {
-      "predicted": 0,
-      "skipped": [],
-      "metrics": [],
-      "MAPE": null
+      "predicted": 1978,
+      "skipped": {
+        "count": 0,
+        "reasons": {}
+      },
+      "metrics": [
+        {
+          "bucket": "truck/11-20",
+          "n": 101,
+          "MAPE": 29.110484857526227,
+          "signedPct": -0.6187039942174206
+        },
+        {
+          "bucket": "sports/11-20",
+          "n": 120,
+          "MAPE": 47.209332479619015,
+          "signedPct": -46.79773221356535
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 155.2591196373904,
+          "signedPct": 155.2591196373904
+        },
+        {
+          "bucket": "suv/0-5",
+          "n": 364,
+          "MAPE": 24.06490754967056,
+          "signedPct": 23.313592956579562
+        },
+        {
+          "bucket": "sports/6-10",
+          "n": 87,
+          "MAPE": 32.75072659866426,
+          "signedPct": -31.017290986086465
+        },
+        {
+          "bucket": "suv/6-10",
+          "n": 244,
+          "MAPE": 43.00925753986261,
+          "signedPct": 42.817885995991325
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 3,
+          "MAPE": 228.79752870453146,
+          "signedPct": 228.79752870453146
+        },
+        {
+          "bucket": "suv/11-20",
+          "n": 192,
+          "MAPE": 65.39190509321655,
+          "signedPct": 65.03785215342162
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 349,
+          "MAPE": 42.0626861225257,
+          "signedPct": 41.878031034121506
+        },
+        {
+          "bucket": "truck/21+",
+          "n": 24,
+          "MAPE": 42.766834060826746,
+          "signedPct": 13.949241082221699
+        },
+        {
+          "bucket": "truck/6-10",
+          "n": 128,
+          "MAPE": 56.46557158430149,
+          "signedPct": 55.68571007070141
+        },
+        {
+          "bucket": "sports/0-5",
+          "n": 82,
+          "MAPE": 17.822028075134394,
+          "signedPct": -5.19438905361644
+        },
+        {
+          "bucket": "fullsize/21+",
+          "n": 4,
+          "MAPE": 67.46727277246156,
+          "signedPct": 67.46727277246156
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 39.644056779851766,
+          "signedPct": -0.5034016928480156
+        },
+        {
+          "bucket": "suv/21+",
+          "n": 18,
+          "MAPE": 99.61825163885072,
+          "signedPct": 93.08600011016476
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 2,
+          "MAPE": 18.786190749788663,
+          "signedPct": -18.786190749788663
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 90,
+          "MAPE": 23.057661198520574,
+          "signedPct": -16.174358159831996
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 31.110316271346232,
+          "signedPct": -24.03523302435605
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 26.887816660113536,
+          "signedPct": -12.888113319139512
+        },
+        {
+          "bucket": "ev/0-5",
+          "n": 9,
+          "MAPE": 101.21169283128332,
+          "signedPct": 101.21169283128332
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 13,
+          "MAPE": 59.97847690019451,
+          "signedPct": 59.97847690019451
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 25.687332848463264,
+          "signedPct": -25.687332848463264
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 1,
+          "MAPE": 6.343048580181776,
+          "signedPct": -6.343048580181776
+        }
+      ],
+      "MAPE": 39.95971283062659
     }
   },
   "afterAddingSamples": {
     "all": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 37075,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 24.953807890976222,
+          "signedPct": 18.182925288587576
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7852,
+          "MAPE": 17.91610981579054,
+          "signedPct": -1.427954765706772
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18725,
+          "MAPE": 72.12935525719195,
+          "signedPct": 67.56382621078006
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 62.99964732266787,
+          "signedPct": 57.66076838265705
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 1007,
+          "MAPE": 37.78143000372038,
+          "signedPct": 32.402613116929636
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 25.736441259655162,
+          "signedPct": -23.18614731027047
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 32.19018261902211,
+          "signedPct": 14.740257019052716
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5716,
+          "MAPE": 55.69851596655328,
+          "signedPct": 54.899476472726406
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 62,
+          "MAPE": 72.52712845754805,
+          "signedPct": 69.46679018706573
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 26.05614190024488,
+          "signedPct": -26.05614190024488
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 107,
+          "MAPE": 38.685411224952944,
+          "signedPct": -37.676781593838804
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 384,
+          "MAPE": 17.400326490430018,
+          "signedPct": 4.247764829643612
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 21.635481484104982,
+          "signedPct": 21.635481484104982
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 19.066144216198854,
+          "signedPct": 19.066144216198854
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 9,
+          "MAPE": 117.61133041986793,
+          "signedPct": 117.61133041986793
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 22.96207008291445,
+          "signedPct": 22.96207008291445
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 31.144014784993082,
+          "signedPct": 31.144014784993082
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.596863016300837,
-          "signedPct": 2.5543451229885417
+          "bucket": "suv/11-20",
+          "n": 206,
+          "MAPE": 51.48792693184949,
+          "signedPct": 49.453786310558705
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 21.7269644151793,
-          "signedPct": -11.251318908991475
+          "n": 134,
+          "MAPE": 31.01957267669064,
+          "signedPct": 16.846362528820375
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 14.60041029513138,
-          "signedPct": 12.548953248384187
+          "n": 112,
+          "MAPE": 34.69868851790162,
+          "signedPct": -21.402829365777304
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 15.257514215681432,
-          "signedPct": 15.257514215681432
+          "n": 27,
+          "MAPE": 39.77877190333507,
+          "signedPct": -13.713382153295088
         },
         {
           "bucket": "suv/21+",
-          "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "n": 21,
+          "MAPE": 75.6407720850573,
+          "signedPct": 64.62794591649931
         },
         {
           "bucket": "sports/6-10",
-          "n": 2,
-          "MAPE": 24.716446460859437,
-          "signedPct": -24.716446460859437
-        },
-        {
-          "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
-        },
-        {
-          "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
-          "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
-        },
-        {
-          "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
+          "n": 89,
+          "MAPE": 32.57018097759,
+          "signedPct": -30.875698974283612
         },
         {
           "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 125,
+          "MAPE": 46.702463129367345,
+          "signedPct": -44.56238917166552
+        },
+        {
+          "bucket": "luxury/21+",
+          "n": 1,
+          "MAPE": 29.285401123138644,
+          "signedPct": -29.285401123138644
+        },
+        {
+          "bucket": "luxury/11-20",
+          "n": 1,
+          "MAPE": 6.4556316481292235,
+          "signedPct": -6.4556316481292235
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 11,
+          "MAPE": 26.322232186031105,
+          "signedPct": 0.2541927916164607
         },
         {
           "bucket": "sports/0-5",
+          "n": 86,
+          "MAPE": 17.69413555608414,
+          "signedPct": -5.298854339184695
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 155.2591196373904,
+          "signedPct": 155.2591196373904
+        },
+        {
+          "bucket": "fullsize/21+",
           "n": 4,
-          "MAPE": 15.072338915553992,
-          "signedPct": -7.440392693333883
+          "MAPE": 29.30758713377498,
+          "signedPct": 17.22709094072308
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 39.644056779851766,
+          "signedPct": -0.5034016928480156
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 48.6331931428988,
+          "signedPct": -46.82466311704924
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 41.16919735051823,
+          "signedPct": -39.02167932339766
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 27.23551341412026,
+          "signedPct": -27.23551341412026
         }
       ],
-      "MAPE": 17.357187551203467
+      "MAPE": 53.38649799236232
     },
     "transactionsAndReferences": {
-      "predicted": 143,
-      "skipped": [
-        {
-          "id": "refs-b.csv:57",
-          "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      "predicted": 35097,
+      "skipped": {
+        "count": 23093,
+        "reasons": {
+          "Not enough data to estimate this vehicle: a documented MSRP anchor and CPI reference are required.": 22837,
+          "Not enough data to estimate this vehicle: confirm model year and actual mileage.": 69,
+          "Not enough data to estimate this vehicle: the anchor year has no CPI observation.": 187
         }
-      ],
+      },
       "metrics": [
         {
-          "bucket": "midsize/0-5",
-          "n": 2,
-          "MAPE": 5.732712430275027,
-          "signedPct": 3.4322017476779045
-        },
-        {
-          "bucket": "midsize/6-10",
-          "n": 1,
-          "MAPE": 10.025923022764516,
-          "signedPct": -10.025923022764516
-        },
-        {
-          "bucket": "midsize/11-20",
-          "n": 2,
-          "MAPE": 21.6349837798279,
-          "signedPct": 21.6349837798279
+          "bucket": "economy/0-5",
+          "n": 1417,
+          "MAPE": 24.953807890976222,
+          "signedPct": 18.182925288587576
         },
         {
           "bucket": "suv/0-5",
-          "n": 22,
-          "MAPE": 12.53548620810326,
-          "signedPct": 3.990329844931962
+          "n": 7488,
+          "MAPE": 17.980098432799522,
+          "signedPct": -2.1605190268821555
         },
         {
-          "bucket": "suv/6-10",
-          "n": 14,
-          "MAPE": 14.19740006571553,
-          "signedPct": 6.22070819062688
-        },
-        {
-          "bucket": "suv/11-20",
-          "n": 16,
-          "MAPE": 22.630814253234323,
-          "signedPct": 14.546134289095303
-        },
-        {
-          "bucket": "economy/0-5",
-          "n": 14,
-          "MAPE": 11.084209750584009,
-          "signedPct": -2.7388322679595007
+          "bucket": "ev/0-5",
+          "n": 18716,
+          "MAPE": 72.11537037590499,
+          "signedPct": 67.54764589449536
         },
         {
           "bucket": "economy/6-10",
-          "n": 7,
-          "MAPE": 8.997374182904275,
-          "signedPct": -4.4703649034115776
+          "n": 493,
+          "MAPE": 62.99964732266787,
+          "signedPct": 57.66076838265705
         },
         {
-          "bucket": "economy/11-20",
-          "n": 10,
-          "MAPE": 9.14303480234329,
-          "signedPct": 4.368539533254274
+          "bucket": "suv/6-10",
+          "n": 763,
+          "MAPE": 39.34930882284496,
+          "signedPct": 32.65400984874274
+        },
+        {
+          "bucket": "luxury/0-5",
+          "n": 181,
+          "MAPE": 25.736441259655162,
+          "signedPct": -23.18614731027047
         },
         {
           "bucket": "van/0-5",
-          "n": 4,
-          "MAPE": 22.954994383254224,
-          "signedPct": -12.199498289468789
+          "n": 138,
+          "MAPE": 32.19018261902211,
+          "signedPct": 14.740257019052716
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 5703,
+          "MAPE": 55.688759786974586,
+          "signedPct": 54.88789888101028
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 60,
+          "MAPE": 74.26209456916071,
+          "signedPct": 72.4649546969402
+        },
+        {
+          "bucket": "luxury/6-10",
+          "n": 5,
+          "MAPE": 26.05614190024488,
+          "signedPct": -26.05614190024488
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 17,
+          "MAPE": 18.422197628234684,
+          "signedPct": -18.378298027725616
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 35,
+          "MAPE": 43.69619723774783,
+          "signedPct": -33.13457605085633
+        },
+        {
+          "bucket": "midsize/0-5",
+          "n": 6,
+          "MAPE": 21.635481484104982,
+          "signedPct": 21.635481484104982
+        },
+        {
+          "bucket": "midsize/6-10",
+          "n": 3,
+          "MAPE": 19.066144216198854,
+          "signedPct": 19.066144216198854
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 6,
+          "MAPE": 62.01823127753615,
+          "signedPct": 62.01823127753615
         },
         {
           "bucket": "van/6-10",
           "n": 2,
-          "MAPE": 7.591292402672689,
-          "signedPct": -7.591292402672689
+          "MAPE": 22.96207008291445,
+          "signedPct": 22.96207008291445
         },
         {
           "bucket": "van/11-20",
-          "n": 2,
-          "MAPE": 21.99458338765965,
-          "signedPct": 12.54924177314589
+          "n": 4,
+          "MAPE": 31.144014784993082,
+          "signedPct": 31.144014784993082
         },
         {
-          "bucket": "truck/0-5",
-          "n": 5,
-          "MAPE": 10.596863016300837,
-          "signedPct": 2.5543451229885417
+          "bucket": "suv/11-20",
+          "n": 14,
+          "MAPE": 27.169133167302828,
+          "signedPct": 13.249161269261904
         },
         {
           "bucket": "truck/6-10",
-          "n": 4,
-          "MAPE": 21.7269644151793,
-          "signedPct": -11.251318908991475
+          "n": 6,
+          "MAPE": 18.581275019377568,
+          "signedPct": -18.581275019377568
         },
         {
           "bucket": "truck/11-20",
-          "n": 6,
-          "MAPE": 14.60041029513138,
-          "signedPct": 12.548953248384187
+          "n": 11,
+          "MAPE": 15.068795449497618,
+          "signedPct": 5.671794726487166
         },
         {
           "bucket": "truck/21+",
-          "n": 2,
-          "MAPE": 15.257514215681432,
-          "signedPct": 15.257514215681432
+          "n": 3,
+          "MAPE": 17.320295522140256,
+          "signedPct": -17.320295522140256
         },
         {
           "bucket": "suv/21+",
           "n": 3,
-          "MAPE": 12.76786552459515,
-          "signedPct": -6.1651609924671815
+          "MAPE": 15.256379193651219,
+          "signedPct": -15.256379193651219
         },
         {
           "bucket": "sports/6-10",
@@ -1059,40 +1753,28 @@
           "signedPct": -24.716446460859437
         },
         {
+          "bucket": "sports/11-20",
+          "n": 5,
+          "MAPE": 34.53759872332713,
+          "signedPct": 9.085843833930436
+        },
+        {
           "bucket": "luxury/21+",
-          "n": 2,
-          "MAPE": 12.79757230921449,
-          "signedPct": -12.79757230921449
+          "n": 1,
+          "MAPE": 29.285401123138644,
+          "signedPct": -29.285401123138644
         },
         {
           "bucket": "luxury/11-20",
-          "n": 3,
-          "MAPE": 8.531781254943768,
-          "signedPct": 8.531781254943768
-        },
-        {
-          "bucket": "luxury/0-5",
           "n": 1,
-          "MAPE": 1.7247097576581272,
-          "signedPct": 1.7247097576581272
-        },
-        {
-          "bucket": "ev/6-10",
-          "n": 1,
-          "MAPE": 51.176153593539134,
-          "signedPct": -51.176153593539134
+          "MAPE": 6.4556316481292235,
+          "signedPct": -6.4556316481292235
         },
         {
           "bucket": "sports/21+",
-          "n": 8,
-          "MAPE": 27.04530362568397,
-          "signedPct": 9.497280718581433
-        },
-        {
-          "bucket": "sports/11-20",
-          "n": 6,
-          "MAPE": 65.60120951024085,
-          "signedPct": 61.25163567138214
+          "n": 10,
+          "MAPE": 28.320150546616038,
+          "signedPct": 0.9139169287962844
         },
         {
           "bucket": "sports/0-5",
@@ -1101,54 +1783,196 @@
           "signedPct": -7.440392693333883
         }
       ],
-      "MAPE": 17.357187551203467
+      "MAPE": 54.59146218543921
     },
     "dealerAsks": {
-      "predicted": 0,
-      "skipped": [],
-      "metrics": [],
-      "MAPE": null
+      "predicted": 1978,
+      "skipped": {
+        "count": 0,
+        "reasons": {}
+      },
+      "metrics": [
+        {
+          "bucket": "truck/11-20",
+          "n": 101,
+          "MAPE": 36.836597663965435,
+          "signedPct": -24.351550801568482
+        },
+        {
+          "bucket": "sports/11-20",
+          "n": 120,
+          "MAPE": 47.209332479619015,
+          "signedPct": -46.79773221356535
+        },
+        {
+          "bucket": "midsize/21+",
+          "n": 3,
+          "MAPE": 155.2591196373904,
+          "signedPct": 155.2591196373904
+        },
+        {
+          "bucket": "suv/0-5",
+          "n": 364,
+          "MAPE": 16.599772551605934,
+          "signedPct": 13.64193860704393
+        },
+        {
+          "bucket": "sports/6-10",
+          "n": 87,
+          "MAPE": 32.75072659866426,
+          "signedPct": -31.017290986086465
+        },
+        {
+          "bucket": "suv/6-10",
+          "n": 244,
+          "MAPE": 32.878595827523355,
+          "signedPct": 31.616483172776338
+        },
+        {
+          "bucket": "midsize/11-20",
+          "n": 3,
+          "MAPE": 228.79752870453146,
+          "signedPct": 228.79752870453146
+        },
+        {
+          "bucket": "suv/11-20",
+          "n": 192,
+          "MAPE": 53.261172310514354,
+          "signedPct": 52.09370688648659
+        },
+        {
+          "bucket": "truck/0-5",
+          "n": 349,
+          "MAPE": 14.7632047822463,
+          "signedPct": 7.996710190152195
+        },
+        {
+          "bucket": "truck/21+",
+          "n": 24,
+          "MAPE": 42.586081450984416,
+          "signedPct": -13.262517982189443
+        },
+        {
+          "bucket": "truck/6-10",
+          "n": 128,
+          "MAPE": 31.60261787937719,
+          "signedPct": 18.507033038892157
+        },
+        {
+          "bucket": "sports/0-5",
+          "n": 82,
+          "MAPE": 17.822028075134394,
+          "signedPct": -5.19438905361644
+        },
+        {
+          "bucket": "fullsize/21+",
+          "n": 4,
+          "MAPE": 29.30758713377498,
+          "signedPct": 17.22709094072308
+        },
+        {
+          "bucket": "van/21+",
+          "n": 2,
+          "MAPE": 39.644056779851766,
+          "signedPct": -0.5034016928480156
+        },
+        {
+          "bucket": "suv/21+",
+          "n": 18,
+          "MAPE": 85.70483756695833,
+          "signedPct": 77.9420001015244
+        },
+        {
+          "bucket": "economy/11-20",
+          "n": 2,
+          "MAPE": 20.47814510916807,
+          "signedPct": -20.47814510916807
+        },
+        {
+          "bucket": "fullsize/0-5",
+          "n": 90,
+          "MAPE": 42.51290712655529,
+          "signedPct": -41.32205071188242
+        },
+        {
+          "bucket": "fullsize/6-10",
+          "n": 109,
+          "MAPE": 48.6331931428988,
+          "signedPct": -46.82466311704924
+        },
+        {
+          "bucket": "fullsize/11-20",
+          "n": 32,
+          "MAPE": 41.16919735051823,
+          "signedPct": -39.02167932339766
+        },
+        {
+          "bucket": "ev/0-5",
+          "n": 9,
+          "MAPE": 101.21169283128332,
+          "signedPct": 101.21169283128332
+        },
+        {
+          "bucket": "ev/6-10",
+          "n": 13,
+          "MAPE": 59.97847690019451,
+          "signedPct": 59.97847690019451
+        },
+        {
+          "bucket": "economy/21+",
+          "n": 1,
+          "MAPE": 27.23551341412026,
+          "signedPct": -27.23551341412026
+        },
+        {
+          "bucket": "sports/21+",
+          "n": 1,
+          "MAPE": 6.343048580181776,
+          "signedPct": -6.343048580181776
+        }
+      ],
+      "MAPE": 32.00599835413125
     }
   },
   "proposedSegmentCalibration": {
     "economy": {
-      "market": 1.3094,
+      "market": 1.2308359999999998,
       "k": 0.9246,
       "floor": 0.535,
       "interval": 0.19335516015890222
     },
     "midsize": {
-      "market": 1.0884,
+      "market": 1.284312,
       "k": 0.8782,
       "floor": 0.8075,
       "interval": 0.20171512605020883
     },
     "fullsize": {
-      "market": 1,
+      "market": 0.7,
       "k": 1,
       "floor": 1,
       "interval": 0.3764232476777453
     },
     "suv": {
-      "market": 1.3302,
+      "market": 1.250388,
       "k": 0.94925,
       "floor": 0.715,
       "interval": 0.3190541739125425
     },
     "truck": {
-      "market": 1.270834,
+      "market": 1.2228780000000001,
       "k": 0.8637,
       "floor": 1.08,
       "interval": 0.29876847889320624
     },
     "van": {
-      "market": 0.9701,
+      "market": 1.183522,
       "k": 0.8666,
       "floor": 0.6575,
       "interval": 0.29227605789924366
     },
     "luxury": {
-      "market": 1.1144,
+      "market": 0.936096,
       "k": 1.0928,
       "floor": 1.4475,
       "interval": 0.3764232476777453
@@ -1160,7 +1984,7 @@
       "interval": 0.489961513961377
     },
     "ev": {
-      "market": 1.1508,
+      "market": 1.749216,
       "k": 1.37845,
       "floor": 0.5,
       "interval": 0.40811327833254313
@@ -1168,8 +1992,141 @@
   },
   "evFactorSanity": {
     "configuredFactor": 0.9,
-    "overlap": [],
-    "note": "No comparable WA EV/dealer cells; factor cannot be validated."
+    "overlap": [
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2022,
+        "n": 4,
+        "recordedToAsk": 0.8091695969705166
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2023,
+        "n": 4,
+        "recordedToAsk": 0.807416208104052
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2023,
+        "n": 7,
+        "recordedToAsk": 0.9923179199290885
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2023,
+        "n": 12,
+        "recordedToAsk": 1.0594110216327173
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2023,
+        "n": 10,
+        "recordedToAsk": 0.9554565701559019
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2023,
+        "n": 12,
+        "recordedToAsk": 1.001079274594126
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2017,
+        "n": 10,
+        "recordedToAsk": 0.7572075726842461
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2018,
+        "n": 5,
+        "recordedToAsk": 0.8507059477487493
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2019,
+        "n": 4,
+        "recordedToAsk": 0.9189691646900442
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 10,
+        "recordedToAsk": 1.0933393285371704
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 7,
+        "recordedToAsk": 0.6954151603833133
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 12,
+        "recordedToAsk": 1.1261379080442084
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 12,
+        "recordedToAsk": 0.8986261191725842
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 14,
+        "recordedToAsk": 0.8422488115381517
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 3,
+        "recordedToAsk": 0.8313358444621999
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 14,
+        "recordedToAsk": 0.8314593406593407
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 10,
+        "recordedToAsk": 0.9857783783783785
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 6,
+        "recordedToAsk": 0.7416904898036973
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2020,
+        "n": 11,
+        "recordedToAsk": 0.8728631735517735
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2021,
+        "n": 4,
+        "recordedToAsk": 0.9213310164014389
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2021,
+        "n": 2,
+        "recordedToAsk": 0.9359926276987889
+      },
+      {
+        "family": "chevrolet/bolt ev",
+        "year": 2021,
+        "n": 3,
+        "recordedToAsk": 1.0062215993544825
+      }
+    ],
+    "note": "Observational comparison only: ask/sale date, condition and trim may differ."
   },
   "limitations": [
     "WA records lack trims and assume the lowest MSRP tier; interpret their errors and EV overlap accordingly.",

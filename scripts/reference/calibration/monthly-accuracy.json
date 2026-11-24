@@ -1,0 +1,1053 @@
+{
+  "fittedAt": "2026-11-24T03:01:59.989Z",
+  "dataWindow": {
+    "from": "2026-11-01",
+    "to": "2026-11-24"
+  },
+  "accepted": true,
+  "reason": "Non-worsening overall holdout median and p80.",
+  "matching": {
+    "received": 4714,
+    "totalStored": 4714,
+    "matched": 3640,
+    "modeled": 3622,
+    "skipped": [
+      {
+        "id": "market:2c0979878b602172196b647e7db973be4f991fe703dabe428046f4918ffe1fc4",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:6e8bcf6998b750b5d82742763dd5252c661efe9207a5d6ba2780a1ca3f09ffe2",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:b2508baf2c352748d713e8138d22f42cb8a931d2b2fa1874005f24b8b86ab177",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:6c224ce0b79f6a2451dc7f6fd3756186c4518914d1ef816ca8608274263f0f16",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:ee106610a428decc80921f9d0a397078365d0f2bda9ee91e5f1b3be2208964b9",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:ac58eee31c0327aed5cb15ec95ac20023c868136dea17bee9bb7105056ad7f2c",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:ad2db72f4fd293a7bf84a528b2e8adc8560f170d1617f80e2c40d64623c8196e",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:5f699bba9e1c2971c11e146900ab08d7f4ce41f61a3b8145bd62bd9419875148",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:934cb42e470c8453c16d55a890551768bd9f0a3bcd447be8ebf6d825c5a699c6",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:f8a0cc3f512328ce352c02f74168770f5647212aad00945e6c709b0952113207",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:d5dec4c17278e866dcf464ca7d2cbbea3d90b7b36cc42381eb63ada2a7478ce4",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:35987a17e05b48e315eee18d2b9f4ac83c2c9cb7b40d323adbfc912aeb98741c",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:6fe44531159ffdbc0b5e4e864c068719d8577d00b1e44c0008bdb7c7cc7276f1",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:e005d2bfc7db3a3ffc9191720b32b02d7d4e54521cf980a1d824bb4658565280",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:7f4c595f132d2652380effb6fe2e6edda4792997737a96ad7a79ae32aa4442f7",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:feed4638d90122b14bd931ec051117e8c7f86265703074e325fb3eceb03fe3e1",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:293aff0a8030910fe53f59268a7cb9687449f490523ef4fb48375426f2a01bd4",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      },
+      {
+        "id": "market:3f74c833cbada0d54a5119997e185d542b46e5db0ca0962e2574de48daaebfd8",
+        "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
+      }
+    ],
+    "rate": 0.7721680101824353
+  },
+  "dealerFactor": {
+    "factor": 0.9,
+    "estimate": null,
+    "interval": null,
+    "intervalBasis": "Conservative range of family-level median ratios; not a causal ask-to-sale estimate.",
+    "supported": false,
+    "waCells": 40809,
+    "overlap": [],
+    "note": "Retain configured 0.90: insufficient contemporaneous EV families/cells or excessive uncertainty. WA has unknown trim and covers one state."
+  },
+  "split": {
+    "chevrolet/ss": "train",
+    "nissan/frontier": "holdout",
+    "chevrolet/cobalt": "train",
+    "chevrolet/astro": "holdout",
+    "nissan/titan": "train",
+    "dodge/charger": "holdout",
+    "buick/lesabre": "train",
+    "toyota/tacoma": "holdout",
+    "chevrolet/aveo": "train",
+    "gmc/terrain": "holdout",
+    "gmc/yukon": "train",
+    "chevrolet/camaro": "holdout",
+    "honda/ridgeline": "train",
+    "chevrolet/cruze": "holdout",
+    "ford/flex": "train",
+    "gmc/sierra 1500": "holdout",
+    "gmc/yukon xl": "train",
+    "jeep/gladiator": "holdout",
+    "lexus/rx": "train",
+    "lexus/nx": "holdout",
+    "lexus/ls": "train",
+    "dodge/challenger": "holdout",
+    "buick/lacrosse": "train",
+    "chevrolet/bolt ev": "holdout",
+    "chevrolet/cavalier": "train",
+    "honda/cr-v": "holdout",
+    "buick/century": "train",
+    "chevrolet/corvette": "holdout",
+    "gmc/acadia": "train",
+    "gmc/envoy": "holdout",
+    "dodge/viper": "train",
+    "volkswagen/passat": "holdout"
+  },
+  "counts": {
+    "train": 1252,
+    "holdout": 2370,
+    "trainFamilies": 16,
+    "holdoutFamilies": 16
+  },
+  "decisions": [
+    {
+      "segment": "economy",
+      "n": 13,
+      "holdoutN": 74,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "ev",
+      "n": 0,
+      "holdoutN": 22,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "fullsize",
+      "n": 27,
+      "holdoutN": 231,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "luxury",
+      "n": 8,
+      "holdoutN": 0,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "midsize",
+      "n": 1,
+      "holdoutN": 5,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "sports",
+      "n": 4,
+      "holdoutN": 458,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    },
+    {
+      "segment": "suv",
+      "n": 955,
+      "holdoutN": 930,
+      "proposedFactor": 0.7818831701261457,
+      "shrinkage": 0.9408866995073891,
+      "before": {
+        "n": 930,
+        "families": 4,
+        "median": 15.673263684138815,
+        "p80": 26.538183717304705
+      },
+      "after": {
+        "n": 930,
+        "families": 4,
+        "median": 15.673263684138815,
+        "p80": 26.538183717304705
+      },
+      "reason": "Accepted: sample, family, cap and holdout guards pass."
+    },
+    {
+      "segment": "truck",
+      "n": 244,
+      "holdoutN": 648,
+      "proposedFactor": 0.7787217133933794,
+      "shrinkage": 0.8026315789473685,
+      "before": {
+        "n": 648,
+        "families": 4,
+        "median": 14.02447957457198,
+        "p80": 27.78775927878274
+      },
+      "after": {
+        "n": 648,
+        "families": 4,
+        "median": 23.721833960099268,
+        "p80": 37.34311702705497
+      },
+      "reason": "Retain previous: holdout median or p80 worsened."
+    },
+    {
+      "segment": "van",
+      "n": 0,
+      "holdoutN": 2,
+      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+    }
+  ],
+  "proposedCells": [
+    {
+      "segment": "suv",
+      "n": 955,
+      "families": 5,
+      "factor": 0.7818831701261457,
+      "shrinkage": 0.9408866995073891,
+      "holdout": {
+        "n": 930,
+        "families": 4,
+        "before": 15.673263684138815,
+        "after": 15.673263684138815,
+        "p80Before": 26.538183717304705,
+        "p80After": 26.538183717304705
+      }
+    }
+  ],
+  "baseline": {
+    "n": 2370,
+    "families": 16,
+    "median": 20.516534651162438,
+    "p80": 44.97313604153886
+  },
+  "before": {
+    "n": 2370,
+    "families": 16,
+    "median": 18.430121431897405,
+    "p80": 36.552996714938345
+  },
+  "after": {
+    "n": 2370,
+    "families": 16,
+    "median": 18.430121431897405,
+    "p80": 36.552996714938345
+  },
+  "metrics": [
+    {
+      "bucket": "age:0-5",
+      "before": {
+        "n": 1008,
+        "families": 10,
+        "median": 16.781623116135414,
+        "p80": 37.84346484619361
+      },
+      "after": {
+        "n": 1008,
+        "families": 10,
+        "median": 15.201302886349156,
+        "p80": 29.459413919030688
+      }
+    },
+    {
+      "bucket": "age:11-20",
+      "before": {
+        "n": 536,
+        "families": 12,
+        "median": 31.959965686794877,
+        "p80": 54.825280868550806
+      },
+      "after": {
+        "n": 536,
+        "families": 12,
+        "median": 29.67283181836531,
+        "p80": 49.70659252079439
+      }
+    },
+    {
+      "bucket": "age:21+",
+      "before": {
+        "n": 34,
+        "families": 6,
+        "median": 39.34978196931499,
+        "p80": 83.44880875177739
+      },
+      "after": {
+        "n": 34,
+        "families": 6,
+        "median": 37.49866638724491,
+        "p80": 64.51093306530352
+      }
+    },
+    {
+      "bucket": "age:6-10",
+      "before": {
+        "n": 792,
+        "families": 11,
+        "median": 20.109057635428464,
+        "p80": 40.101799483566346
+      },
+      "after": {
+        "n": 792,
+        "families": 11,
+        "median": 17.288658432382725,
+        "p80": 33.00083355427382
+      }
+    },
+    {
+      "bucket": "segment-age:economy/11-20",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment-age:economy/21+",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment-age:economy/6-10",
+      "before": {
+        "n": 74,
+        "families": 1,
+        "median": 18.2548200287722,
+        "p80": 49.201515591620876
+      },
+      "after": {
+        "n": 74,
+        "families": 1,
+        "median": 18.2548200287722,
+        "p80": 49.201515591620876
+      }
+    },
+    {
+      "bucket": "segment-age:ev/0-5",
+      "before": {
+        "n": 9,
+        "families": 1,
+        "median": 30.188336612792476,
+        "p80": 40.008360043257795
+      },
+      "after": {
+        "n": 9,
+        "families": 1,
+        "median": 30.188336612792476,
+        "p80": 40.008360043257795
+      }
+    },
+    {
+      "bucket": "segment-age:ev/6-10",
+      "before": {
+        "n": 13,
+        "families": 1,
+        "median": 10.11887556247636,
+        "p80": 25.08811152361793
+      },
+      "after": {
+        "n": 13,
+        "families": 1,
+        "median": 10.11887556247636,
+        "p80": 25.08811152361793
+      }
+    },
+    {
+      "bucket": "segment-age:fullsize/0-5",
+      "before": {
+        "n": 90,
+        "families": 1,
+        "median": 24.698505636788127,
+        "p80": 37.12792778030592
+      },
+      "after": {
+        "n": 90,
+        "families": 1,
+        "median": 24.698505636788127,
+        "p80": 37.12792778030592
+      }
+    },
+    {
+      "bucket": "segment-age:fullsize/11-20",
+      "before": {
+        "n": 32,
+        "families": 1,
+        "median": 26.92702063134818,
+        "p80": 35.783842591653176
+      },
+      "after": {
+        "n": 32,
+        "families": 1,
+        "median": 26.92702063134818,
+        "p80": 35.783842591653176
+      }
+    },
+    {
+      "bucket": "segment-age:fullsize/21+",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment-age:fullsize/6-10",
+      "before": {
+        "n": 109,
+        "families": 1,
+        "median": 32.57752275402551,
+        "p80": 44.233983153042495
+      },
+      "after": {
+        "n": 109,
+        "families": 1,
+        "median": 32.57752275402551,
+        "p80": 44.233983153042495
+      }
+    },
+    {
+      "bucket": "segment-age:luxury/11-20",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment-age:luxury/21+",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment-age:midsize/11-20",
+      "before": {
+        "n": 3,
+        "families": 1,
+        "median": 193.2658649082597,
+        "p80": 262.137240468135
+      },
+      "after": {
+        "n": 3,
+        "families": 1,
+        "median": 193.2658649082597,
+        "p80": 262.137240468135
+      }
+    },
+    {
+      "bucket": "segment-age:midsize/21+",
+      "before": {
+        "n": 2,
+        "families": 1,
+        "median": 106.33563684887781,
+        "p80": 124.33366778005953
+      },
+      "after": {
+        "n": 2,
+        "families": 1,
+        "median": 106.33563684887781,
+        "p80": 124.33366778005953
+      }
+    },
+    {
+      "bucket": "segment-age:sports/0-5",
+      "before": {
+        "n": 187,
+        "families": 2,
+        "median": 30.792288134794354,
+        "p80": 59.86068344093049
+      },
+      "after": {
+        "n": 187,
+        "families": 2,
+        "median": 30.792288134794354,
+        "p80": 59.86068344093049
+      }
+    },
+    {
+      "bucket": "segment-age:sports/11-20",
+      "before": {
+        "n": 155,
+        "families": 3,
+        "median": 45.13984749421303,
+        "p80": 55.10460614338108
+      },
+      "after": {
+        "n": 155,
+        "families": 3,
+        "median": 45.13984749421303,
+        "p80": 55.10460614338108
+      }
+    },
+    {
+      "bucket": "segment-age:sports/21+",
+      "before": {
+        "n": 3,
+        "families": 1,
+        "median": 8.465742853404345,
+        "p80": 24.88873063981324
+      },
+      "after": {
+        "n": 3,
+        "families": 1,
+        "median": 8.465742853404345,
+        "p80": 24.88873063981324
+      }
+    },
+    {
+      "bucket": "segment-age:sports/6-10",
+      "before": {
+        "n": 113,
+        "families": 3,
+        "median": 31.110334112181626,
+        "p80": 41.130104300315764
+      },
+      "after": {
+        "n": 113,
+        "families": 3,
+        "median": 31.110334112181626,
+        "p80": 41.130104300315764
+      }
+    },
+    {
+      "bucket": "segment-age:suv/0-5",
+      "before": {
+        "n": 308,
+        "families": 3,
+        "median": 20.286316303589437,
+        "p80": 51.99270301189152
+      },
+      "after": {
+        "n": 308,
+        "families": 3,
+        "median": 15.15353392218254,
+        "p80": 22.493572015485512
+      }
+    },
+    {
+      "bucket": "segment-age:suv/11-20",
+      "before": {
+        "n": 251,
+        "families": 4,
+        "median": 17.965897873289983,
+        "p80": 71.68382246962837
+      },
+      "after": {
+        "n": 251,
+        "families": 4,
+        "median": 21.454209895213506,
+        "p80": 36.314105197346876
+      }
+    },
+    {
+      "bucket": "segment-age:suv/21+",
+      "before": {
+        "n": 6,
+        "families": 1,
+        "median": 102.4147567280489,
+        "p80": 200.0651402285031
+      },
+      "after": {
+        "n": 6,
+        "families": 1,
+        "median": 58.264691670839454,
+        "p80": 134.6158830862085
+      }
+    },
+    {
+      "bucket": "segment-age:suv/6-10",
+      "before": {
+        "n": 365,
+        "families": 3,
+        "median": 17.596665540688882,
+        "p80": 41.37470531323478
+      },
+      "after": {
+        "n": 365,
+        "families": 3,
+        "median": 14.059598520128558,
+        "p80": 22.088863921025226
+      }
+    },
+    {
+      "bucket": "segment-age:truck/0-5",
+      "before": {
+        "n": 414,
+        "families": 3,
+        "median": 10.585303552997788,
+        "p80": 22.369628096095447
+      },
+      "after": {
+        "n": 414,
+        "families": 3,
+        "median": 10.585303552997788,
+        "p80": 22.369628096095447
+      }
+    },
+    {
+      "bucket": "segment-age:truck/11-20",
+      "before": {
+        "n": 95,
+        "families": 3,
+        "median": 37.27296881684955,
+        "p80": 47.60147435294463
+      },
+      "after": {
+        "n": 95,
+        "families": 3,
+        "median": 37.27296881684955,
+        "p80": 47.60147435294463
+      }
+    },
+    {
+      "bucket": "segment-age:truck/21+",
+      "before": {
+        "n": 21,
+        "families": 2,
+        "median": 32.155508510125806,
+        "p80": 61.675982725576795
+      },
+      "after": {
+        "n": 21,
+        "families": 2,
+        "median": 32.155508510125806,
+        "p80": 61.675982725576795
+      }
+    },
+    {
+      "bucket": "segment-age:truck/6-10",
+      "before": {
+        "n": 118,
+        "families": 2,
+        "median": 13.782275726331466,
+        "p80": 23.560264168286864
+      },
+      "after": {
+        "n": 118,
+        "families": 2,
+        "median": 13.782275726331466,
+        "p80": 23.560264168286864
+      }
+    },
+    {
+      "bucket": "segment-age:van/21+",
+      "before": {
+        "n": 2,
+        "families": 1,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      },
+      "after": {
+        "n": 2,
+        "families": 1,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      }
+    },
+    {
+      "bucket": "segment:economy",
+      "before": {
+        "n": 74,
+        "families": 1,
+        "median": 18.2548200287722,
+        "p80": 49.201515591620876
+      },
+      "after": {
+        "n": 74,
+        "families": 1,
+        "median": 18.2548200287722,
+        "p80": 49.201515591620876
+      }
+    },
+    {
+      "bucket": "segment:ev",
+      "before": {
+        "n": 22,
+        "families": 1,
+        "median": 24.139737979933493,
+        "p80": 31.961538849897714
+      },
+      "after": {
+        "n": 22,
+        "families": 1,
+        "median": 24.139737979933493,
+        "p80": 31.961538849897714
+      }
+    },
+    {
+      "bucket": "segment:fullsize",
+      "before": {
+        "n": 231,
+        "families": 1,
+        "median": 27.827193803936336,
+        "p80": 39.448085536217256
+      },
+      "after": {
+        "n": 231,
+        "families": 1,
+        "median": 27.827193803936336,
+        "p80": 39.448085536217256
+      }
+    },
+    {
+      "bucket": "segment:luxury",
+      "before": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "families": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "bucket": "segment:midsize",
+      "before": {
+        "n": 5,
+        "families": 1,
+        "median": 136.332355067514,
+        "p80": 216.22299009488484
+      },
+      "after": {
+        "n": 5,
+        "families": 1,
+        "median": 136.332355067514,
+        "p80": 216.22299009488484
+      }
+    },
+    {
+      "bucket": "segment:sports",
+      "before": {
+        "n": 458,
+        "families": 3,
+        "median": 35.66895608096168,
+        "p80": 54.586509962034086
+      },
+      "after": {
+        "n": 458,
+        "families": 3,
+        "median": 35.66895608096168,
+        "p80": 54.586509962034086
+      }
+    },
+    {
+      "bucket": "segment:suv",
+      "before": {
+        "n": 930,
+        "families": 4,
+        "median": 18.877656495597982,
+        "p80": 50.94972001924212
+      },
+      "after": {
+        "n": 930,
+        "families": 4,
+        "median": 15.673263684138815,
+        "p80": 26.538183717304705
+      }
+    },
+    {
+      "bucket": "segment:truck",
+      "before": {
+        "n": 648,
+        "families": 4,
+        "median": 14.02447957457198,
+        "p80": 27.78775927878274
+      },
+      "after": {
+        "n": 648,
+        "families": 4,
+        "median": 14.02447957457198,
+        "p80": 27.78775927878274
+      }
+    },
+    {
+      "bucket": "segment:van",
+      "before": {
+        "n": 2,
+        "families": 1,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      },
+      "after": {
+        "n": 2,
+        "families": 1,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      }
+    }
+  ],
+  "flaggedSegments": [
+    "segment:economy",
+    "segment:ev",
+    "segment:fullsize",
+    "segment:midsize",
+    "segment:sports",
+    "segment:suv",
+    "segment:van"
+  ],
+  "drift": [
+    {
+      "bucket": "age:0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "age:11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "age:21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "age:6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:economy/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:economy/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:economy/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:ev/0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:ev/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:fullsize/0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:fullsize/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:fullsize/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:fullsize/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:luxury/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:luxury/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:midsize/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:midsize/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:sports/0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:sports/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:sports/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:sports/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:suv/0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:suv/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:suv/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:suv/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:truck/0-5",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:truck/11-20",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:truck/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:truck/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment-age:van/21+",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:economy",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:ev",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:fullsize",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:luxury",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:midsize",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:sports",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:suv",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:truck",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
+      "bucket": "segment:van",
+      "medianDelta": null,
+      "p80Delta": null
+    }
+  ],
+  "runtimeSeconds": 30.535194791000002
+}

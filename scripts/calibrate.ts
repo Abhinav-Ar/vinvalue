@@ -1,9 +1,10 @@
-/** Offline proposals only. npx tsx scripts/calibrate.ts [--local-db | labeled-sales.json]
+/** Local calibration and guarded correction publication. npx tsx scripts/calibrate.ts [--local-db | labeled-sales.json]
  * Local DB guard prohibits production. No database is opened by default. */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { loadReferences } from '../models/reference';
 import type { LabeledSale } from '../models/valuation/calibration';
 import { joinMarketSamples, proposeWithMarket, type DealerSample } from '../models/valuation/marketCalibration';
+const started=performance.now();
 const data=loadReferences();
 let rows:LabeledSale[]=[],samples:DealerSample[]=[];
 if(process.argv.includes('--local-db')) {
@@ -28,8 +29,21 @@ for(const file of ['refs-a.csv','refs-b.csv']) {
 const joined=joinMarketSamples(samples,data);
 const {rows:marketRows,...matching}=joined;
 const report={label:'PROPOSALS ONLY — human review required',matching,...proposeWithMarket([...rows,...marketRows],data)};
-writeFileSync('scripts/reference/calibration/market-proposals.json',JSON.stringify(report,null,2)+'\n');
+writeFileSync('scripts/reference/calibration/market-proposals.json',JSON.stringify(report,(key,value)=>key==='skipped'&&Array.isArray(value)?{count:value.length,reasons:value.reduce((out:Record<string,number>,r:{reason:string})=>{out[r.reason]=(out[r.reason]??0)+1;return out;},{})}:value,2)+'\n');
 const table=(label:string,metrics:typeof report.baseline.all)=>`## ${label}\n\n| Segment / age | n | MAPE % | Signed % |\n|---|---:|---:|---:|\n${metrics.metrics.map(r=>`| ${r.bucket} | ${r.n} | ${r.MAPE.toFixed(2)} | ${r.signedPct.toFixed(2)} |`).join('\n')}\n`;
 writeFileSync('scripts/reference/calibration/MARKET_REPORT.md',`# Market sampling calibration proposals\n\nHuman review required. Model config was not modified.\n\nDealer asking → private party factor: ${matching.factor} (configured, not fitted). Matched ${matching.matched}/${matching.received} samples; match rate ${matching.matchRate??'n/a'}. Unknown or ambiguous trims are dropped.\n\nTraining: ${report.counts.train} rows / ${report.counts.trainFamilies} families. Holdout: ${report.counts.holdout} rows / ${report.counts.holdoutFamilies} families. Fixed 50/50 family split, shared across both fits.\n\n${report.evFactorSanity.note} Comparable EV cells: ${report.evFactorSanity.overlap.length}.\n\n${table('Current config holdout',report.baseline.all)}\n${table('Fit without dealer samples',report.beforeAddingSamples.all)}\n${table('Fit with dealer samples',report.afterAddingSamples.all)}\nFull proposed segment parameters, source-specific holdout metrics, family split and WA EV factor checks: market-proposals.json.\n\n${report.limitations.map(x=>`- ${x}`).join('\n')}\n`);
-console.log(JSON.stringify({matching,counts:report.counts,output:'scripts/reference/calibration/market-proposals.json'},null,2));
+
+const {fitBiasCorrections,accuracyMarkdown}=await import('../models/valuation/biasCalibration');
+const {committedCorrections}=await import('../models/valuation/biasCorrections');
+let bias:ReturnType<typeof fitBiasCorrections>&{markdown?:string;drift?:unknown};
+if(process.argv.includes('--local-db')) {
+  const {getDb}=await import('../models/db');
+  const {runValuationCalibration}=await import('../models/jobs/valuationCalibration');
+  bias=await runValuationCalibration(getDb(),new Date(),true);
+} else bias=fitBiasCorrections(samples,rows,data,committedCorrections);
+writeFileSync('models/reference/data/bias-corrections.json',JSON.stringify(bias.corrections,null,2)+'\n');
+const runtimeSeconds=(performance.now()-started)/1000;
+writeFileSync('scripts/reference/calibration/monthly-accuracy.json',JSON.stringify({...bias.report,drift:bias.drift??null,runtimeSeconds},null,2)+'\n');
+writeFileSync('scripts/reference/calibration/MONTHLY_ACCURACY.md',bias.markdown??accuracyMarkdown(bias.report));
+console.log(JSON.stringify({runtimeSeconds,matching,bias:bias.report,output:'scripts/reference/calibration/monthly-accuracy.json'},null,2));
 process.exit(0);

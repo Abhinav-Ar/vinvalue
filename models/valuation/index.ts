@@ -1,3 +1,4 @@
+import { committedCorrections, correctionFactor, type Corrections } from './biasCorrections';
 import type { DecodedSpecs, AppraisalInputs, ValueRange, Adjustment, CompStats, Confidence } from '@/models/db/schema';
 import type { ValuationAudit } from '@/shared/valuation';
 import { loadReferences, type ReferenceData } from '@/models/reference';
@@ -51,6 +52,7 @@ export type ComputeArgs = {
   listings: Listing[];
   config?: ValuationConfig;
   references?: ReferenceData;
+  corrections?: Corrections;
   /** Local search radius (default config.radiusMiles). */
   radiusMiles?: number;
   /** Search tier the listings came from (fetchCompsTiered). Inferred from distance/years when omitted. */
@@ -457,8 +459,10 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
     } catch (e) { if (!(e instanceof TooFewCompsError)) throw e; }
   }
   const model = !result, p = config.surface;
-  const adjustments = result?.adjustments ?? historyAdjustments(subject.H, args.inputs, config);
-  const base = result?.stats.weightedMedian ?? subject.H;
+  const snapshot=args.corrections??committedCorrections;
+  const correction=model?correctionFactor(snapshot,subject.segment):1;
+  const base = result?.stats.weightedMedian ?? subject.H*correction;
+  const adjustments = result?.adjustments ?? historyAdjustments(base, args.inputs, config);
   const value = result?.private.value ?? roundTo(Math.max(base+adjustments.reduce((a,x) => a+x.amount,0),base*config.floorPct),config.roundTo);
   const comps = result?.comps ?? [];
   const used = comps.filter(c => c.usedInBase);
@@ -478,6 +482,7 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
   const hLog = clamp(rawWidth,model ? p.modelLogMin : p.compsLogMin,model ? p.modelLogMax : p.compsLogMax);
   const range = (factor:number): ValueRange => ({ value: roundTo(value*factor,config.roundTo), low: roundTo(value*factor*Math.exp(-hLog),config.roundTo), high: roundTo(value*factor*Math.exp(hLog),config.roundTo) });
   const notes = model ? ['Model estimate (no local sales data)', 'Original MSRP adjusted for inflation, retention and mileage; calibrated to approximate market references (and real WA EV sales for EVs).'] : ['Sales normalized by subject/comp value-surface ratios. No separate mileage, trim or collector uplift is added.'];
+  if(model) notes.push(`Market correction: ${correction.toFixed(4)}× for ${subject.segment}; snapshot ${snapshot.fittedAt} (family holdout guarded; dealer asks converted to private equivalents).`);
   if (subject.msrpRow?.confidence === "approximate") notes.push("Original MSRP is approximate (best-knowledge figure, not from a cited source); the range is widened to reflect it.");
   notes.push("Not an offer. A buyer's inspection decides.");
   const audit: ValuationAudit = { references:{msrp:subject.msrpRow,generation:subject.generationRef,variant:subject.variantRef},parameters:{surface:p,retention:config.retentionPriors,segments:config.segmentCalibration,brands:config.brandCalibration,overrides:config.generationCurvePriors},mode: model ? 'model' : 'comps', asOf: now.toISOString(), parameterVersion:p.parameterVersion, referenceVintage:subject.cpiVintage,score:subject.D,coverage:subject.q,factors:subject.factors,notes,anchor:subject.M,retention:subject.R,mileageFactor:Math.exp(subject.L),base:roundTo(base,config.roundTo),hLog,effectiveComps:nEff,normalizations:normalized.audit };
