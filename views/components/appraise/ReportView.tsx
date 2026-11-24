@@ -57,7 +57,7 @@ export function ReportView({ slug }: { slug: string }) {
 
   const model = !!r.confidence?.flags.includes('model_estimate');
   const recorded = r.compStats.source === 'recorded_sales';
-  const drawing = <CarDrawing variant={carVariant(r.vehicle.model)} label={`Line drawing of a ${r.vehicle.label}`} />;
+  const drawing = <CarDrawing variant={carVariant(r.vehicle.model, r.vehicle.body)} label={`Line drawing of a ${r.vehicle.label}`} />;
 
   return (
     <div className="grid">
