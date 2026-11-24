@@ -72,7 +72,7 @@ describe('monthly sampler (fixture transport only)',()=>{
       for(const f of ranked.slice(0,30))expect(plan.some(q=>key(q)===key(f))).toBe(true);
       expect(plan.filter(q=>!top.has(key(q))).length).toBeLessThanOrEqual(67);
     }
-    expect(samplerParams({...q,make:'RAM',model:'2500'},'fixture').get('model')).toBe('2500');
+    expect(samplerParams({...q,make:'RAM',model:'2500'},'fixture').get('model')).toBe('ram 2500 pickup,ram 2500');
     expect(samplerParams({...q,make:'JEEP',model:'Wrangler'},'fixture').get('model')).toBe('wrangler,wrangler unlimited');
   });
   it('caps name diagnostics at 15 shared-budget calls without advancing sampling or storing rows',async()=>{
