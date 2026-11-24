@@ -37,7 +37,7 @@ try {
             .evaluate((el) => (el as HTMLElement).click());
           await page.mouse.move(0, 0);
           await page.waitForTimeout(800);
-          await page.screenshot({ path: `qa/car/${tag}-${state}-${look}.png` });
+          await page.screenshot({ style: 'nextjs-portal { display: none !important }', path: `qa/car/${tag}-${state}-${look}.png` });
         }
       }
       const canvas = viewer.locator('canvas');

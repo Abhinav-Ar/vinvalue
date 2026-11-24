@@ -3,16 +3,18 @@
  * WebGL view of the AIQ-01 model. Loaded with next/dynamic (ssr: false) only; the SVG drawing
  * stays underneath as the fallback and carries the callouts and labels.
  *
- * The camera frames the same rectangle as the SVG's viewBox, so in the resting view the wheel
- * centers sit on the same pixels in both. The glass lift turns the elevation into an axonometric view.
+ * The camera frames the SVG viewBox. Moving wheel and canopy anchors project back into
+ * that rectangle as the assemblies separate.
  *
  * Interaction: drag to turn the car (touch turns it sideways only, so vertical swipes still scroll
  * the page), arrow keys turn it when focused, hover outlines a part, click selects it.
  * Scroll progress explodes the parts.
  */
-import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Component, useEffect, useMemo, useRef, type ReactNode, type RefObject } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { anchors, explodePhases, type ProgressSource } from '@/views/components/landing/ExplodeCar';
 import { buildCar, highlight, pickPart, setColors, setLook, type CarColors, type CarLook, type CarModel, type PartId } from './model';
@@ -50,7 +52,7 @@ export default function CarCanvas(props: CarCanvasProps) {
           frameloop="demand"
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
           style={{ position: 'absolute', inset: 0, touchAction: 'pan-y', cursor: 'grab' }}
-          onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
+          onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); gl.toneMapping = THREE.ACESFilmicToneMapping; }}
         >
           <Scene {...props} host={host} />
         </Canvas>
@@ -75,7 +77,8 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
   const set = useThree((s) => s.set);
   const gl = useThree((s) => s.gl);
   const invalidate = useThree((s) => s.invalidate);
-  const model = useMemo<CarModel>(() => buildCar(readColors(host.current)), [host]);
+  const asset = useLoader(GLTFLoader, '/models/concept.glb', loader => loader.setMeshoptDecoder(MeshoptDecoder));
+  const model = useMemo<CarModel>(() => buildCar(asset.scene, readColors(host.current)), [asset, host]);
   useEffect(() => {
     const el = gl.domElement;
     const lost = () => onFail?.();
@@ -116,18 +119,18 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
 
   useEffect(() => progress?.subscribe(() => invalidate()), [progress, invalidate]);
 
-  // Solid look: studio reflections from a generated room environment (no files, no extra package).
+  // The same studio lights the opaque mechanicals and the painted shell.
   const scene = useThree((s) => s.scene);
   const env = useRef<THREE.WebGLRenderTarget | null>(null);
   useEffect(() => {
-    if (look === 'solid' && !env.current) {
+    if (!env.current) {
       const pm = new THREE.PMREMGenerator(gl);
       const room = new RoomEnvironment();
       env.current = pm.fromScene(room, 0.04);
       room.dispose();
       pm.dispose();
     }
-    scene.environment = look === 'solid' ? env.current?.texture ?? null : null;
+    scene.environment = env.current.texture;
     setLook(model, look);
     invalidate();
   }, [look, gl, scene, model, invalidate]);
@@ -220,11 +223,12 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
     let again = false;
     const p = progress?.get() ?? 0;
     const { lift, out, down } = explodePhases(p);
-    const phases = {lift,out,down};
-    for(const {group,home,offset,phase,guide} of model.motions) {
-      group.position.copy(home).addScaledVector(offset,phases[phase]);
+    const phases = { lift, out, down };
+    for (const { group, home, offset, phase, guide, swing } of model.motions) {
+      group.position.copy(home).addScaledVector(offset, phases[phase]);
+      group.rotation.y = swing * phases[phase];
+      if (!guide) continue;
       projected.copy(group.position).sub(home);
-      if (group.parent === model.parts.body) projected.add(model.parts.body.position);
       const length = projected.length();
       guide.visible = length > .02;
       if (guide.visible) {
@@ -256,14 +260,15 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
       g.matrix.copy(m);
       g.updateMatrixWorld(true);
       anchors.forEach(({ x, y }, i) => {
-        const wheel = model.parts.frontWheel.children[facing>=0?0:1];
+        const side = facing >= 0 ? 0 : 1;
+        const wheel = model.wheels[(i === 2 ? 2 : 0) + side];
         const project = (moved: boolean) => {
-          if(i===0) projected.set(.6,2.47,.7);
-          else if(i===1) projected.set(-2.67,.69,Math.sign(facing)*1.44);
-          else projected.set(2.43,.69,.18);
-          if(moved) {
-            if(i===1) projected.copy(wheel.position);
-            else projected.add(i===0 ? model.parts.glass.position : model.selectable.get('drivetrain')!.position);
+          if (i === 0) {
+            projected.set(-.36, 1.98, facing >= 0 ? .78 : -.78);
+            if (moved) projected.add(model.canopy.position);
+          } else {
+            projected.copy(wheel.position);
+            if (!moved) projected.z -= Math.sign(projected.z) * 1.15 * out;
           }
           projected.applyMatrix4(g.matrixWorld).project(camera);
           return [(projected.x + 1) * 500, (1 - projected.y) * 270 - 60];
@@ -314,13 +319,9 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
   return (
     <group ref={holder} matrixAutoUpdate={false} onPointerMove={onMove} onPointerOut={onOut} onClick={onClick}>
       <primitive object={model.root} />
-      {look === 'solid' && (
-        <>
-          <ambientLight intensity={0.35} />
-          <directionalLight position={[3, 6, 5]} intensity={1.4} />
-          <directionalLight position={[-4, 3, -3]} intensity={0.5} />
-        </>
-      )}
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[3, 6, 5]} intensity={1.4} />
+      <directionalLight position={[-4, 3, -3]} intensity={0.5} />
     </group>
   );
 }

@@ -54,11 +54,11 @@ export const anchors = [
   { x: 743, y: 261, label: "Your car's history" },
 ];
 
-export function ExplodeLabels() {
+export function ExplodeLabels({ projected = false }: { projected?: boolean }) {
   return <g stroke="var(--blue)" fill="var(--blue)">
     {anchors.map(({ x, y, label }, i) => {
       const dx = i === 0 ? 36 : i === 1 ? 18 : 114;
-      const dy = i === 0 ? -54 : i === 2 ? 112 : 70;
+      const dy = i === 0 ? (projected ? -98 : -54) : i === 2 ? 112 : 70;
       return <g key={label} className={`${styles.lab} ${[styles.l1, styles.l2, styles.l3][i]}`}>
         <g className={styles.svgGuide} transform={`translate(${x} ${y})`}>
           <line x2={i === 1 ? -92 : 0} y2={i === 0 ? -78 : i === 2 ? 84 : 0}

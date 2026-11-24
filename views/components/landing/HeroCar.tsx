@@ -9,7 +9,7 @@ import styles from './landing.module.css';
 
 /**
  * Frame shared by the drawing and the 3D canvas: the car plus room above for the lifted glass and
- * below for the dropped wheels. Wheel centers sit at SVG (233, 261) and (743, 261) in both.
+ * below for the dropped wheels. The SVG and WebGL versions use separate dimension marks for their resting views.
  */
 const VIEWBOX = '0 -60 1000 540';
 export const HERO_ASPECT = '1000 / 540';
@@ -22,6 +22,21 @@ const CALLOUTS: Callout[] = [
 ];
 
 const dim = { stroke: 'currentColor', strokeWidth: 0.9, fill: 'none' } as const;
+
+// Dimension marks in SVG units. The imported car is 4.357 m long with a 2.800 m wheelbase.
+function Dimension({ x1, x2, y1, y2, y, label, delay, transform }: {
+  x1: number; x2: number; y1: number; y2: number; y: number;
+  label: string; delay: string; transform?: string;
+}) {
+  return <g transform={transform}>
+    <g className="f" style={{ animationDelay: delay }} {...dim}>
+      <path d={`M${x1} ${y1} V${y + 8} M${x2} ${y2} V${y + 8}`} strokeDasharray="3 3" />
+      <path d={`M${x1} ${y} H${x2} M${x1 + 9} ${y - 4} l-9 4 9 4 M${x2 - 9} ${y - 4} l9 4 -9 4`} />
+    </g>
+    <text className="f dimt" style={{ animationDelay: delay }} x={(x1 + x2) / 2} y={y - 7}
+      textAnchor="middle" fontSize={12} fill="currentColor">{label}</text>
+  </g>;
+}
 
 /** Explode window inside the pinned scroll (fraction of the pin travel). */
 const EXPLODE_FROM = 0.06;
@@ -160,23 +175,17 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
         style={{ pointerEvents: 'none' }}
       >
         <g className={styles.hud}>
-          <g className="f" style={{ animationDelay: '1.8s' }} {...dim}>
-            <path d="M233 312 L233 374 M743 312 L743 374" strokeDasharray="3 3" />
-            <path d="M233 366 L743 366 M242 362 L233 366 L242 370 M734 362 L743 366 L734 370" />
-          </g>
-          <text className="f dimt" style={{ animationDelay: '1.8s' }} x={488} y={359} textAnchor="middle" fontSize={12} fill="currentColor">Wheelbase 100.4 in</text>
-          <g className="f" style={{ animationDelay: '2s' }} {...dim}>
-            <path d="M62 312 L62 404 M938 312 L938 404" strokeDasharray="3 3" />
-            <path d="M62 396 L938 396 M71 392 L62 396 L71 400 M929 392 L938 396 L929 400" />
-          </g>
-          <text className="f dimt" style={{ animationDelay: '2s' }} x={500} y={389} textAnchor="middle" fontSize={12} fill="currentColor">Overall length 172.0 in</text>
-          <g className="f" style={{ animationDelay: '2.1s' }} {...dim}>
-            <path d="M660 74 L984 74 M944 330 L984 330" strokeDasharray="3 3" />
-            <path d="M974 74 L974 330 M970 83 L974 74 L978 83 M970 321 L974 330 L978 321" />
-          </g>
-          <text className="f dimt" style={{ animationDelay: '2.1s' }} transform="translate(992 202) rotate(-90)" textAnchor="middle" fontSize={12} fill="currentColor">Height 51.2 in</text>
+          <Dimension delay="1.8s" {...(ready
+            ? { x1: 331, x2: 784, y1: 360, y2: 332, y: 392, label: 'Wheelbase 110.2 in' }
+            : { x1: 233, x2: 743, y1: 312, y2: 312, y: 366, label: 'Wheelbase 100.4 in' })} />
+          <Dimension delay="2s" {...(ready
+            ? { x1: 84, x2: 862, y1: 330, y2: 330, y: 422, label: 'Overall length 171.6 in' }
+            : { x1: 62, x2: 938, y1: 312, y2: 312, y: 396, label: 'Overall length 172.0 in' })} />
+          <Dimension delay="2.1s" transform="rotate(-90)" {...(ready
+            ? { x1: -335, x2: -117, y1: 849, y2: 570, y: 927, label: 'Height 45.2 in' }
+            : { x1: -330, x2: -74, y1: 944, y2: 660, y: 974, label: 'Height 51.2 in' })} />
         </g>
-        <ExplodeLabels />
+        <ExplodeLabels projected={ready} />
       </CarDrawing>
 
       {use3d && (

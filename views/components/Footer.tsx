@@ -22,6 +22,10 @@ export function Footer() {
         <div>
           <p className="kicker">Sources</p>
           <p className="small" style={{ margin: 0, lineHeight: 1.5 }}>VIN data from NHTSA vPIC. Recorded sales from Washington State title records. Model estimates from original MSRP, age and mileage.</p>
+          <p className="small" style={{ margin: '8px 0 0', lineHeight: 1.5 }}>
+            <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept">Car Concept</a> by Eric Chadwick, © 2024 Darmstadt Graphics Group GmbH,
+            based on Unity Fan’s public-domain model. Adapted and recoloured under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+          </p>
         </div>
         <div>
           <p className="kicker">Rev.</p>
