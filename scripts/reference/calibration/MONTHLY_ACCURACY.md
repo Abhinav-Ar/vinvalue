@@ -1,11 +1,13 @@
-# Monthly model accuracy — method 2.3.0
+# Monthly model accuracy — method 2.3.1
 
-Published CV-improving family corrections; segment fallbacks separately guarded by family-holdout CV.
+Published CV-improving family corrections shrunk toward 1.0; unsupported families use 1.0.
 
 | Evaluation | n | Median before | Median after | p80 before | p80 after |
 |---|---:|---:|---:|---:|---:|
-| seen | 4292 | 23.52 | 10.46 | 51.47 | 26.24 |
-| unseen | 4320 | 23.64 | 19.29 | 51.74 | 37.32 |
+| seen | 4292 | 23.52 | 10.50 | 51.47 | 26.52 |
+| unseen | 4320 | 23.64 | 23.64 | 51.74 | 51.74 |
+
+Unseen fallback comparison (same family-held-out folds): {"neutral":{"n":4320,"median":23.643723841723684,"p80":51.73756742761992},"previousPooled":{"n":4320,"median":19.294212040378163,"p80":37.324204248717066}}
 
 - One month: no temporal validation.
 - Five folds balanced within canonical make/model/generation, deduplicated by listing hash.

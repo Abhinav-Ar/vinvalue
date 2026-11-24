@@ -1,6 +1,6 @@
-# Family calibration 2.3.0 — local verification
+# Family calibration 2.3.1 — local verification
 
-Baseline commit: 089f996. Node 22.23.5. Local PGlite only; PROVIDERS unset. No provider calls, push or merge. MSRP changes were checked against HEAD: only modelAliases/trimAliases differ. Installed Next 15.5.29 has no node_modules/next/dist/docs directory; no Next APIs or routes were changed.
+Implementation base: 23767f5. Node 22.23.5. Local PGlite only; PROVIDERS unset. No provider calls, push or merge. MSRP changes were checked against HEAD: only modelAliases/trimAliases differ. Installed Next 15.5.29 has no node_modules/next/dist/docs directory; no Next APIs or routes were changed.
 
 ## Matching
 
@@ -74,154 +74,140 @@ Requested large-model coverage: ford/f-150: 0 stored, chevrolet/silverado: 0 sto
 
 Full counts, years and reasons: matching-before.json / matching-after.json. Reproduce with matching-diagnostics.ts.
 
+## Sampling and naming
+
+November 2026: 450 calls; 383 (85.11%) reserved for the top 60 supported families by WA registrations, and 67 (14.89%) for the rotating long tail. Every top family receives a call before additional calls are allocated by square-root registrations × existing segment weight. Generation/age cells and eight metros rotate within each family. Coverage of all top 30 is tested across all twelve months. Older-than-2005 families require a generation with E ≥ 0.6.
+
+`registrationRanking.json` is regenerated offline by `npx tsx scripts/reference/build-registration-ranking.ts` from `scripts/reference/ranked-models.csv` and MSRP model aliases. Punctuation and case are normalized. Explicit unsplit registration mappings: SILVERADO → Silverado 1500, SIERRA → Sierra 1500, DODGE RAM → Dodge Ram 1500. Heavy-duty variants receive no invented registration volume. Unsupported registration names are omitted.
+
+Exact query make/model spellings for every supported family are in `models/config/marketcheckNames.json`. The provider retains its tested lowercase serialization. In particular: Ford F-150/F-250/F-350; Chevrolet Silverado 1500; GMC Sierra 1500; RAM 1500/2500/3500; Toyota 4Runner; Jeep Grand Cherokee; Honda CR-V. Wrangler queries explicitly include both `Wrangler,Wrangler Unlimited` (comma-separated model filter). Whether the upstream taxonomy requires the Unlimited value remains unverified: no live requests were made.
+
+Owner-run checker: `npx tsx --env-file=.env.local scripts/check-marketcheck-names.ts --offset=0`, then offsets 15/30/45 only as quota permits. Each invocation attempts at most 15 calls, one per family, rows=1, radius=100, Los Angeles ZIP 90012, all years, no trim. It shares the sampler's monthly usage table, lease, quota reserve and account/rate stop rules. Calls consume sampling quota; checker requests do not advance the sampling cursor or store listings. No retries, transport details or credentials are printed.
+
+| Top registration family | Calls |
+|---|---:|
+| FORD F-150 | 14 |
+| CHEVROLET Silverado 1500 | 13 |
+| TOYOTA Camry | 7 |
+| HONDA CR-V | 11 |
+| TOYOTA RAV4 | 11 |
+| HONDA Civic | 9 |
+| HONDA Accord | 6 |
+| TOYOTA Tacoma | 12 |
+| SUBARU Forester | 10 |
+| SUBARU Outback | 10 |
+| TOYOTA Corolla | 6 |
+| DODGE Ram 1500 | 11 |
+| TOYOTA Highlander | 8 |
+| GMC Sierra 1500 | 10 |
+| FORD Escape | 8 |
+| TOYOTA 4Runner | 8 |
+| FORD Ranger | 9 |
+| JEEP Wrangler | 8 |
+| TOYOTA Prius | 5 |
+| FORD Explorer | 7 |
+| FORD F-250 | 9 |
+| TOYOTA Tundra | 9 |
+| JEEP Grand Cherokee | 7 |
+| SUBARU Impreza | 4 |
+| SUBARU Legacy | 4 |
+| FORD F-350 | 8 |
+| TOYOTA Sienna | 4 |
+| HONDA Pilot | 7 |
+| SUBARU Crosstrek | 7 |
+| FORD Focus | 4 |
+
 ## Five-fold validation
 
-Before means neutral corrections (not the old segment snapshot). CI below is for the raw family median private-equivalent / engine ratio, not the shrunk factor. Dealer factor remains 0.90; unsupported WA overlap did not replace it.
+Seen-family splitting, eligibility and error definitions are unchanged. Family centers now shrink toward 1.0, never toward a pooled segment center. Unsupported or rejected families receive 1.0 even when a legacy snapshot contains segment cells. Published 2.3.1 snapshots contain no segment corrections.
 
-| Evaluation | n | Median before | Median after | p80 before | p80 after |
-|---|---:|---:|---:|---:|---:|
-| seen | 4292 | 23.52% | 10.46% | 51.47% | 26.24% |
-| unseen | 4320 | 23.64% | 19.29% | 51.74% | 37.32% |
+| Evaluation | n | Median absolute % error | p80 absolute % error |
+|---|---:|---:|---:|
+| Seen neutral | 4292 | 23.52 | 51.47 |
+| Seen corrected | 4292 | 10.50 | 26.52 |
+| Unseen neutral fallback | 4320 | 23.64 | 51.74 |
+| Unseen previous guarded pooled fallback | 4320 | 19.29 | 37.32 |
 
-Guards reuse CV, so these are validation results, not an untouched final test. Seen metrics exclude families with <5 rows. Family holdout hides make/model/generation; another generation of the model may remain in training. Sparse singleton segments have no useful unseen support and retain neutral fallback. Monthly bucket metrics are raw candidate CV; the aggregate CV table uses guarded candidates.
+The previous pooled comparison reproduces the old segment acceptance guards in the same family-held-out folds. It improves this sample aggregate but transfers unsupported GMC-heavy estimates to unsampled families, so it is retired. This is generation-level family holdout, not necessarily holdout of every generation of a model. CV also selects publication guards; there is no independent final test.
 
-| Evaluation/fold | Train | Test | Train families | Test families |
-|---|---:|---:|---:|---:|
-| seen/0 | 3426 | 894 | 62 | 66 |
-| seen/1 | 3442 | 878 | 66 | 62 |
-| seen/2 | 3458 | 862 | 66 | 58 |
-| seen/3 | 3472 | 848 | 66 | 54 |
-| seen/4 | 3482 | 838 | 66 | 53 |
-| unseen/0 | 3084 | 1236 | 55 | 11 |
-| unseen/1 | 3523 | 797 | 53 | 13 |
-| unseen/2 | 3551 | 769 | 53 | 13 |
-| unseen/3 | 3553 | 767 | 51 | 15 |
-| unseen/4 | 3569 | 751 | 52 | 14 |
+The 2.3.0 → 2.3.1 migration validates against neutral rather than treating the retired prior as a publication target. Later 2.3.1 fits retain the existing prior-improvement guard.
 
-## Family correction table
+## Published family corrections
 
-48 accepted family corrections. Rejected families use an accepted segment fallback, otherwise 1.0. Final publication passed the overall CV guard against both neutral and active prior corrections.
+48 accepted corrections. No segment fallback.
 
-| Make/model/generation | n | Fitted factor | Raw median 80% CI | Accepted | Applied factor |
-|---|---:|---:|---|---|---:|
-| buick/century/gen6 | 1 | 0.750 | 0.423–0.423 | no | 0.750 |
-| buick/lacrosse/gen1 | 10 | 0.799 | 0.607–0.897 | no | 1.000 |
-| buick/lacrosse/gen2 | 8 | 0.750 | 0.504–0.620 | yes | 0.750 |
-| buick/lacrosse/gen3 | 5 | 0.824 | 0.713–0.886 | yes | 0.824 |
-| buick/lesabre/gen8 | 4 | 0.750 | 0.488–0.795 | no | 1.000 |
-| chevrolet/astro/gen2 | 2 | 1.022 | 0.877–2.038 | no | 1.000 |
-| chevrolet/aveo/t250 | 2 | 1.135 | 1.049–1.354 | no | 1.000 |
-| chevrolet/bolt ev/gen1 | 22 | 0.841 | 0.796–0.913 | yes | 0.841 |
-| chevrolet/camaro/gen5 | 89 | 1.250 | 1.848–2.060 | yes | 1.250 |
-| chevrolet/camaro/gen6 | 21 | 1.250 | 1.661–1.722 | yes | 1.250 |
-| chevrolet/cavalier/j-body gen3 | 1 | 1.250 | 1.292–1.292 | no | 1.000 |
-| chevrolet/cobalt/delta | 10 | 1.246 | 1.130–1.665 | yes | 1.246 |
-| chevrolet/corvette/c5 | 26 | 1.040 | 1.031–1.088 | yes | 1.040 |
-| chevrolet/corvette/c6 | 68 | 1.250 | 1.241–1.288 | yes | 1.250 |
-| chevrolet/corvette/c7 | 57 | 1.250 | 1.335–1.390 | yes | 1.250 |
-| chevrolet/corvette/c8 | 110 | 0.671 | 0.645–0.684 | yes | 0.671 |
-| chevrolet/cruze/j400 | 74 | 0.888 | 0.835–0.923 | no | 1.000 |
-| chevrolet/ss/vf | 3 | 1.250 | 1.636–2.456 | no | 1.000 |
-| dodge/challenger/lc | 215 | 1.388 | 1.350–1.453 | yes | 1.388 |
-| dodge/charger/lb | 3 | 0.750 | 0.543–0.732 | no | 1.000 |
-| dodge/charger/ld | 225 | 1.355 | 1.293–1.386 | yes | 1.355 |
-| dodge/charger/lx | 7 | 1.048 | 0.859–1.253 | no | 1.000 |
-| dodge/viper/zb i | 1 | 1.069 | 1.068–1.068 | no | 1.000 |
-| dodge/viper/zb ii | 8 | 1.250 | 2.649–3.271 | yes | 1.250 |
-| ford/flex/d471 | 20 | 0.750 | 0.511–0.589 | yes | 0.750 |
-| gmc/acadia/c1xx | 162 | 0.647 | 0.633–0.652 | yes | 0.647 |
-| gmc/acadia/gen3 | 36 | 0.831 | 0.801–0.855 | yes | 0.831 |
-| gmc/acadia/lambda | 90 | 0.750 | 0.445–0.484 | yes | 0.750 |
-| gmc/envoy/gmt360 | 14 | 0.750 | 0.408–0.569 | yes | 0.750 |
-| gmc/sierra 1500/gmt900 | 1 | 1.101 | 1.104–1.104 | no | 0.962 |
-| gmc/terrain/gen1 | 75 | 0.750 | 0.541–0.583 | yes | 0.750 |
-| gmc/terrain/gen2 | 211 | 0.668 | 0.660–0.682 | yes | 0.668 |
-| gmc/yukon xl/gmt800 | 3 | 0.750 | 0.440–0.764 | no | 0.750 |
-| gmc/yukon xl/gmt900 | 17 | 0.750 | 0.420–0.507 | yes | 0.750 |
-| gmc/yukon xl/k2xx | 80 | 0.750 | 0.537–0.561 | yes | 0.750 |
-| gmc/yukon xl/t1 | 113 | 0.817 | 0.811–0.826 | yes | 0.817 |
-| gmc/yukon/gmt800 | 6 | 0.750 | 0.627–0.704 | no | 0.750 |
-| gmc/yukon/gmt900 | 21 | 0.750 | 0.498–0.675 | yes | 0.750 |
-| gmc/yukon/k2xx | 112 | 0.631 | 0.621–0.647 | yes | 0.631 |
-| gmc/yukon/t1 | 143 | 0.852 | 0.843–0.864 | yes | 0.852 |
-| honda/cr-v/re | 22 | 0.822 | 0.741–0.925 | yes | 0.822 |
-| honda/cr-v/rm | 184 | 0.928 | 0.905–0.938 | yes | 0.928 |
-| honda/cr-v/rs | 142 | 0.915 | 0.900–0.923 | yes | 0.915 |
-| honda/cr-v/rw | 264 | 0.896 | 0.888–0.907 | yes | 0.896 |
-| honda/ridgeline/yk1 | 17 | 0.750 | 0.603–0.770 | yes | 0.750 |
-| honda/ridgeline/yk2 | 124 | 0.759 | 0.731–0.766 | yes | 0.759 |
-| jeep/gladiator/jt | 178 | 0.838 | 0.818–0.845 | yes | 0.838 |
-| lexus/ls/xf30 | 8 | 0.750 | 0.396–0.478 | yes | 0.750 |
-| lexus/ls/xf40 | 16 | 0.750 | 0.396–0.623 | yes | 0.750 |
-| lexus/nx/az10 | 97 | 0.837 | 0.825–0.850 | yes | 0.837 |
-| lexus/nx/az20 | 47 | 0.943 | 0.924–0.956 | yes | 0.943 |
-| lexus/rx/al10 | 86 | 0.794 | 0.785–0.820 | yes | 0.794 |
-| lexus/rx/al20 | 116 | 0.866 | 0.857–0.875 | yes | 0.866 |
-| lexus/rx/ala10 | 81 | 0.961 | 0.946–0.978 | yes | 0.961 |
-| lexus/rx/xu10 | 2 | 0.750 | 0.444–0.549 | no | 0.750 |
-| lexus/rx/xu30 | 44 | 0.750 | 0.584–0.697 | yes | 0.750 |
-| nissan/frontier/d40 | 118 | 0.899 | 0.876–0.933 | yes | 0.899 |
-| nissan/frontier/d41 | 162 | 0.972 | 0.963–0.983 | yes | 0.972 |
-| nissan/titan/a60 | 21 | 0.816 | 0.710–0.877 | yes | 0.816 |
-| nissan/titan/a61 | 94 | 0.750 | 0.693–0.736 | yes | 0.750 |
-| toyota/tacoma/n140 | 19 | 1.250 | 1.304–1.654 | yes | 1.250 |
-| toyota/tacoma/n220 | 88 | 1.250 | 1.504–1.669 | yes | 1.250 |
-| toyota/tacoma/n300 | 243 | 1.100 | 1.089–1.108 | yes | 1.100 |
-| toyota/tacoma/n400 | 66 | 0.998 | 0.970–1.035 | no | 0.962 |
-| volkswagen/passat/b5 | 2 | 0.750 | 0.423–0.567 | no | 0.750 |
-| volkswagen/passat/b6 | 3 | 0.750 | 0.245–0.743 | no | 0.750 |
-
-Segment fallbacks: truck ×0.962, suv ×0.750, midsize ×0.750. Other segments use 1.0.
-
-## Mileage diagnostics
-
-These are low/high mileage thirds, with >=20k separation, >0.10 absolute log difference and nonoverlapping bootstrap 80% intervals. They are confounded by year/trim and are reported rather than fitted into a mileage correction. A single family intercept cannot resolve them.
-
-| Family | n | Residual log change / 10k miles |
+| Family | n | Factor |
 |---|---:|---:|
-| chevrolet/camaro/gen5 | 89 | -0.0181 |
-| chevrolet/corvette/c6 | 68 | +0.0135 |
-| chevrolet/corvette/c7 | 57 | +0.0212 |
-| chevrolet/cruze/j400 | 74 | -0.0688 |
-| dodge/challenger/lc | 215 | +0.0227 |
-| gmc/acadia/c1xx | 162 | -0.0284 |
-| gmc/acadia/gen3 | 36 | +0.0594 |
-| gmc/acadia/lambda | 90 | -0.0652 |
-| gmc/terrain/gen1 | 75 | -0.0466 |
-| gmc/yukon xl/k2xx | 80 | -0.0358 |
-| gmc/yukon/k2xx | 112 | -0.0253 |
-| honda/cr-v/rm | 184 | -0.0237 |
-| honda/cr-v/rs | 142 | +0.0313 |
-| lexus/rx/al10 | 86 | -0.0363 |
-| lexus/rx/ala10 | 81 | +0.0380 |
-| lexus/rx/xu30 | 44 | -0.0333 |
-| nissan/frontier/d40 | 118 | -0.0198 |
-| nissan/frontier/d41 | 162 | +0.0253 |
-| nissan/titan/a61 | 94 | -0.0223 |
-| toyota/tacoma/n220 | 88 | -0.0290 |
-| toyota/tacoma/n400 | 66 | +0.0603 |
+| honda/ridgeline/yk2 | 124 | 0.7588 |
+| honda/ridgeline/yk1 | 17 | 0.7500 |
+| jeep/gladiator/jt | 178 | 0.8383 |
+| nissan/frontier/d41 | 162 | 0.9725 |
+| nissan/frontier/d40 | 118 | 0.8991 |
+| nissan/titan/a61 | 94 | 0.7500 |
+| nissan/titan/a60 | 21 | 0.8174 |
+| toyota/tacoma/n300 | 243 | 1.0997 |
+| toyota/tacoma/n220 | 88 | 1.2500 |
+| toyota/tacoma/n140 | 19 | 1.2500 |
+| ford/flex/d471 | 20 | 0.7500 |
+| gmc/acadia/c1xx | 162 | 0.6475 |
+| gmc/acadia/gen3 | 36 | 0.8321 |
+| gmc/acadia/lambda | 90 | 0.7500 |
+| gmc/envoy/gmt360 | 14 | 0.7500 |
+| lexus/nx/az20 | 47 | 0.9441 |
+| gmc/terrain/gen2 | 211 | 0.6685 |
+| gmc/terrain/gen1 | 75 | 0.7500 |
+| lexus/nx/az10 | 97 | 0.8384 |
+| gmc/yukon/t1 | 143 | 0.8525 |
+| gmc/yukon/k2xx | 112 | 0.6324 |
+| lexus/rx/al20 | 116 | 0.8667 |
+| gmc/yukon/gmt900 | 21 | 0.7500 |
+| lexus/rx/ala10 | 81 | 0.9620 |
+| gmc/yukon xl/t1 | 113 | 0.8171 |
+| gmc/yukon xl/k2xx | 80 | 0.7500 |
+| lexus/rx/al10 | 86 | 0.7961 |
+| gmc/yukon xl/gmt900 | 17 | 0.7500 |
+| honda/cr-v/rw | 264 | 0.8966 |
+| honda/cr-v/rs | 142 | 0.9154 |
+| lexus/rx/xu30 | 44 | 0.7500 |
+| honda/cr-v/re | 22 | 0.8386 |
+| honda/cr-v/rm | 184 | 0.9289 |
+| chevrolet/camaro/gen5 | 89 | 1.2500 |
+| chevrolet/camaro/gen6 | 21 | 1.2500 |
+| chevrolet/corvette/c8 | 110 | 0.6703 |
+| chevrolet/corvette/c7 | 57 | 1.2500 |
+| chevrolet/corvette/c6 | 68 | 1.2500 |
+| chevrolet/corvette/c5 | 26 | 1.0388 |
+| dodge/challenger/lc | 215 | 1.3868 |
+| dodge/viper/zb ii | 8 | 1.2500 |
+| lexus/ls/xf40 | 16 | 0.9354 |
+| lexus/ls/xf30 | 8 | 0.8320 |
+| buick/lacrosse/gen3 | 5 | 0.8277 |
+| buick/lacrosse/gen2 | 8 | 0.7500 |
+| dodge/charger/ld | 225 | 1.3557 |
+| chevrolet/cobalt/delta | 10 | 1.2034 |
+| chevrolet/bolt ev/gen1 | 22 | 0.8886 |
 
 ## Sanity cars
 
-Before uses the committed 2.2.0 segment correction; after uses the new 2.3.0 snapshot. The script's train/holdout labels refer to an older static reference split, not the new CV. Dollar ranges are informal guesses, not labels. We do not tune to them. Camry, F-150 and Wrangler have no direct family support here; their shifts reflect segment fallback. RAV4 also lacks direct matched family support. S2000/GT3 remain uncalibrated; no claim that these samples establish collector prices.
+Model-only values at 2026-11-16. These are checks of behavior, not accuracy labels. Camry and Altima return to their pre-correction values. Informal expectations in the script do not tune the model. S2000 and GT3 remain unsupported by these samples.
 
-| Car | Before | After |
+| Car | 2.3.0 | 2.3.1 |
 |---|---:|---:|
-| 2017 TOYOTA Camry LE 90k | $13,830 | $10,370 |
+| 2017 TOYOTA Camry LE 90k | $10,370 | $13,830 |
 | 2019 FORD Mustang GT 50k | $20,020 | $20,020 |
-| 2015 NISSAN Altima 2.5 S 120k | $9,560 | $7,170 |
-| 2018 FORD F-150 XLT 80k | $19,680 | $18,930 |
-| 2020 HONDA CR-V EX 60k | $16,870 | $19,340 |
-| 2016 JEEP Wrangler Sahara 90k | $11,680 | $11,210 |
+| 2015 NISSAN Altima 2.5 S 120k | $7,170 | $9,560 |
+| 2018 FORD F-150 XLT 80k | $18,930 | $19,680 |
+| 2020 HONDA CR-V EX 60k | $19,340 | $19,340 |
+| 2016 JEEP Wrangler Sahara 90k | $11,210 | $14,940 |
 | 2001 HONDA S2000 Base 60k | $30,620 | $30,620 |
-| 2019 TOYOTA Tacoma TRD Off-Road 60k | $26,780 | $29,450 |
+| 2019 TOYOTA Tacoma TRD Off-Road 60k | $29,450 | $29,450 |
 | 2010 TOYOTA Corolla LE 150k | $6,420 | $6,420 |
 | 2008 PORSCHE 911 GT3 30k | $104,310 | $104,310 |
 | 2013 HONDA Civic LX 110k | $8,110 | $8,110 |
-| 2021 TOYOTA RAV4 XLE 40k | $20,110 | $19,290 |
+| 2021 TOYOTA RAV4 XLE 40k | $19,290 | $25,720 |
 
-Full intervals and informal expectations: sanity-before.txt / sanity-after.txt.
+Full intervals: sanity-after.txt. Detailed CV and mileage diagnostics: monthly-accuracy.json.
 
 ## Required checks
 
-`npx tsc --noEmit`, `npx vitest run`, `node scripts/check-architecture.mjs`, `npm run backtest`, and `npx next build` pass. The backtest reports no labeled model sales; its arithmetic examples are not an accuracy validation. The empirical CV above is the accuracy evidence.
+Passed: `npx tsc --noEmit`, `npx vitest run` (32 files, 282 tests), `node scripts/check-architecture.mjs`, `npm run backtest`, `npx next build`. The backtest has no labeled model sales; arithmetic examples are not accuracy evidence. All execution uses Node 22, local PGlite and PROVIDERS unset. No live MarketCheck calls, push or merge.

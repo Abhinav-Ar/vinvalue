@@ -4,7 +4,7 @@ import { createTestDb } from './helpers/db';
 import type { Db } from '@/models/db';
 import { marketSamples, marketSampleUsage } from '@/models/db/schema';
 import { runMarketSampler, samplerParams } from '@/models/jobs/marketSampler';
-import { buildSamplingPlan, marketSampling } from '@/models/config/marketSampling';
+import { buildSamplingPlan, marketSampling, rankedSamplingFamilies } from '@/models/config/marketSampling';
 import { loadReferences } from '@/models/reference';
 import { joinMarketSamples, proposeWithMarket } from '@/models/valuation/marketCalibration';
 import { getProviders, setProviders } from '@/models/providers';
@@ -64,6 +64,25 @@ describe('monthly sampler (fixture transport only)',()=>{
     expect(new Set(plan.map(p=>p.zip)).size).toBe(8);
     for(const p of plan)expect(data.msrp.some(r=>r.make===p.make&&r.model===p.model&&p.yearFrom>=r.yearFrom&&p.yearTo<=r.yearTo)).toBe(true);
     expect(buildSamplingPlan(data,'2026-12')).not.toEqual(plan);
+  });
+  it('covers the top 30 every month, limits the long tail, and maps exact provider names',()=>{
+    const data=loadReferences(),ranked=rankedSamplingFamilies(data),key=(f:{make:string;model:string})=>f.make+'/'+f.model;
+    for(let m=1;m<=12;m++) {
+      const plan=buildSamplingPlan(data,`2026-${String(m).padStart(2,'0')}`),top=new Set(ranked.slice(0,60).map(key));
+      for(const f of ranked.slice(0,30))expect(plan.some(q=>key(q)===key(f))).toBe(true);
+      expect(plan.filter(q=>!top.has(key(q))).length).toBeLessThanOrEqual(67);
+    }
+    expect(samplerParams({...q,make:'RAM',model:'2500'},'fixture').get('model')).toBe('2500');
+    expect(samplerParams({...q,make:'JEEP',model:'Wrangler'},'fixture').get('model')).toBe('wrangler,wrangler unlimited');
+  });
+  it('caps name diagnostics at 15 shared-budget calls without advancing sampling or storing rows',async()=>{
+    const f=vi.fn(async(_url:RequestInfo|URL,_init?:RequestInit)=>ok());
+    await runMarketSampler(db,{...opts,namesOnly:true,maxCalls:100,plan:Array(25).fill(q),fetchImpl:f});
+    expect(f).toHaveBeenCalledTimes(15);
+    expect(new URL(f.mock.calls[0]?.[0] as unknown as string).searchParams.get('rows')).toBe('1');
+    expect((await db.select().from(marketSampleUsage))[0]!.cursor).toBe(0);
+    expect((await db.select().from(marketSampleUsage))[0]!.calls).toBe(15);
+    expect(await db.select().from(marketSamples)).toHaveLength(0);
   });
   it('drops unmatched/ambiguous trims rather than inferring a base trim',()=>{
     const data=loadReferences(),a=data.msrp[0]!;

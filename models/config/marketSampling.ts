@@ -1,3 +1,5 @@
+import registrationRanking from './registrationRanking.json';
+import marketcheckNames from './marketcheckNames.json';
 import { valuationConfig } from '@/models/config/valuation';
 import { exactName, type ReferenceData } from '@/models/reference';
 export const marketSampling = {
@@ -18,27 +20,51 @@ export function sampleSegment(make:string,model:string) {
   if(segment==='truck'||segment==='suv'||segment==='luxury') return segment;
   return ['economy','midsize','fullsize','van','ev'].includes(segment??'')?'control':'excluded';
 }
-/** Only anchored model-years, deterministic rotation through families, ages and eight metros. */
+/** Snapshot generated from scripts/reference/ranked-models.csv; aliases resolve to MSRP families.
+ * SILVERADO/SIERRA registrations belong to 1500; unsplit DODGE RAM belongs to Ram 1500.
+ * No volume is invented for heavy-duty variants or unsupported registration names. */
+export function rankedSamplingFamilies(data:ReferenceData) {
+  return registrationRanking.filter(f=>data.msrp.some(r=>r.make===f.make&&r.model===f.model)&&
+    (data.msrp.some(r=>r.make===f.make&&r.model===f.model&&r.yearTo>=2005)||
+     data.generations.some(g=>g.make===f.make&&g.model===f.model&&g.E>=.6)));
+}
+export function marketcheckName(make:string,model:string) {
+  const name=(marketcheckNames as Record<string,{make:string;model:string}>)[`${exactName(make)}/${exactName(model)}`];
+  if(!name) throw new Error('Missing explicit MarketCheck family name');
+  return name;
+}
+/** Reserve 85% for the top 60, guaranteeing every family before weighted extra calls.
+ * Long tail rotates by family, rather than by model-year, so old families cannot monopolize it. */
 export function buildSamplingPlan(data:ReferenceData, month:string, budget:number=marketSampling.monthlyCalls):SampleQuery[] {
-  const rotation=Number(month.slice(0,4))*12+Number(month.slice(5)), year=Number(month.slice(0,4));
-  const families=[...new Map(data.msrp.map(r=>[`${exactName(r.make)}/${exactName(r.model)}`,{make:r.make,model:r.model}])).values()].sort((a,b)=>`${a.make}/${a.model}`.localeCompare(`${b.make}/${b.model}`));
-  const pools=Object.fromEntries(Object.keys(marketSampling.weights).map(s=>[s,families.filter(f=>sampleSegment(f.make,f.model)===s).flatMap(f=>marketSampling.ageBuckets.flatMap(([lo,hi])=>{
-    const years=Array.from({length:hi-lo+1},(_,i)=>year-hi+i).filter(y=>data.msrp.some(r=>r.make===f.make&&r.model===f.model&&y>=r.yearFrom&&y<=r.yearTo));
-    // One anchored year per request avoids gaps in generation coverage.
-    return years.flatMap(y=>{
-      if(/^(civic|golf|gti)$/i.test(f.model)) {
-        const trims=data.msrp.filter(r=>r.make===f.make&&r.model===f.model&&y>=r.yearFrom&&y<=r.yearTo&&/^(si|type r|gti|golf r|r)$/i.test(r.trim));
-        return trims.map(r=>({...f,yearFrom:y,yearTo:y,segment:s,trim:r.trim}));
-      }
-      return [{...f,yearFrom:y,yearTo:y,segment:s}];
-    });
-  }))]));
-  const plan:SampleQuery[]=[];const counts:Record<string,number>={};
-  for(let i=0;i<budget;i++) {
-    const segment=Object.keys(marketSampling.weights).filter(s=>pools[s]!.length).sort((a,b)=>(counts[a]??0)/marketSampling.weights[a as keyof typeof marketSampling.weights]-(counts[b]??0)/marketSampling.weights[b as keyof typeof marketSampling.weights])[0];
-    if(!segment) break;
-    const n=counts[segment]??0,pool=pools[segment]!;counts[segment]=n+1;
-    plan.push({...pool[(rotation*37+n)%pool.length]!,zip:marketSampling.zips[(rotation+i)%marketSampling.zips.length]!,radiusMiles:100});
+  const rotation=Number(month.slice(0,4))*12+Number(month.slice(5)),year=Number(month.slice(0,4));
+  const ranked=rankedSamplingFamilies(data);
+  const candidates=ranked.map(f=>{
+    const rows=data.msrp.filter(r=>r.make===f.make&&r.model===f.model);
+    const cells=rows.flatMap(r=>marketSampling.ageBuckets.flatMap(([lo,hi],bucket)=>{
+      const from=Math.max(r.yearFrom,year-hi),to=Math.min(r.yearTo,year-lo);
+      return from<=to?[{generation:r.generation,bucket,from,to}]:[];
+    }));
+    const unique=[...new Map(cells.map(c=>[`${c.generation}/${c.bucket}`,c])).values()];
+    // Collector generations older than the ordinary age window remain eligible.
+    if(!unique.length) for(const g of data.generations.filter(g=>g.make===f.make&&g.model===f.model&&g.E>=.6)) {
+      const r=rows.find(r=>r.generation===g.generation);if(r)unique.push({generation:g.generation,bucket:4,from:r.yearFrom,to:Math.min(r.yearTo,year-1)});
+    }
+    return {...f,cells:unique,segment:sampleSegment(f.make,f.model)};
+  }).filter(f=>f.cells.length);
+  const top=candidates.slice(0,60),tail=candidates.slice(60),counts=new Map<string,number>(),plan:SampleQuery[]=[];
+  const add=(f:typeof candidates[number])=>{
+    const key=f.make+'/'+f.model,n=counts.get(key)??0;counts.set(key,n+1);
+    const cell=f.cells[(rotation+n)%f.cells.length]!,y=cell.from+(rotation+n)% (cell.to-cell.from+1);
+    plan.push({make:f.make,model:f.model,yearFrom:y,yearTo:y,segment:f.segment,
+      zip:marketSampling.zips[(rotation+candidates.indexOf(f)+n)%8]!,radiusMiles:100});
+  };
+  const total=Math.max(0,Math.floor(budget)),tailCalls=tail.length?Math.floor(total*.15):0,headCalls=total-tailCalls;
+  for(const f of top.slice(0,headCalls))add(f);
+  const weight=(f:typeof candidates[number])=>Math.sqrt(f.registrations||1)*
+    (marketSampling.weights[f.segment as keyof typeof marketSampling.weights]??.15);
+  while(plan.length<headCalls&&top.length) {
+    add([...top].sort((a,b)=>(counts.get(a.make+'/'+a.model)??0)/weight(a)-(counts.get(b.make+'/'+b.model)??0)/weight(b))[0]!);
   }
+  for(let i=0;i<tailCalls;i++)add(tail[(rotation*tailCalls+i)%tail.length]!);
   return plan;
 }

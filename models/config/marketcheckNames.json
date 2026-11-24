@@ -1,0 +1,1054 @@
+{
+  "acura/integra": {
+    "make": "ACURA",
+    "model": "Integra"
+  },
+  "acura/mdx": {
+    "make": "ACURA",
+    "model": "MDX"
+  },
+  "acura/nsx": {
+    "make": "ACURA",
+    "model": "NSX"
+  },
+  "acura/rdx": {
+    "make": "ACURA",
+    "model": "RDX"
+  },
+  "acura/tl": {
+    "make": "ACURA",
+    "model": "TL"
+  },
+  "acura/tlx": {
+    "make": "ACURA",
+    "model": "TLX"
+  },
+  "acura/tsx": {
+    "make": "ACURA",
+    "model": "TSX"
+  },
+  "audi/a3": {
+    "make": "AUDI",
+    "model": "A3"
+  },
+  "audi/a4": {
+    "make": "AUDI",
+    "model": "A4"
+  },
+  "audi/a6": {
+    "make": "AUDI",
+    "model": "A6"
+  },
+  "audi/q3": {
+    "make": "AUDI",
+    "model": "Q3"
+  },
+  "audi/q5": {
+    "make": "AUDI",
+    "model": "Q5"
+  },
+  "audi/q7": {
+    "make": "AUDI",
+    "model": "Q7"
+  },
+  "bmw/3 series": {
+    "make": "BMW",
+    "model": "3 Series"
+  },
+  "bmw/m2": {
+    "make": "BMW",
+    "model": "M2"
+  },
+  "bmw/m3": {
+    "make": "BMW",
+    "model": "M3"
+  },
+  "bmw/m4": {
+    "make": "BMW",
+    "model": "M4"
+  },
+  "bmw/x1": {
+    "make": "BMW",
+    "model": "X1"
+  },
+  "bmw/x3": {
+    "make": "BMW",
+    "model": "X3"
+  },
+  "bmw/x5": {
+    "make": "BMW",
+    "model": "X5"
+  },
+  "buick/century": {
+    "make": "BUICK",
+    "model": "Century"
+  },
+  "buick/enclave": {
+    "make": "BUICK",
+    "model": "Enclave"
+  },
+  "buick/encore": {
+    "make": "BUICK",
+    "model": "Encore"
+  },
+  "buick/lacrosse": {
+    "make": "BUICK",
+    "model": "LaCrosse"
+  },
+  "buick/lesabre": {
+    "make": "BUICK",
+    "model": "LeSabre"
+  },
+  "cadillac/cts": {
+    "make": "CADILLAC",
+    "model": "CTS"
+  },
+  "cadillac/escalade": {
+    "make": "CADILLAC",
+    "model": "Escalade"
+  },
+  "cadillac/srx": {
+    "make": "CADILLAC",
+    "model": "SRX"
+  },
+  "chevrolet/astro": {
+    "make": "CHEVROLET",
+    "model": "Astro"
+  },
+  "chevrolet/avalanche": {
+    "make": "CHEVROLET",
+    "model": "Avalanche"
+  },
+  "chevrolet/aveo": {
+    "make": "CHEVROLET",
+    "model": "Aveo"
+  },
+  "chevrolet/blazer": {
+    "make": "CHEVROLET",
+    "model": "Blazer"
+  },
+  "chevrolet/bolt ev": {
+    "make": "CHEVROLET",
+    "model": "Bolt EV"
+  },
+  "chevrolet/camaro": {
+    "make": "CHEVROLET",
+    "model": "Camaro"
+  },
+  "chevrolet/cavalier": {
+    "make": "CHEVROLET",
+    "model": "Cavalier"
+  },
+  "chevrolet/cobalt": {
+    "make": "CHEVROLET",
+    "model": "Cobalt"
+  },
+  "chevrolet/colorado": {
+    "make": "CHEVROLET",
+    "model": "Colorado"
+  },
+  "chevrolet/corvette": {
+    "make": "CHEVROLET",
+    "model": "Corvette"
+  },
+  "chevrolet/cruze": {
+    "make": "CHEVROLET",
+    "model": "Cruze"
+  },
+  "chevrolet/equinox": {
+    "make": "CHEVROLET",
+    "model": "Equinox"
+  },
+  "chevrolet/express": {
+    "make": "CHEVROLET",
+    "model": "Express"
+  },
+  "chevrolet/hhr": {
+    "make": "CHEVROLET",
+    "model": "HHR"
+  },
+  "chevrolet/impala": {
+    "make": "CHEVROLET",
+    "model": "Impala"
+  },
+  "chevrolet/malibu": {
+    "make": "CHEVROLET",
+    "model": "Malibu"
+  },
+  "chevrolet/s10": {
+    "make": "CHEVROLET",
+    "model": "S10"
+  },
+  "chevrolet/ss": {
+    "make": "CHEVROLET",
+    "model": "SS"
+  },
+  "chevrolet/silverado 1500": {
+    "make": "CHEVROLET",
+    "model": "Silverado 1500"
+  },
+  "chevrolet/silverado 2500hd": {
+    "make": "CHEVROLET",
+    "model": "Silverado 2500HD"
+  },
+  "chevrolet/sonic": {
+    "make": "CHEVROLET",
+    "model": "Sonic"
+  },
+  "chevrolet/spark": {
+    "make": "CHEVROLET",
+    "model": "Spark"
+  },
+  "chevrolet/suburban": {
+    "make": "CHEVROLET",
+    "model": "Suburban"
+  },
+  "chevrolet/tahoe": {
+    "make": "CHEVROLET",
+    "model": "Tahoe"
+  },
+  "chevrolet/trailblazer": {
+    "make": "CHEVROLET",
+    "model": "Trailblazer"
+  },
+  "chevrolet/traverse": {
+    "make": "CHEVROLET",
+    "model": "Traverse"
+  },
+  "chevrolet/trax": {
+    "make": "CHEVROLET",
+    "model": "Trax"
+  },
+  "chevrolet/volt": {
+    "make": "CHEVROLET",
+    "model": "Volt"
+  },
+  "chrysler/200": {
+    "make": "CHRYSLER",
+    "model": "200"
+  },
+  "chrysler/300": {
+    "make": "CHRYSLER",
+    "model": "300"
+  },
+  "chrysler/pt cruiser": {
+    "make": "CHRYSLER",
+    "model": "PT Cruiser"
+  },
+  "chrysler/pacifica": {
+    "make": "CHRYSLER",
+    "model": "Pacifica"
+  },
+  "chrysler/sebring": {
+    "make": "CHRYSLER",
+    "model": "Sebring"
+  },
+  "chrysler/town and country": {
+    "make": "CHRYSLER",
+    "model": "Town and Country"
+  },
+  "dodge/avenger": {
+    "make": "DODGE",
+    "model": "Avenger"
+  },
+  "dodge/caliber": {
+    "make": "DODGE",
+    "model": "Caliber"
+  },
+  "dodge/challenger": {
+    "make": "DODGE",
+    "model": "Challenger"
+  },
+  "dodge/charger": {
+    "make": "DODGE",
+    "model": "Charger"
+  },
+  "dodge/dakota": {
+    "make": "DODGE",
+    "model": "Dakota"
+  },
+  "dodge/dart": {
+    "make": "DODGE",
+    "model": "Dart"
+  },
+  "dodge/durango": {
+    "make": "DODGE",
+    "model": "Durango"
+  },
+  "dodge/grand caravan": {
+    "make": "DODGE",
+    "model": "Grand Caravan"
+  },
+  "dodge/journey": {
+    "make": "DODGE",
+    "model": "Journey"
+  },
+  "dodge/ram 1500": {
+    "make": "DODGE",
+    "model": "Ram 1500"
+  },
+  "dodge/ram 2500": {
+    "make": "DODGE",
+    "model": "Ram 2500"
+  },
+  "dodge/ram 3500": {
+    "make": "DODGE",
+    "model": "Ram 3500"
+  },
+  "dodge/viper": {
+    "make": "DODGE",
+    "model": "Viper"
+  },
+  "fiat/500": {
+    "make": "FIAT",
+    "model": "500"
+  },
+  "ford/bronco": {
+    "make": "FORD",
+    "model": "Bronco"
+  },
+  "ford/bronco sport": {
+    "make": "FORD",
+    "model": "Bronco Sport"
+  },
+  "ford/c-max": {
+    "make": "FORD",
+    "model": "C-MAX"
+  },
+  "ford/crown victoria": {
+    "make": "FORD",
+    "model": "Crown Victoria"
+  },
+  "ford/e-350": {
+    "make": "FORD",
+    "model": "E-350"
+  },
+  "ford/edge": {
+    "make": "FORD",
+    "model": "Edge"
+  },
+  "ford/escape": {
+    "make": "FORD",
+    "model": "Escape"
+  },
+  "ford/expedition": {
+    "make": "FORD",
+    "model": "Expedition"
+  },
+  "ford/expedition max": {
+    "make": "FORD",
+    "model": "Expedition MAX"
+  },
+  "ford/explorer": {
+    "make": "FORD",
+    "model": "Explorer"
+  },
+  "ford/explorer sport trac": {
+    "make": "FORD",
+    "model": "Explorer Sport Trac"
+  },
+  "ford/f-150": {
+    "make": "FORD",
+    "model": "F-150"
+  },
+  "ford/f-250": {
+    "make": "FORD",
+    "model": "F-250"
+  },
+  "ford/f-350": {
+    "make": "FORD",
+    "model": "F-350"
+  },
+  "ford/fiesta": {
+    "make": "FORD",
+    "model": "Fiesta"
+  },
+  "ford/flex": {
+    "make": "FORD",
+    "model": "Flex"
+  },
+  "ford/focus": {
+    "make": "FORD",
+    "model": "Focus"
+  },
+  "ford/fusion": {
+    "make": "FORD",
+    "model": "Fusion"
+  },
+  "ford/gt": {
+    "make": "FORD",
+    "model": "GT"
+  },
+  "ford/maverick": {
+    "make": "FORD",
+    "model": "Maverick"
+  },
+  "ford/mustang": {
+    "make": "FORD",
+    "model": "Mustang"
+  },
+  "ford/ranger": {
+    "make": "FORD",
+    "model": "Ranger"
+  },
+  "ford/taurus": {
+    "make": "FORD",
+    "model": "Taurus"
+  },
+  "ford/transit": {
+    "make": "FORD",
+    "model": "Transit"
+  },
+  "ford/transit connect": {
+    "make": "FORD",
+    "model": "Transit Connect"
+  },
+  "gmc/acadia": {
+    "make": "GMC",
+    "model": "Acadia"
+  },
+  "gmc/canyon": {
+    "make": "GMC",
+    "model": "Canyon"
+  },
+  "gmc/envoy": {
+    "make": "GMC",
+    "model": "Envoy"
+  },
+  "gmc/sierra 1500": {
+    "make": "GMC",
+    "model": "Sierra 1500"
+  },
+  "gmc/sonoma": {
+    "make": "GMC",
+    "model": "Sonoma"
+  },
+  "gmc/terrain": {
+    "make": "GMC",
+    "model": "Terrain"
+  },
+  "gmc/yukon": {
+    "make": "GMC",
+    "model": "Yukon"
+  },
+  "gmc/yukon xl": {
+    "make": "GMC",
+    "model": "Yukon XL"
+  },
+  "honda/accord": {
+    "make": "HONDA",
+    "model": "Accord"
+  },
+  "honda/cr-v": {
+    "make": "HONDA",
+    "model": "CR-V"
+  },
+  "honda/civic": {
+    "make": "HONDA",
+    "model": "Civic"
+  },
+  "honda/element": {
+    "make": "HONDA",
+    "model": "Element"
+  },
+  "honda/fit": {
+    "make": "HONDA",
+    "model": "Fit"
+  },
+  "honda/hr-v": {
+    "make": "HONDA",
+    "model": "HR-V"
+  },
+  "honda/insight": {
+    "make": "HONDA",
+    "model": "Insight"
+  },
+  "honda/odyssey": {
+    "make": "HONDA",
+    "model": "Odyssey"
+  },
+  "honda/passport": {
+    "make": "HONDA",
+    "model": "Passport"
+  },
+  "honda/pilot": {
+    "make": "HONDA",
+    "model": "Pilot"
+  },
+  "honda/ridgeline": {
+    "make": "HONDA",
+    "model": "Ridgeline"
+  },
+  "honda/s2000": {
+    "make": "HONDA",
+    "model": "S2000"
+  },
+  "hyundai/accent": {
+    "make": "HYUNDAI",
+    "model": "Accent"
+  },
+  "hyundai/elantra": {
+    "make": "HYUNDAI",
+    "model": "Elantra"
+  },
+  "hyundai/kona": {
+    "make": "HYUNDAI",
+    "model": "Kona"
+  },
+  "hyundai/palisade": {
+    "make": "HYUNDAI",
+    "model": "Palisade"
+  },
+  "hyundai/santa fe": {
+    "make": "HYUNDAI",
+    "model": "Santa Fe"
+  },
+  "hyundai/sonata": {
+    "make": "HYUNDAI",
+    "model": "Sonata"
+  },
+  "hyundai/tucson": {
+    "make": "HYUNDAI",
+    "model": "Tucson"
+  },
+  "infiniti/g35": {
+    "make": "INFINITI",
+    "model": "G35"
+  },
+  "infiniti/g37": {
+    "make": "INFINITI",
+    "model": "G37"
+  },
+  "infiniti/qx60": {
+    "make": "INFINITI",
+    "model": "QX60"
+  },
+  "jeep/cherokee": {
+    "make": "JEEP",
+    "model": "Cherokee"
+  },
+  "jeep/compass": {
+    "make": "JEEP",
+    "model": "Compass"
+  },
+  "jeep/gladiator": {
+    "make": "JEEP",
+    "model": "Gladiator"
+  },
+  "jeep/grand cherokee": {
+    "make": "JEEP",
+    "model": "Grand Cherokee"
+  },
+  "jeep/liberty": {
+    "make": "JEEP",
+    "model": "Liberty"
+  },
+  "jeep/patriot": {
+    "make": "JEEP",
+    "model": "Patriot"
+  },
+  "jeep/renegade": {
+    "make": "JEEP",
+    "model": "Renegade"
+  },
+  "jeep/wrangler": {
+    "make": "JEEP",
+    "model": "Wrangler,Wrangler Unlimited"
+  },
+  "kia/forte": {
+    "make": "KIA",
+    "model": "Forte"
+  },
+  "kia/niro": {
+    "make": "KIA",
+    "model": "Niro"
+  },
+  "kia/optima": {
+    "make": "KIA",
+    "model": "Optima"
+  },
+  "kia/rio": {
+    "make": "KIA",
+    "model": "Rio"
+  },
+  "kia/sedona": {
+    "make": "KIA",
+    "model": "Sedona"
+  },
+  "kia/sorento": {
+    "make": "KIA",
+    "model": "Sorento"
+  },
+  "kia/soul": {
+    "make": "KIA",
+    "model": "Soul"
+  },
+  "kia/spectra": {
+    "make": "KIA",
+    "model": "Spectra"
+  },
+  "kia/sportage": {
+    "make": "KIA",
+    "model": "Sportage"
+  },
+  "kia/telluride": {
+    "make": "KIA",
+    "model": "Telluride"
+  },
+  "land rover/range rover": {
+    "make": "LAND ROVER",
+    "model": "Range Rover"
+  },
+  "land rover/range rover sport": {
+    "make": "LAND ROVER",
+    "model": "Range Rover Sport"
+  },
+  "lexus/es": {
+    "make": "LEXUS",
+    "model": "ES"
+  },
+  "lexus/gs": {
+    "make": "LEXUS",
+    "model": "GS"
+  },
+  "lexus/gx": {
+    "make": "LEXUS",
+    "model": "GX"
+  },
+  "lexus/is": {
+    "make": "LEXUS",
+    "model": "IS"
+  },
+  "lexus/ls": {
+    "make": "LEXUS",
+    "model": "LS"
+  },
+  "lexus/nx": {
+    "make": "LEXUS",
+    "model": "NX"
+  },
+  "lexus/rx": {
+    "make": "LEXUS",
+    "model": "RX"
+  },
+  "lincoln/navigator": {
+    "make": "LINCOLN",
+    "model": "Navigator"
+  },
+  "lincoln/town car": {
+    "make": "LINCOLN",
+    "model": "Town Car"
+  },
+  "mazda/cx-30": {
+    "make": "MAZDA",
+    "model": "CX-30"
+  },
+  "mazda/cx-5": {
+    "make": "MAZDA",
+    "model": "CX-5"
+  },
+  "mazda/cx-9": {
+    "make": "MAZDA",
+    "model": "CX-9"
+  },
+  "mazda/mx-5 miata": {
+    "make": "MAZDA",
+    "model": "MX-5 Miata"
+  },
+  "mazda/mazda3": {
+    "make": "MAZDA",
+    "model": "Mazda3"
+  },
+  "mazda/mazda6": {
+    "make": "MAZDA",
+    "model": "Mazda6"
+  },
+  "mazda/protege": {
+    "make": "MAZDA",
+    "model": "Protege"
+  },
+  "mazda/rx-7": {
+    "make": "MAZDA",
+    "model": "RX-7"
+  },
+  "mazda/rx-8": {
+    "make": "MAZDA",
+    "model": "RX-8"
+  },
+  "mercedes-benz/c-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "C-Class"
+  },
+  "mercedes-benz/e-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "E-Class"
+  },
+  "mercedes-benz/gl-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "GL-Class"
+  },
+  "mercedes-benz/gla-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "GLA-Class"
+  },
+  "mercedes-benz/glc-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "GLC-Class"
+  },
+  "mercedes-benz/gle-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "GLE-Class"
+  },
+  "mercedes-benz/m-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "M-Class"
+  },
+  "mercedes-benz/s-class": {
+    "make": "MERCEDES-BENZ",
+    "model": "S-Class"
+  },
+  "mini/cooper": {
+    "make": "MINI",
+    "model": "Cooper"
+  },
+  "mini/countryman": {
+    "make": "MINI",
+    "model": "Countryman"
+  },
+  "mini/hardtop": {
+    "make": "MINI",
+    "model": "Hardtop"
+  },
+  "mitsubishi/lancer": {
+    "make": "MITSUBISHI",
+    "model": "Lancer"
+  },
+  "mitsubishi/lancer evolution": {
+    "make": "MITSUBISHI",
+    "model": "Lancer Evolution"
+  },
+  "mitsubishi/outlander": {
+    "make": "MITSUBISHI",
+    "model": "Outlander"
+  },
+  "mitsubishi/outlander sport": {
+    "make": "MITSUBISHI",
+    "model": "Outlander Sport"
+  },
+  "nissan/350z": {
+    "make": "NISSAN",
+    "model": "350Z"
+  },
+  "nissan/370z": {
+    "make": "NISSAN",
+    "model": "370Z"
+  },
+  "nissan/altima": {
+    "make": "NISSAN",
+    "model": "Altima"
+  },
+  "nissan/armada": {
+    "make": "NISSAN",
+    "model": "Armada"
+  },
+  "nissan/frontier": {
+    "make": "NISSAN",
+    "model": "Frontier"
+  },
+  "nissan/gt-r": {
+    "make": "NISSAN",
+    "model": "GT-R"
+  },
+  "nissan/leaf": {
+    "make": "NISSAN",
+    "model": "Leaf"
+  },
+  "nissan/maxima": {
+    "make": "NISSAN",
+    "model": "Maxima"
+  },
+  "nissan/murano": {
+    "make": "NISSAN",
+    "model": "Murano"
+  },
+  "nissan/pathfinder": {
+    "make": "NISSAN",
+    "model": "Pathfinder"
+  },
+  "nissan/rogue": {
+    "make": "NISSAN",
+    "model": "Rogue"
+  },
+  "nissan/rogue sport": {
+    "make": "NISSAN",
+    "model": "Rogue Sport"
+  },
+  "nissan/sentra": {
+    "make": "NISSAN",
+    "model": "Sentra"
+  },
+  "nissan/titan": {
+    "make": "NISSAN",
+    "model": "Titan"
+  },
+  "nissan/versa": {
+    "make": "NISSAN",
+    "model": "Versa"
+  },
+  "nissan/versa note": {
+    "make": "NISSAN",
+    "model": "Versa Note"
+  },
+  "nissan/xterra": {
+    "make": "NISSAN",
+    "model": "Xterra"
+  },
+  "nissan/z": {
+    "make": "NISSAN",
+    "model": "Z"
+  },
+  "pontiac/grand prix": {
+    "make": "PONTIAC",
+    "model": "Grand Prix"
+  },
+  "pontiac/vibe": {
+    "make": "PONTIAC",
+    "model": "Vibe"
+  },
+  "porsche/911": {
+    "make": "PORSCHE",
+    "model": "911"
+  },
+  "porsche/cayenne": {
+    "make": "PORSCHE",
+    "model": "Cayenne"
+  },
+  "porsche/macan": {
+    "make": "PORSCHE",
+    "model": "Macan"
+  },
+  "ram/1500": {
+    "make": "RAM",
+    "model": "1500"
+  },
+  "ram/2500": {
+    "make": "RAM",
+    "model": "2500"
+  },
+  "ram/3500": {
+    "make": "RAM",
+    "model": "3500"
+  },
+  "saturn/vue": {
+    "make": "SATURN",
+    "model": "Vue"
+  },
+  "subaru/ascent": {
+    "make": "SUBARU",
+    "model": "Ascent"
+  },
+  "subaru/brz": {
+    "make": "SUBARU",
+    "model": "BRZ"
+  },
+  "subaru/crosstrek": {
+    "make": "SUBARU",
+    "model": "Crosstrek"
+  },
+  "subaru/forester": {
+    "make": "SUBARU",
+    "model": "Forester"
+  },
+  "subaru/impreza": {
+    "make": "SUBARU",
+    "model": "Impreza"
+  },
+  "subaru/legacy": {
+    "make": "SUBARU",
+    "model": "Legacy"
+  },
+  "subaru/outback": {
+    "make": "SUBARU",
+    "model": "Outback"
+  },
+  "subaru/wrx": {
+    "make": "SUBARU",
+    "model": "WRX"
+  },
+  "subaru/xv crosstrek": {
+    "make": "SUBARU",
+    "model": "XV Crosstrek"
+  },
+  "tesla/model 3": {
+    "make": "TESLA",
+    "model": "Model 3"
+  },
+  "tesla/model s": {
+    "make": "TESLA",
+    "model": "Model S"
+  },
+  "tesla/model x": {
+    "make": "TESLA",
+    "model": "Model X"
+  },
+  "tesla/model y": {
+    "make": "TESLA",
+    "model": "Model Y"
+  },
+  "toyota/4runner": {
+    "make": "TOYOTA",
+    "model": "4Runner"
+  },
+  "toyota/86": {
+    "make": "TOYOTA",
+    "model": "86"
+  },
+  "toyota/avalon": {
+    "make": "TOYOTA",
+    "model": "Avalon"
+  },
+  "toyota/camry": {
+    "make": "TOYOTA",
+    "model": "Camry"
+  },
+  "toyota/camry solara": {
+    "make": "TOYOTA",
+    "model": "Camry Solara"
+  },
+  "toyota/corolla": {
+    "make": "TOYOTA",
+    "model": "Corolla"
+  },
+  "toyota/fj cruiser": {
+    "make": "TOYOTA",
+    "model": "FJ Cruiser"
+  },
+  "toyota/fr-s": {
+    "make": "TOYOTA",
+    "model": "FR-S"
+  },
+  "toyota/gr corolla": {
+    "make": "TOYOTA",
+    "model": "GR Corolla"
+  },
+  "toyota/gr86": {
+    "make": "TOYOTA",
+    "model": "GR86"
+  },
+  "toyota/highlander": {
+    "make": "TOYOTA",
+    "model": "Highlander"
+  },
+  "toyota/land cruiser": {
+    "make": "TOYOTA",
+    "model": "Land Cruiser"
+  },
+  "toyota/matrix": {
+    "make": "TOYOTA",
+    "model": "Matrix"
+  },
+  "toyota/prius": {
+    "make": "TOYOTA",
+    "model": "Prius"
+  },
+  "toyota/prius c": {
+    "make": "TOYOTA",
+    "model": "Prius c"
+  },
+  "toyota/prius v": {
+    "make": "TOYOTA",
+    "model": "Prius v"
+  },
+  "toyota/rav4": {
+    "make": "TOYOTA",
+    "model": "RAV4"
+  },
+  "toyota/sequoia": {
+    "make": "TOYOTA",
+    "model": "Sequoia"
+  },
+  "toyota/sienna": {
+    "make": "TOYOTA",
+    "model": "Sienna"
+  },
+  "toyota/supra": {
+    "make": "TOYOTA",
+    "model": "Supra"
+  },
+  "toyota/tacoma": {
+    "make": "TOYOTA",
+    "model": "Tacoma"
+  },
+  "toyota/tundra": {
+    "make": "TOYOTA",
+    "model": "Tundra"
+  },
+  "toyota/venza": {
+    "make": "TOYOTA",
+    "model": "Venza"
+  },
+  "toyota/yaris": {
+    "make": "TOYOTA",
+    "model": "Yaris"
+  },
+  "toyota/tc": {
+    "make": "TOYOTA",
+    "model": "tC"
+  },
+  "toyota/xb": {
+    "make": "TOYOTA",
+    "model": "xB"
+  },
+  "volkswagen/atlas": {
+    "make": "VOLKSWAGEN",
+    "model": "Atlas"
+  },
+  "volkswagen/beetle": {
+    "make": "VOLKSWAGEN",
+    "model": "Beetle"
+  },
+  "volkswagen/gti": {
+    "make": "VOLKSWAGEN",
+    "model": "GTI"
+  },
+  "volkswagen/golf": {
+    "make": "VOLKSWAGEN",
+    "model": "Golf"
+  },
+  "volkswagen/golf r": {
+    "make": "VOLKSWAGEN",
+    "model": "Golf R"
+  },
+  "volkswagen/jetta": {
+    "make": "VOLKSWAGEN",
+    "model": "Jetta"
+  },
+  "volkswagen/jetta sportwagen": {
+    "make": "VOLKSWAGEN",
+    "model": "Jetta SportWagen"
+  },
+  "volkswagen/new beetle": {
+    "make": "VOLKSWAGEN",
+    "model": "New Beetle"
+  },
+  "volkswagen/passat": {
+    "make": "VOLKSWAGEN",
+    "model": "Passat"
+  },
+  "volkswagen/tiguan": {
+    "make": "VOLKSWAGEN",
+    "model": "Tiguan"
+  },
+  "volvo/s60": {
+    "make": "VOLVO",
+    "model": "S60"
+  },
+  "volvo/xc60": {
+    "make": "VOLVO",
+    "model": "XC60"
+  },
+  "volvo/xc90": {
+    "make": "VOLVO",
+    "model": "XC90"
+  }
+}

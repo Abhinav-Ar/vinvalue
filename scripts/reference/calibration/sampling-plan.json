@@ -1,0 +1,187 @@
+{
+  "month": "2026-11",
+  "calls": 450,
+  "longTail": 67,
+  "top30": [
+    {
+      "make": "FORD",
+      "model": "F-150",
+      "registrations": 1304879,
+      "calls": 14
+    },
+    {
+      "make": "CHEVROLET",
+      "model": "Silverado 1500",
+      "registrations": 1110117,
+      "calls": 13
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Camry",
+      "registrations": 1057361,
+      "calls": 7
+    },
+    {
+      "make": "HONDA",
+      "model": "CR-V",
+      "registrations": 991218,
+      "calls": 11
+    },
+    {
+      "make": "TOYOTA",
+      "model": "RAV4",
+      "registrations": 988790,
+      "calls": 11
+    },
+    {
+      "make": "HONDA",
+      "model": "Civic",
+      "registrations": 961317,
+      "calls": 9
+    },
+    {
+      "make": "HONDA",
+      "model": "Accord",
+      "registrations": 894564,
+      "calls": 6
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Tacoma",
+      "registrations": 862703,
+      "calls": 12
+    },
+    {
+      "make": "SUBARU",
+      "model": "Forester",
+      "registrations": 821516,
+      "calls": 10
+    },
+    {
+      "make": "SUBARU",
+      "model": "Outback",
+      "registrations": 808790,
+      "calls": 10
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Corolla",
+      "registrations": 785647,
+      "calls": 6
+    },
+    {
+      "make": "DODGE",
+      "model": "Ram 1500",
+      "registrations": 706796,
+      "calls": 11
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Highlander",
+      "registrations": 573001,
+      "calls": 8
+    },
+    {
+      "make": "GMC",
+      "model": "Sierra 1500",
+      "registrations": 542565,
+      "calls": 10
+    },
+    {
+      "make": "FORD",
+      "model": "Escape",
+      "registrations": 502633,
+      "calls": 8
+    },
+    {
+      "make": "TOYOTA",
+      "model": "4Runner",
+      "registrations": 496661,
+      "calls": 8
+    },
+    {
+      "make": "FORD",
+      "model": "Ranger",
+      "registrations": 480186,
+      "calls": 9
+    },
+    {
+      "make": "JEEP",
+      "model": "Wrangler",
+      "registrations": 476025,
+      "calls": 8
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Prius",
+      "registrations": 471964,
+      "calls": 5
+    },
+    {
+      "make": "FORD",
+      "model": "Explorer",
+      "registrations": 457509,
+      "calls": 7
+    },
+    {
+      "make": "FORD",
+      "model": "F-250",
+      "registrations": 453460,
+      "calls": 9
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Tundra",
+      "registrations": 451884,
+      "calls": 9
+    },
+    {
+      "make": "JEEP",
+      "model": "Grand Cherokee",
+      "registrations": 423737,
+      "calls": 7
+    },
+    {
+      "make": "SUBARU",
+      "model": "Impreza",
+      "registrations": 412794,
+      "calls": 4
+    },
+    {
+      "make": "SUBARU",
+      "model": "Legacy",
+      "registrations": 403445,
+      "calls": 4
+    },
+    {
+      "make": "FORD",
+      "model": "F-350",
+      "registrations": 386545,
+      "calls": 8
+    },
+    {
+      "make": "TOYOTA",
+      "model": "Sienna",
+      "registrations": 384915,
+      "calls": 4
+    },
+    {
+      "make": "HONDA",
+      "model": "Pilot",
+      "registrations": 372492,
+      "calls": 7
+    },
+    {
+      "make": "SUBARU",
+      "model": "Crosstrek",
+      "registrations": 358890,
+      "calls": 7
+    },
+    {
+      "make": "FORD",
+      "model": "Focus",
+      "registrations": 356001,
+      "calls": 4
+    }
+  ]
+}

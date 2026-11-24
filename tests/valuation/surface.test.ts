@@ -9,7 +9,7 @@ import type { DecodedSpecs } from '@/models/db/schema';
 const now = new Date('2026-11-16Z');
 const data = exampleReference();
 const specs: DecodedSpecs = {year:2017,make:'Toyota',model:'Camry LE',body:null,drive:null,engine:null,fuel:null,doors:null,plant:null,trimRaw:'Base',trimCandidates:['Base'],checkDigitValid:true};
-const neutral:Corrections={version:2,methodVersion:'2.3.0',fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[],families:[]};
+const neutral:Corrections={version:2,methodVersion:'2.3.1',fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[],families:[]};
 const inputs = {vin:'FIXTURE',trim:'Base',mileage:90000,zip:'98001',condition:'good' as const,title:'clean' as const,accidents:'none' as const,serviceHistory:null,owners:null,keys:null,warningLights:null};
 describe('reference-backed model and differential contracts',()=>{
  it('resolves exact case-insensitive aliases and never substring matches',()=>{

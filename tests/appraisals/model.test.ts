@@ -12,7 +12,7 @@ it('persists and reloads the model basis, wide interval, factors and one history
  expect(loaded?.base.label).toBe('Model estimate (no local sales data)');
  expect(loaded?.compStats.used).toBe(0);
  expect(loaded?.compStats.weightedMedian).toBe(0);
- expect(loaded?.methodVersion).toBe('2.3.0');
+ expect(loaded?.methodVersion).toBe('2.3.1');
  expect(loaded?.confidence?.flags).toContain('model_estimate');
  expect(loaded?.private).toEqual(report.private);
  expect(loaded!.base.amount+loaded!.adjustments.reduce((a,x)=>a+x.amount,0)).toBe(loaded?.private.value);

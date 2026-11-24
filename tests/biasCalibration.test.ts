@@ -4,9 +4,9 @@ import { valuationConfig } from '@/models/config/valuation';
 import { evaluateSurface } from '@/models/valuation/surface';
 import { prepareMarketObservation,cachedMarketValue, type DealerSample } from '@/models/valuation/marketCalibration';
 import { fitBiasCorrections,estimateDealerFactor } from '@/models/valuation/biasCalibration';
-import { correctionSchema, type Corrections } from '@/models/valuation/biasCorrections';
+import { correctionSchema, correctionFactor, type Corrections } from '@/models/valuation/biasCorrections';
 const data=loadReferences();
-const empty:Corrections={version:2,methodVersion:'2.3.0',families:[],fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[]};
+const empty:Corrections={version:2,methodVersion:'2.3.1',families:[],fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[]};
 const now=new Date('2026-11-23');
 
 describe('cached production surface',()=>{
@@ -73,4 +73,19 @@ it('recovers opposing family biases within a segment and allows precise large-fa
  expect(result.report.cv.seen.after.median!).toBeLessThan(result.report.cv.seen.before.median!);
  const duplicate=fitBiasCorrections([...expanded,...expanded],[],data,empty,now);
  expect(duplicate.report.counts).toEqual(result.report.counts);
+});
+
+it('uses neutral fallback even when a segment correction exists',()=>{
+ const c={...empty,cells:[{segment:'suv',n:100,factor:.75,shrinkage:1,ci:[.7,.8] as [number,number],wideCap:false}]};
+ expect(correctionFactor(c,'suv','toyota/rav4/unsupported')).toBe(1);
+ const report=fitBiasCorrections(synthetic(),[],data,empty,now).report;
+ expect(report.cv.unseen.after).toEqual(report.cv.unseen.before);
+});
+
+it('migrates legacy pooled snapshots to neutral-prior family corrections',()=>{
+ const prior={...empty,methodVersion:'2.3.0' as const};
+ const result=fitBiasCorrections(synthetic(),[],data,prior,now);
+ expect(result.report.accepted).toBe(true);
+ expect(result.corrections.methodVersion).toBe('2.3.1');
+ expect(result.corrections.cells).toEqual([]);
 });

@@ -1,0 +1,1317 @@
+[
+  {
+    "make": "FORD",
+    "model": "F-150",
+    "registrations": 1304879
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Silverado 1500",
+    "registrations": 1110117
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Camry",
+    "registrations": 1057361
+  },
+  {
+    "make": "HONDA",
+    "model": "CR-V",
+    "registrations": 991218
+  },
+  {
+    "make": "TOYOTA",
+    "model": "RAV4",
+    "registrations": 988790
+  },
+  {
+    "make": "HONDA",
+    "model": "Civic",
+    "registrations": 961317
+  },
+  {
+    "make": "HONDA",
+    "model": "Accord",
+    "registrations": 894564
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Tacoma",
+    "registrations": 862703
+  },
+  {
+    "make": "SUBARU",
+    "model": "Forester",
+    "registrations": 821516
+  },
+  {
+    "make": "SUBARU",
+    "model": "Outback",
+    "registrations": 808790
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Corolla",
+    "registrations": 785647
+  },
+  {
+    "make": "DODGE",
+    "model": "Ram 1500",
+    "registrations": 706796
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Highlander",
+    "registrations": 573001
+  },
+  {
+    "make": "GMC",
+    "model": "Sierra 1500",
+    "registrations": 542565
+  },
+  {
+    "make": "FORD",
+    "model": "Escape",
+    "registrations": 502633
+  },
+  {
+    "make": "TOYOTA",
+    "model": "4Runner",
+    "registrations": 496661
+  },
+  {
+    "make": "FORD",
+    "model": "Ranger",
+    "registrations": 480186
+  },
+  {
+    "make": "JEEP",
+    "model": "Wrangler",
+    "registrations": 476025
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Prius",
+    "registrations": 471964
+  },
+  {
+    "make": "FORD",
+    "model": "Explorer",
+    "registrations": 457509
+  },
+  {
+    "make": "FORD",
+    "model": "F-250",
+    "registrations": 453460
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Tundra",
+    "registrations": 451884
+  },
+  {
+    "make": "JEEP",
+    "model": "Grand Cherokee",
+    "registrations": 423737
+  },
+  {
+    "make": "SUBARU",
+    "model": "Impreza",
+    "registrations": 412794
+  },
+  {
+    "make": "SUBARU",
+    "model": "Legacy",
+    "registrations": 403445
+  },
+  {
+    "make": "FORD",
+    "model": "F-350",
+    "registrations": 386545
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Sienna",
+    "registrations": 384915
+  },
+  {
+    "make": "HONDA",
+    "model": "Pilot",
+    "registrations": 372492
+  },
+  {
+    "make": "SUBARU",
+    "model": "Crosstrek",
+    "registrations": 358890
+  },
+  {
+    "make": "FORD",
+    "model": "Focus",
+    "registrations": 356001
+  },
+  {
+    "make": "RAM",
+    "model": "1500",
+    "registrations": 352321
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Elantra",
+    "registrations": 344600
+  },
+  {
+    "make": "LEXUS",
+    "model": "RX",
+    "registrations": 344389
+  },
+  {
+    "make": "HONDA",
+    "model": "Odyssey",
+    "registrations": 333947
+  },
+  {
+    "make": "NISSAN",
+    "model": "Altima",
+    "registrations": 331564
+  },
+  {
+    "make": "MAZDA",
+    "model": "Mazda3",
+    "registrations": 316287
+  },
+  {
+    "make": "MAZDA",
+    "model": "CX-5",
+    "registrations": 313041
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Jetta",
+    "registrations": 301414
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Tahoe",
+    "registrations": 284541
+  },
+  {
+    "make": "FORD",
+    "model": "Fusion",
+    "registrations": 277565
+  },
+  {
+    "make": "NISSAN",
+    "model": "Rogue",
+    "registrations": 270971
+  },
+  {
+    "make": "BMW",
+    "model": "3 Series",
+    "registrations": 268151
+  },
+  {
+    "make": "FORD",
+    "model": "Mustang",
+    "registrations": 246064
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Equinox",
+    "registrations": 242358
+  },
+  {
+    "make": "TESLA",
+    "model": "Model Y",
+    "registrations": 235136
+  },
+  {
+    "make": "KIA",
+    "model": "Soul",
+    "registrations": 234438
+  },
+  {
+    "make": "JEEP",
+    "model": "Cherokee",
+    "registrations": 229091
+  },
+  {
+    "make": "NISSAN",
+    "model": "Sentra",
+    "registrations": 226333
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Sonata",
+    "registrations": 224834
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Suburban",
+    "registrations": 216265
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Malibu",
+    "registrations": 214033
+  },
+  {
+    "make": "ACURA",
+    "model": "MDX",
+    "registrations": 203421
+  },
+  {
+    "make": "TESLA",
+    "model": "Model 3",
+    "registrations": 200741
+  },
+  {
+    "make": "FORD",
+    "model": "Edge",
+    "registrations": 195121
+  },
+  {
+    "make": "KIA",
+    "model": "Sorento",
+    "registrations": 189037
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Tucson",
+    "registrations": 187920
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Santa Fe",
+    "registrations": 179685
+  },
+  {
+    "make": "HONDA",
+    "model": "Fit",
+    "registrations": 178892
+  },
+  {
+    "make": "NISSAN",
+    "model": "Frontier",
+    "registrations": 178477
+  },
+  {
+    "make": "DODGE",
+    "model": "Dakota",
+    "registrations": 177696
+  },
+  {
+    "make": "KIA",
+    "model": "Sportage",
+    "registrations": 158687
+  },
+  {
+    "make": "DODGE",
+    "model": "Durango",
+    "registrations": 156762
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Colorado",
+    "registrations": 155027
+  },
+  {
+    "make": "GMC",
+    "model": "Yukon",
+    "registrations": 153530
+  },
+  {
+    "make": "KIA",
+    "model": "Optima",
+    "registrations": 143422
+  },
+  {
+    "make": "NISSAN",
+    "model": "Pathfinder",
+    "registrations": 143239
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Cruze",
+    "registrations": 140944
+  },
+  {
+    "make": "DODGE",
+    "model": "Grand Caravan",
+    "registrations": 140602
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "C-Class",
+    "registrations": 138495
+  },
+  {
+    "make": "KIA",
+    "model": "Forte",
+    "registrations": 138398
+  },
+  {
+    "make": "LEXUS",
+    "model": "ES",
+    "registrations": 138356
+  },
+  {
+    "make": "FORD",
+    "model": "Expedition",
+    "registrations": 137155
+  },
+  {
+    "make": "RAM",
+    "model": "2500",
+    "registrations": 135445
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Passat",
+    "registrations": 133693
+  },
+  {
+    "make": "BMW",
+    "model": "X5",
+    "registrations": 129584
+  },
+  {
+    "make": "HONDA",
+    "model": "HR-V",
+    "registrations": 129281
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "S10",
+    "registrations": 128858
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Impala",
+    "registrations": 128385
+  },
+  {
+    "make": "FORD",
+    "model": "Taurus",
+    "registrations": 125855
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Avalon",
+    "registrations": 122465
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "Town and Country",
+    "registrations": 121597
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Tiguan",
+    "registrations": 116779
+  },
+  {
+    "make": "AUDI",
+    "model": "Q5",
+    "registrations": 116015
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Accent",
+    "registrations": 115987
+  },
+  {
+    "make": "NISSAN",
+    "model": "Versa",
+    "registrations": 114655
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Traverse",
+    "registrations": 111740
+  },
+  {
+    "make": "GMC",
+    "model": "Acadia",
+    "registrations": 111382
+  },
+  {
+    "make": "AUDI",
+    "model": "A4",
+    "registrations": 108914
+  },
+  {
+    "make": "BMW",
+    "model": "X3",
+    "registrations": 108851
+  },
+  {
+    "make": "LEXUS",
+    "model": "IS",
+    "registrations": 107478
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Trailblazer",
+    "registrations": 106985
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "E-Class",
+    "registrations": 105892
+  },
+  {
+    "make": "NISSAN",
+    "model": "Murano",
+    "registrations": 103890
+  },
+  {
+    "make": "ACURA",
+    "model": "RDX",
+    "registrations": 102543
+  },
+  {
+    "make": "ACURA",
+    "model": "TL",
+    "registrations": 101903
+  },
+  {
+    "make": "DODGE",
+    "model": "Charger",
+    "registrations": 100653
+  },
+  {
+    "make": "CADILLAC",
+    "model": "Escalade",
+    "registrations": 98971
+  },
+  {
+    "make": "JEEP",
+    "model": "Liberty",
+    "registrations": 96679
+  },
+  {
+    "make": "SUBARU",
+    "model": "Ascent",
+    "registrations": 94922
+  },
+  {
+    "make": "MAZDA",
+    "model": "Mazda6",
+    "registrations": 94535
+  },
+  {
+    "make": "HONDA",
+    "model": "Ridgeline",
+    "registrations": 94313
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Camaro",
+    "registrations": 94004
+  },
+  {
+    "make": "JEEP",
+    "model": "Compass",
+    "registrations": 93583
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "Pacifica",
+    "registrations": 92413
+  },
+  {
+    "make": "NISSAN",
+    "model": "Leaf",
+    "registrations": 91887
+  },
+  {
+    "make": "GMC",
+    "model": "Yukon XL",
+    "registrations": 89785
+  },
+  {
+    "make": "DODGE",
+    "model": "Journey",
+    "registrations": 88728
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Corvette",
+    "registrations": 88173
+  },
+  {
+    "make": "GMC",
+    "model": "Terrain",
+    "registrations": 87838
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Beetle",
+    "registrations": 86841
+  },
+  {
+    "make": "VOLVO",
+    "model": "XC90",
+    "registrations": 85052
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Blazer",
+    "registrations": 82412
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Sequoia",
+    "registrations": 81998
+  },
+  {
+    "make": "JEEP",
+    "model": "Patriot",
+    "registrations": 78471
+  },
+  {
+    "make": "NISSAN",
+    "model": "Xterra",
+    "registrations": 78366
+  },
+  {
+    "make": "SUBARU",
+    "model": "WRX",
+    "registrations": 78049
+  },
+  {
+    "make": "NISSAN",
+    "model": "Maxima",
+    "registrations": 77383
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "300",
+    "registrations": 76397
+  },
+  {
+    "make": "NISSAN",
+    "model": "Titan",
+    "registrations": 75943
+  },
+  {
+    "make": "RAM",
+    "model": "3500",
+    "registrations": 75829
+  },
+  {
+    "make": "DODGE",
+    "model": "Challenger",
+    "registrations": 75161
+  },
+  {
+    "make": "SUBARU",
+    "model": "XV Crosstrek",
+    "registrations": 74393
+  },
+  {
+    "make": "HONDA",
+    "model": "Element",
+    "registrations": 72159
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Venza",
+    "registrations": 71427
+  },
+  {
+    "make": "MAZDA",
+    "model": "MX-5 Miata",
+    "registrations": 71404
+  },
+  {
+    "make": "FORD",
+    "model": "Fiesta",
+    "registrations": 71166
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "PT Cruiser",
+    "registrations": 69738
+  },
+  {
+    "make": "JEEP",
+    "model": "Renegade",
+    "registrations": 69734
+  },
+  {
+    "make": "KIA",
+    "model": "Rio",
+    "registrations": 69224
+  },
+  {
+    "make": "LEXUS",
+    "model": "NX",
+    "registrations": 68388
+  },
+  {
+    "make": "MAZDA",
+    "model": "CX-9",
+    "registrations": 67428
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Express",
+    "registrations": 66689
+  },
+  {
+    "make": "TOYOTA",
+    "model": "xB",
+    "registrations": 66183
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Kona",
+    "registrations": 65724
+  },
+  {
+    "make": "MINI",
+    "model": "Hardtop",
+    "registrations": 65258
+  },
+  {
+    "make": "LEXUS",
+    "model": "GX",
+    "registrations": 64933
+  },
+  {
+    "make": "KIA",
+    "model": "Sedona",
+    "registrations": 64718
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Yaris",
+    "registrations": 64250
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Golf",
+    "registrations": 63716
+  },
+  {
+    "make": "VOLVO",
+    "model": "XC60",
+    "registrations": 61754
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Matrix",
+    "registrations": 60485
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "GLC-Class",
+    "registrations": 59577
+  },
+  {
+    "make": "AUDI",
+    "model": "Q7",
+    "registrations": 59168
+  },
+  {
+    "make": "KIA",
+    "model": "Niro",
+    "registrations": 58276
+  },
+  {
+    "make": "KIA",
+    "model": "Spectra",
+    "registrations": 56418
+  },
+  {
+    "make": "ACURA",
+    "model": "TSX",
+    "registrations": 56077
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Atlas",
+    "registrations": 56044
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Avalanche",
+    "registrations": 54932
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Prius c",
+    "registrations": 54466
+  },
+  {
+    "make": "HYUNDAI",
+    "model": "Palisade",
+    "registrations": 53213
+  },
+  {
+    "make": "TESLA",
+    "model": "Model S",
+    "registrations": 52875
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "200",
+    "registrations": 51984
+  },
+  {
+    "make": "TOYOTA",
+    "model": "tC",
+    "registrations": 51523
+  },
+  {
+    "make": "FORD",
+    "model": "Bronco",
+    "registrations": 51042
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Sonic",
+    "registrations": 50733
+  },
+  {
+    "make": "MITSUBISHI",
+    "model": "Outlander",
+    "registrations": 50352
+  },
+  {
+    "make": "BUICK",
+    "model": "Enclave",
+    "registrations": 49101
+  },
+  {
+    "make": "MINI",
+    "model": "Cooper",
+    "registrations": 47890
+  },
+  {
+    "make": "GMC",
+    "model": "Canyon",
+    "registrations": 47798
+  },
+  {
+    "make": "CADILLAC",
+    "model": "CTS",
+    "registrations": 47761
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "GLE-Class",
+    "registrations": 47606
+  },
+  {
+    "make": "PORSCHE",
+    "model": "911",
+    "registrations": 47274
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Trax",
+    "registrations": 45124
+  },
+  {
+    "make": "BUICK",
+    "model": "LeSabre",
+    "registrations": 44762
+  },
+  {
+    "make": "DODGE",
+    "model": "Dart",
+    "registrations": 44440
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Cobalt",
+    "registrations": 44398
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Prius v",
+    "registrations": 44338
+  },
+  {
+    "make": "VOLVO",
+    "model": "S60",
+    "registrations": 44335
+  },
+  {
+    "make": "TOYOTA",
+    "model": "FJ Cruiser",
+    "registrations": 43787
+  },
+  {
+    "make": "FORD",
+    "model": "E-350",
+    "registrations": 43780
+  },
+  {
+    "make": "KIA",
+    "model": "Telluride",
+    "registrations": 43033
+  },
+  {
+    "make": "MAZDA",
+    "model": "CX-30",
+    "registrations": 42637
+  },
+  {
+    "make": "AUDI",
+    "model": "A6",
+    "registrations": 41911
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "M-Class",
+    "registrations": 41801
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "GTI",
+    "registrations": 41014
+  },
+  {
+    "make": "HONDA",
+    "model": "Passport",
+    "registrations": 40768
+  },
+  {
+    "make": "PORSCHE",
+    "model": "Cayenne",
+    "registrations": 40459
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Astro",
+    "registrations": 40418
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Land Cruiser",
+    "registrations": 40094
+  },
+  {
+    "make": "FORD",
+    "model": "Flex",
+    "registrations": 39999
+  },
+  {
+    "make": "FORD",
+    "model": "Bronco Sport",
+    "registrations": 39456
+  },
+  {
+    "make": "LEXUS",
+    "model": "GS",
+    "registrations": 39429
+  },
+  {
+    "make": "FORD",
+    "model": "Transit",
+    "registrations": 39194
+  },
+  {
+    "make": "FIAT",
+    "model": "500",
+    "registrations": 38782
+  },
+  {
+    "make": "AUDI",
+    "model": "A3",
+    "registrations": 38668
+  },
+  {
+    "make": "MINI",
+    "model": "Countryman",
+    "registrations": 38494
+  },
+  {
+    "make": "BMW",
+    "model": "X1",
+    "registrations": 37927
+  },
+  {
+    "make": "LEXUS",
+    "model": "LS",
+    "registrations": 37761
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Bolt EV",
+    "registrations": 37657
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "HHR",
+    "registrations": 37600
+  },
+  {
+    "make": "TESLA",
+    "model": "Model X",
+    "registrations": 37466
+  },
+  {
+    "make": "CADILLAC",
+    "model": "SRX",
+    "registrations": 37319
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Spark",
+    "registrations": 37222
+  },
+  {
+    "make": "BUICK",
+    "model": "Encore",
+    "registrations": 36936
+  },
+  {
+    "make": "INFINITI",
+    "model": "G35",
+    "registrations": 36695
+  },
+  {
+    "make": "LAND ROVER",
+    "model": "Range Rover Sport",
+    "registrations": 36657
+  },
+  {
+    "make": "NISSAN",
+    "model": "Armada",
+    "registrations": 36651
+  },
+  {
+    "make": "SATURN",
+    "model": "Vue",
+    "registrations": 36373
+  },
+  {
+    "make": "MITSUBISHI",
+    "model": "Lancer",
+    "registrations": 35749
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Aveo",
+    "registrations": 35737
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Silverado 2500HD",
+    "registrations": 35660
+  },
+  {
+    "make": "ACURA",
+    "model": "TLX",
+    "registrations": 35118
+  },
+  {
+    "make": "BUICK",
+    "model": "LaCrosse",
+    "registrations": 34926
+  },
+  {
+    "make": "PORSCHE",
+    "model": "Macan",
+    "registrations": 34461
+  },
+  {
+    "make": "MITSUBISHI",
+    "model": "Outlander Sport",
+    "registrations": 34268
+  },
+  {
+    "make": "BUICK",
+    "model": "Century",
+    "registrations": 34220
+  },
+  {
+    "make": "FORD",
+    "model": "Explorer Sport Trac",
+    "registrations": 33925
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Volt",
+    "registrations": 33865
+  },
+  {
+    "make": "GMC",
+    "model": "Envoy",
+    "registrations": 33843
+  },
+  {
+    "make": "HONDA",
+    "model": "Insight",
+    "registrations": 33012
+  },
+  {
+    "make": "FORD",
+    "model": "C-MAX",
+    "registrations": 32402
+  },
+  {
+    "make": "DODGE",
+    "model": "Avenger",
+    "registrations": 32158
+  },
+  {
+    "make": "JEEP",
+    "model": "Gladiator",
+    "registrations": 32149
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "Cavalier",
+    "registrations": 32145
+  },
+  {
+    "make": "NISSAN",
+    "model": "Rogue Sport",
+    "registrations": 31696
+  },
+  {
+    "make": "INFINITI",
+    "model": "G37",
+    "registrations": 31502
+  },
+  {
+    "make": "LINCOLN",
+    "model": "Town Car",
+    "registrations": 31353
+  },
+  {
+    "make": "PONTIAC",
+    "model": "Vibe",
+    "registrations": 31098
+  },
+  {
+    "make": "AUDI",
+    "model": "Q3",
+    "registrations": 30821
+  },
+  {
+    "make": "CHRYSLER",
+    "model": "Sebring",
+    "registrations": 30249
+  },
+  {
+    "make": "MAZDA",
+    "model": "Protege",
+    "registrations": 30205
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "GL-Class",
+    "registrations": 30157
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Camry Solara",
+    "registrations": 29686
+  },
+  {
+    "make": "DODGE",
+    "model": "Caliber",
+    "registrations": 29654
+  },
+  {
+    "make": "LINCOLN",
+    "model": "Navigator",
+    "registrations": 28993
+  },
+  {
+    "make": "GMC",
+    "model": "Sonoma",
+    "registrations": 28663
+  },
+  {
+    "make": "FORD",
+    "model": "Maverick",
+    "registrations": 28445
+  },
+  {
+    "make": "FORD",
+    "model": "Expedition MAX",
+    "registrations": 28236
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "S-Class",
+    "registrations": 28112
+  },
+  {
+    "make": "PONTIAC",
+    "model": "Grand Prix",
+    "registrations": 28046
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Jetta SportWagen",
+    "registrations": 27531
+  },
+  {
+    "make": "INFINITI",
+    "model": "QX60",
+    "registrations": 27416
+  },
+  {
+    "make": "LAND ROVER",
+    "model": "Range Rover",
+    "registrations": 27088
+  },
+  {
+    "make": "NISSAN",
+    "model": "Versa Note",
+    "registrations": 26967
+  },
+  {
+    "make": "MERCEDES-BENZ",
+    "model": "GLA-Class",
+    "registrations": 26814
+  },
+  {
+    "make": "FORD",
+    "model": "Crown Victoria",
+    "registrations": 26688
+  },
+  {
+    "make": "FORD",
+    "model": "Transit Connect",
+    "registrations": 26655
+  },
+  {
+    "make": "ACURA",
+    "model": "Integra",
+    "registrations": 25776
+  },
+  {
+    "make": "NISSAN",
+    "model": "350Z",
+    "registrations": 19952
+  },
+  {
+    "make": "BMW",
+    "model": "M3",
+    "registrations": 19247
+  },
+  {
+    "make": "SUBARU",
+    "model": "BRZ",
+    "registrations": 14442
+  },
+  {
+    "make": "TOYOTA",
+    "model": "FR-S",
+    "registrations": 12855
+  },
+  {
+    "make": "HONDA",
+    "model": "S2000",
+    "registrations": 11795
+  },
+  {
+    "make": "NISSAN",
+    "model": "370Z",
+    "registrations": 10403
+  },
+  {
+    "make": "MITSUBISHI",
+    "model": "Lancer Evolution",
+    "registrations": 9072
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "Golf R",
+    "registrations": 9059
+  },
+  {
+    "make": "TOYOTA",
+    "model": "Supra",
+    "registrations": 6451
+  },
+  {
+    "make": "BMW",
+    "model": "M4",
+    "registrations": 6340
+  },
+  {
+    "make": "TOYOTA",
+    "model": "GR86",
+    "registrations": 5286
+  },
+  {
+    "make": "MAZDA",
+    "model": "RX-8",
+    "registrations": 5267
+  },
+  {
+    "make": "TOYOTA",
+    "model": "86",
+    "registrations": 4093
+  },
+  {
+    "make": "BMW",
+    "model": "M2",
+    "registrations": 3476
+  },
+  {
+    "make": "MAZDA",
+    "model": "RX-7",
+    "registrations": 3326
+  },
+  {
+    "make": "NISSAN",
+    "model": "GT-R",
+    "registrations": 2099
+  },
+  {
+    "make": "DODGE",
+    "model": "Viper",
+    "registrations": 1975
+  },
+  {
+    "make": "TOYOTA",
+    "model": "GR Corolla",
+    "registrations": 1928
+  },
+  {
+    "make": "CHEVROLET",
+    "model": "SS",
+    "registrations": 1590
+  },
+  {
+    "make": "ACURA",
+    "model": "NSX",
+    "registrations": 1362
+  },
+  {
+    "make": "NISSAN",
+    "model": "Z",
+    "registrations": 552
+  },
+  {
+    "make": "FORD",
+    "model": "GT",
+    "registrations": 339
+  },
+  {
+    "make": "DODGE",
+    "model": "Ram 2500",
+    "registrations": 86
+  },
+  {
+    "make": "DODGE",
+    "model": "Ram 3500",
+    "registrations": 31
+  },
+  {
+    "make": "VOLKSWAGEN",
+    "model": "New Beetle",
+    "registrations": 0
+  }
+]
