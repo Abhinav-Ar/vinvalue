@@ -6,7 +6,7 @@ import { prepareMarketObservation,cachedMarketValue, type DealerSample } from '@
 import { fitBiasCorrections,estimateDealerFactor } from '@/models/valuation/biasCalibration';
 import { correctionSchema, type Corrections } from '@/models/valuation/biasCorrections';
 const data=loadReferences();
-const empty:Corrections={version:1,fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[]};
+const empty:Corrections={version:2,methodVersion:'2.3.0',families:[],fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[]};
 const now=new Date('2026-11-23');
 
 describe('cached production surface',()=>{
@@ -42,33 +42,35 @@ function synthetic(ratio=1.2) {
   }
   return samples;
 }
-it('shrinks, caps and accepts only non-worsening family holdout corrections',()=>{
+it('fits families, enforces sparse caps and evaluates balanced listing folds',()=>{
  const result=fitBiasCorrections(synthetic(2),[],data,empty,now);
  expect(result.report.accepted).toBe(true);
- const c=result.corrections.cells.find(c=>c.segment==='truck')!;
- expect(c.n).toBeGreaterThanOrEqual(30);expect(c.factor).toBe(1.25);
- expect(c.shrinkage).toBeLessThan(1);
- expect(c.holdout.after).toBeLessThan(c.holdout.before);
- expect(result.report.counts.trainFamilies).toBeGreaterThan(1);
+ expect(result.corrections.families.length).toBeGreaterThan(1);
+ expect(result.corrections.families.every(c=>c.factor===1.25&&!c.wideCap)).toBe(true);
+ expect(result.report.cv.seen.after.median!).toBeLessThan(result.report.cv.seen.before.median!);
+ expect(new Set(result.report.cv.seen.folds.map(f=>f.test)).size).toBe(1);
  expect(correctionSchema.safeParse(result.corrections).success).toBe(true);
 });
-it('preserves previous corrections for sparse and empty months',()=>{
+it('preserves previous corrections for empty months',()=>{
  const previous=fitBiasCorrections(synthetic(),[],data,empty,now).corrections;
  expect(fitBiasCorrections([],[],data,previous,now).corrections).toEqual(previous);
- const oneFamily=synthetic().filter(r=>r.make==='Ford').slice(0,40);
- expect(fitBiasCorrections(oneFamily,[],data,empty,now).corrections.cells).toEqual([]);
 });
 it('keeps .90 without supported contemporaneous WA overlap',()=>{
  const e=estimateDealerFactor(synthetic(),[],data);expect(e.supported).toBe(false);expect(e.factor).toBe(.9);expect(e.estimate).toBeNull();
 });
-it('rejects a correction when held-out families disagree with training',()=>{
- const samples=synthetic(2);
- const first=fitBiasCorrections(samples,[],data,empty,now);
- const shifted=samples.map(s=>first.report.split[(s.make+'/'+s.model).toLowerCase()]==='holdout'?{...s,price:s.price/2}:s);
- const result=fitBiasCorrections(shifted,[],data,empty,now);
- expect(result.corrections.cells).toEqual([]);
- expect(result.report.decisions.some(d=>d.reason.includes('worsened'))).toBe(true);
+it('rejects unsupported wide caps',()=>{
+ const c={segment:'truck',n:40,factor:1.8,shrinkage:.8,ci:[1.7,1.9],wideCap:false};
+ expect(correctionSchema.safeParse({...empty,cells:[c]}).success).toBe(false);
+ expect(correctionSchema.safeParse({...empty,cells:[{...c,wideCap:true}]}).success).toBe(false);
+ expect(correctionSchema.safeParse({...empty,cells:[{...c,n:100,wideCap:true}]}).success).toBe(true);
 });
-it('does not allow invalid correction factors',()=>{
- expect(correctionSchema.safeParse({...empty,cells:[{segment:'truck',n:500,families:5,factor:1.3,shrinkage:.8,holdout:{n:50,families:2,before:20,after:10,p80Before:25,p80After:15}}]}).success).toBe(false);
+it('recovers opposing family biases within a segment and allows precise large-family caps',()=>{
+ const samples=synthetic();const keys=[...new Set(samples.map(s=>s.make+'/'+s.model))];
+ const expanded=samples.flatMap(s=>Array.from({length:3},(_,i)=>({...s,listingHash:s.listingHash+'-'+i,price:s.price/1.2*(keys.indexOf(s.make+'/'+s.model)%2?1.8:.6)})));
+ const result=fitBiasCorrections(expanded,[],data,empty,now);
+ expect(result.corrections.families.some(c=>c.factor>1.25&&c.wideCap)).toBe(true);
+ expect(result.corrections.families.some(c=>c.factor<.75&&c.wideCap)).toBe(true);
+ expect(result.report.cv.seen.after.median!).toBeLessThan(result.report.cv.seen.before.median!);
+ const duplicate=fitBiasCorrections([...expanded,...expanded],[],data,empty,now);
+ expect(duplicate.report.counts).toEqual(result.report.counts);
 });

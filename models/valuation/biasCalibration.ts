@@ -3,14 +3,14 @@ import { median, quantile } from '@/models/stats';
 import { evaluateSurface, NotEnoughDataError } from './surface';
 import type { LabeledSale } from './calibration';
 import { joinMarketSamples, type DealerSample } from './marketCalibration';
-import { correctionFactor, type Corrections } from './biasCorrections';
+import { correctionFamily, correctionFactor, type Corrections } from './biasCorrections';
 
 export const ageBucket=(age:number)=>age<=5?'0-5':age<=10?'6-10':age<=20?'11-20':'21+';
 const hash=(s:string)=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
-type Observation={family:string;segment:string;age:string;predicted:number;observed:number};
+type Observation={id:string;family:string;segment:string;age:string;miles:number;predicted:number;observed:number};
 const families=(rs:Observation[])=>new Set(rs.map(r=>r.family)).size;
 function errors(rs:Observation[],c:Corrections) {
-  const es=rs.map(r=>100*Math.abs(r.predicted*correctionFactor(c,r.segment)/r.observed-1));
+  const es=rs.map(r=>100*Math.abs(r.predicted*correctionFactor(c,r.segment,r.family)/r.observed-1));
   return {n:es.length,families:families(rs),median:es.length?median(es):null,p80:es.length?quantile(es,.8):null};
 }
 
@@ -44,49 +44,119 @@ export function estimateDealerFactor(samples:DealerSample[],sales:LabeledSale[],
   return {factor:supported?estimate!:.9,estimate,interval,intervalBasis:'Conservative range of family-level median ratios; not a causal ask-to-sale estimate.',supported,waCells:wa.size,overlap,note:supported?'Supported contemporaneous EV overlap.':'Retain configured 0.90: insufficient contemporaneous EV families/cells or excessive uncertainty. WA has unknown trim and covers one state.'};
 }
 
-export function fitBiasCorrections(samples:DealerSample[],sales:LabeledSale[],data:ReferenceData,previous:Corrections,now=new Date()) {
-  // Monthly data window: do not silently mix old asks with the current market.
-  const to=now.toISOString().slice(0,10), from=to.slice(0,7)+'-01';
-  const current=samples.filter(s=>{const d=new Date(s.fetchedAt).toISOString().slice(0,10);return d>=from&&d<=to;});
-  const dealerFactor=estimateDealerFactor(current,sales,data);
-  const joined=joinMarketSamples(current,data,dealerFactor.factor);
-  const skipped:Array<{id:string;reason:string}>=[];
-  const obs:Observation[]=joined.rows.flatMap(r=>{
-    try {
-    const s=evaluateSurface(r,r.trim,r.miles,new Date(r.soldOn),data);
-    return [{family:exactName(s.msrpRow!.make)+'/'+exactName(s.msrpRow!.model),segment:s.segment,age:ageBucket(s.age),predicted:s.H,observed:r.soldPrice}];
-    }catch(e){if(!(e instanceof NotEnoughDataError))throw e;skipped.push({id:r.id,reason:e.message});return [];}
-  });
-  const fs=[...new Set(obs.map(r=>r.family))].sort((a,b)=>hash(a)-hash(b)||a.localeCompare(b));
-  const training=new Set(fs.filter((_,i)=>i%2===0));
-  const train=obs.filter(r=>training.has(r.family)), holdout=obs.filter(r=>!training.has(r.family));
-  const proposed:Corrections={version:1,fittedAt:now.toISOString(),dataWindow:{from,to},cells:[]};
-  const decisions:Array<{segment:string;reason:string;n:number;holdoutN:number;proposedFactor?:number;shrinkage?:number;before?:ReturnType<typeof errors>;after?:ReturnType<typeof errors>}>=[];
-  for(const segment of [...new Set(obs.map(r=>r.segment))].sort()) {
-    const tr=train.filter(r=>r.segment===segment),ho=holdout.filter(r=>r.segment===segment);
-    const n=tr.length, shrinkage=n/(n+60);
-    if(n<30||ho.length<30||families(tr)<2||families(ho)<2) {decisions.push({segment,n,holdoutN:ho.length,reason:'Retain previous: need >=30 observations and >=2 families in EACH partition.'});continue;}
-    const factor=Math.max(.75,Math.min(1.25,Math.exp(median(tr.map(r=>Math.log(r.observed/r.predicted)))*shrinkage)));
-    const before=errors(ho,previous);
-    const candidate:Corrections={...proposed,cells:[{segment,n,families:families(tr),factor,shrinkage,holdout:{n:ho.length,families:families(ho),before:before.median!,after:0,p80Before:before.p80!,p80After:0}}]};
-    const after=errors(ho,candidate);
-    if(after.median!>before.median!||after.p80!>before.p80!) {decisions.push({segment,n,holdoutN:ho.length,proposedFactor:factor,shrinkage,before,after,reason:'Retain previous: holdout median or p80 worsened.'});continue;}
-    candidate.cells[0]!.holdout.after=after.median!;candidate.cells[0]!.holdout.p80After=after.p80!;
-    proposed.cells.push(candidate.cells[0]!);decisions.push({segment,n,holdoutN:ho.length,proposedFactor:factor,shrinkage,before,after,reason:'Accepted: sample, family, cap and holdout guards pass.'});
+const residual=(r:Observation)=>Math.log(r.observed/r.predicted);
+const group=(rs:Observation[],key:(r:Observation)=>string)=>{
+  const out=new Map<string,Observation[]>();for(const r of rs){const k=key(r);const a=out.get(k)??[];a.push(r);out.set(k,a);}return out;
+};
+function bootstrap(values:number[],seed:number) {
+  let state=seed||1;const random=()=>{state^=state<<13;state^=state>>>17;state^=state<<5;return (state>>>0)/4294967296;};
+  const medians=Array.from({length:300},()=>median(values.map(()=>values[Math.floor(random()*values.length)]!)));
+  return [Math.exp(quantile(medians,.1)),Math.exp(quantile(medians,.9))] as [number,number];
+}
+function summary(rs:Observation[]) {
+  const values=rs.map(residual),center=median(values),spread=Math.max(.03,1.4826*median(values.map(x=>Math.abs(x-center))));
+  const ci=bootstrap(values,hash(rs[0]!.family));
+  return {center,spread,variance:Math.PI/2*spread**2/rs.length,ci};
+}
+const clamp=(v:number,low:number,high:number)=>Math.max(low,Math.min(high,v));
+const blank=(now:Date):Corrections=>({version:2,methodVersion:'2.3.0',fittedAt:now.toISOString(),dataWindow:{from:now.toISOString().slice(0,7)+'-01',to:now.toISOString().slice(0,10)},cells:[],families:[]});
+/** Empirical Bayes on robust log residuals. Pooled estimates weight independent
+ * family medians by capped precision; huge listing families cannot dominate. */
+function fit(rs:Observation[],now:Date) {
+  const out=blank(now);
+  for(const [segment,rows] of group(rs,r=>r.segment)) {
+    const gs=[...group(rows,r=>r.family)].map(([family,rs])=>({family,rs,...summary(rs)}));
+    const weights=gs.map(g=>1/(g.variance+.01));const total=weights.reduce((a,b)=>a+b,0);
+    const pooled=gs.reduce((a,g,i)=>a+g.center*weights[i]!,0)/total;
+    const between=Math.max(.0025,gs.reduce((a,g,i)=>a+weights[i]!*((g.center-pooled)**2-g.variance),0)/total);
+    const poolingVariance=1/total;
+    const segmentShrink=.15**2/(.15**2+poolingVariance+between/gs.length);
+    const target=pooled*segmentShrink;
+    // Family-level uncertainty, conservative for small numbers of families.
+    const se=Math.sqrt(poolingVariance+between/gs.length);
+    const ci:[number,number]=[Math.exp(pooled-1.282*se),Math.exp(pooled+1.282*se)];
+    out.cells.push({segment,n:rows.length,factor:clamp(Math.exp(target),.75,1.25),shrinkage:segmentShrink,ci,wideCap:false});
+    for(const g of gs) {
+      const shrinkage=between/(between+g.variance);
+      const wideCap=g.rs.length>=100&&g.ci[0]>=Math.exp(g.center)*.9&&g.ci[1]<=Math.exp(g.center)*1.1;
+      const factor=clamp(Math.exp(target+shrinkage*(g.center-target)),wideCap?.5:.75,wideCap?2:1.25);
+      out.families.push({family:g.family,segment,n:g.rs.length,factor,shrinkage,ci:g.ci,wideCap});
+    }
   }
-  const next:Corrections={...proposed,cells:[...previous.cells.filter(c=>!proposed.cells.some(x=>x.segment===c.segment)),...proposed.cells]};
-  const overallBefore=errors(holdout,previous),overallAfter=errors(holdout,next);
-  const accepted=holdout.length>=30&&overallAfter.median!<=overallBefore.median!&&overallAfter.p80!<=overallBefore.p80!;
-  const corrections=accepted?next:previous;
-  const empty:Corrections={...proposed,cells:[]};
-  const buckets=[...new Set(obs.flatMap(r=>['segment:'+r.segment,'age:'+r.age,'segment-age:'+r.segment+'/'+r.age]))].sort();
-  const metrics=buckets.map(bucket=>{
-    const rs=holdout.filter(r=>bucket==='segment:'+r.segment||bucket==='age:'+r.age||bucket==='segment-age:'+r.segment+'/'+r.age);
-    return {bucket,before:errors(rs,empty),after:errors(rs,corrections)};
+  return out;
+}
+function metric(es:number[]) {return {n:es.length,median:es.length?median(es):null,p80:es.length?quantile(es,.8):null};}
+const improved=(a:ReturnType<typeof metric>,b:ReturnType<typeof metric>)=>a.n>=5&&b.median!<a.median!&&b.p80!<=a.p80!;
+export function fitBiasCorrections(samples:DealerSample[],sales:LabeledSale[],data:ReferenceData,previous:Corrections,now=new Date()) {
+  const empty=blank(now),{from,to}=empty.dataWindow;
+  const current=samples.filter(s=>{const d=new Date(s.fetchedAt).toISOString().slice(0,10);return d>=from&&d<=to;});
+  const dealerFactor=estimateDealerFactor(current,sales,data),joined=joinMarketSamples(current,data,dealerFactor.factor);
+  const skipped:Array<{id:string;reason:string}>=[],ids=new Set<string>();
+  const obs:Observation[]=joined.rows.flatMap(r=>{
+    if(ids.has(r.groupId))return [];ids.add(r.groupId);
+    try{const s=evaluateSurface(r,r.trim,r.miles,new Date(r.soldOn),data);return [{id:r.groupId,family:correctionFamily(s.msrpRow!),segment:s.segment,age:ageBucket(s.age),miles:r.miles,predicted:s.H,observed:r.soldPrice}];}
+    catch(e){if(!(e instanceof NotEnoughDataError))throw e;skipped.push({id:r.id,reason:e.message});return [];}
   });
-  return {corrections,report:{fittedAt:now.toISOString(),dataWindow:{from,to},accepted,reason:accepted?'Non-worsening overall holdout median and p80.':'Previous snapshot retained: insufficient holdout or overall error worsened.',matching:{received:current.length,totalStored:samples.length,matched:joined.matched,modeled:obs.length,skipped,rate:current.length?joined.matched/current.length:null},dealerFactor,split:Object.fromEntries(fs.map(f=>[f,training.has(f)?'train':'holdout'])),counts:{train:train.length,holdout:holdout.length,trainFamilies:training.size,holdoutFamilies:fs.length-training.size},decisions,proposedCells:proposed.cells,baseline:errors(holdout,empty),before:overallBefore,after:errors(holdout,corrections),metrics,flaggedSegments:metrics.filter(m=>m.bucket.startsWith('segment:')&&(m.after.median??0)>15).map(m=>m.bucket)}};
+  const fs=group(obs,r=>r.family),seenFold=new Map<string,number>(),unseenFold=new Map<string,number>();
+  for(const rows of fs.values()) [...rows].sort((a,b)=>hash(a.id)-hash(b.id)||a.id.localeCompare(b.id)).forEach((r,i)=>seenFold.set(r.id,i%5));
+  // Greedy segment-stratified family folds, balancing listing counts within each segment.
+  for(const rows of group(obs,r=>r.segment).values()) {
+    const loads=[0,0,0,0,0];
+    for(const [f,rs] of [...group(rows,r=>r.family)].sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0]))) {const fold=loads.indexOf(Math.min(...loads));unseenFold.set(f,fold);loads[fold]!+=rs.length;}
+  }
+  type Prediction={r:Observation;before:number;after:number};
+  function crossValidate(unseen:boolean) {
+    const predictions:Prediction[]=[];
+    const foldOf=(r:Observation)=>unseen?unseenFold.get(r.family)!:seenFold.get(r.id)!;
+    const folds=[];
+    for(let fold=0;fold<5;fold++) {
+      const train=obs.filter(r=>foldOf(r)!==fold),test=obs.filter(r=>foldOf(r)===fold),c=fit(train,now);
+      folds.push({fold,train:train.length,test:test.length,trainFamilies:families(train),testFamilies:families(test)});
+      for(const r of test.filter(r=>unseen||fs.get(r.family)!.length>=5))predictions.push({r,before:100*Math.abs(r.predicted/r.observed-1),after:100*Math.abs(r.predicted*correctionFactor(c,r.segment,r.family)/r.observed-1)});
+    }
+    return {predictions,folds};
+  }
+  const seen=crossValidate(false),unseen=crossValidate(true),candidate=fit(obs,now);
+  const proposedFamilies=[...candidate.families];
+  const metricsFor=(ps:Prediction[])=>({before:metric(ps.map(p=>p.before)),after:metric(ps.map(p=>p.after))});
+  const decisions=candidate.families.map(c=>{
+    const ps=seen.predictions.filter(p=>p.r.family===c.family),m=metricsFor(ps);
+    return {family:c.family,segment:c.segment,n:c.n,accepted:improved(m.before,m.after),...m};
+  });
+  const segmentDecisions=candidate.cells.map(c=>{const m=metricsFor(unseen.predictions.filter(p=>p.r.segment===c.segment));return {segment:c.segment,accepted:new Set(obs.filter(r=>r.segment===c.segment).map(r=>r.family)).size>=3&&improved(m.before,m.after),...m};});
+  candidate.families=candidate.families.filter(c=>decisions.find(d=>d.family===c.family)!.accepted);
+  candidate.cells=candidate.cells.filter(c=>segmentDecisions.find(d=>d.segment===c.segment)!.accepted);
+  // CV guard choices reuse these folds: evaluation is out-of-fit, not an independent final test.
+  const rawCV={seen:metricsFor(seen.predictions),unseen:metricsFor(unseen.predictions)};
+  // Re-evaluate guarded fold candidates, including fallback for rejected family cells.
+  function guarded(unseenMode:boolean, predictions:Prediction[]) {
+    const guardedPredictions:Prediction[]=[];
+    for(let fold=0;fold<5;fold++) {
+      const foldOf=(r:Observation)=>unseenMode?unseenFold.get(r.family)!:seenFold.get(r.id)!;
+      const c=fit(obs.filter(r=>foldOf(r)!==fold),now);
+      c.families=c.families.filter(c=>candidate.families.some(x=>x.family===c.family));
+      c.cells=c.cells.filter(c=>candidate.cells.some(x=>x.segment===c.segment));
+      for(const p of predictions.filter(p=>foldOf(p.r)===fold))guardedPredictions.push({...p,after:100*Math.abs(p.r.predicted*correctionFactor(c,p.r.segment,p.r.family)/p.r.observed-1)});
+    }
+    return guardedPredictions;
+  }
+  const guardedSeen=guarded(false,seen.predictions),guardedUnseen=guarded(true,unseen.predictions);
+  const overall=metricsFor(guardedSeen);
+  const previousSeen=errors(guardedSeen.map(p=>p.r),previous);
+  const accepted=improved(overall.before,overall.after)&&improved(previousSeen,overall.after)&&candidate.families.length>0;
+  const corrections=accepted?candidate:previous;
+  const buckets=[...new Set(obs.flatMap(r=>['segment:'+r.segment,'age:'+r.age,'segment-age:'+r.segment+'/'+r.age]))].sort();
+  const metrics=buckets.map(bucket=>{const ps=seen.predictions.filter(p=>bucket==='segment:'+p.r.segment||bucket==='age:'+p.r.age||bucket==='segment-age:'+p.r.segment+'/'+p.r.age);return {bucket,...metricsFor(ps)};});
+  const mileage= [...fs].filter(([,rs])=>rs.length>=30).map(([family,rs])=>{
+    const ordered=[...rs].sort((a,b)=>a.miles-b.miles),lo=ordered.slice(0,Math.floor(rs.length/3)),hi=ordered.slice(-Math.floor(rs.length/3));
+    const deltaMiles=median(hi.map(r=>r.miles))-median(lo.map(r=>r.miles));
+    const deltaLog=median(hi.map(residual))-median(lo.map(residual));
+    const lowCI=bootstrap(lo.map(residual),hash(family)),highCI=bootstrap(hi.map(residual),hash(family)+1);
+    return {family,n:rs.length,deltaMiles,logResidualPer10k:deltaMiles?deltaLog/deltaMiles*10000:0,clearSlope:deltaMiles>=20000&&Math.abs(deltaLog)>.1&&(highCI[0]>lowCI[1]||highCI[1]<lowCI[0]),note:'Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted.'};
+  });
+  return {corrections,report:{fittedAt:now.toISOString(),dataWindow:{from,to},accepted,reason:accepted?'Published CV-improving family corrections; segment fallbacks separately guarded by family-holdout CV.':'Previous snapshot retained: CV median/p80 guard failed or insufficient evidence.',matching:{received:current.length,totalStored:samples.length,matched:joined.matched,modeled:obs.length,skipped,rate:current.length?joined.matched/current.length:null},dealerFactor,counts:{observations:obs.length,families:fs.size},decisions,segmentDecisions,proposedFamilies,proposedCells:candidate.cells,rawCV,cv:{seen:{...metricsFor(guardedSeen),folds:seen.folds},unseen:{...metricsFor(guardedUnseen),folds:unseen.folds}},mileage,baseline:overall.before,before:overall.before,after:overall.after,metrics,flaggedSegments:metrics.filter(m=>m.bucket.startsWith('segment:')&&(m.after.median??0)>15).map(m=>m.bucket),limitations:['One month: no temporal validation.','Five folds balanced within canonical make/model/generation, deduplicated by listing hash.','Family holdout is stratified by segment and greedily balanced by sample count; indivisible large families cause imbalance.','CV also selects publication guards; no independent final test. Metrics describe guarded out-of-fit candidates; publication guards reuse CV. Families with fewer than five listings are excluded from seen metrics.','Dealer asks × configured private-equivalent factor are proxies, not transaction truth.']}};
 }
 export type AccuracyReport=ReturnType<typeof fitBiasCorrections>['report'];
 export function accuracyMarkdown(report:AccuracyReport) {
-  return '# Monthly model accuracy\n\n'+report.reason+'\n\nErrors are percentages against dealer asks converted to private equivalents; family-separated holdout. WA records only inform aggregated EV overlap.\n\n| Bucket | n | Median before | Median after | p80 after |\n|---|---:|---:|---:|---:|\n'+report.metrics.map(m=>'| '+[m.bucket,m.after.n,m.before.median?.toFixed(2),m.after.median?.toFixed(2),m.after.p80?.toFixed(2)].join(' | ')+' |').join('\n')+'\n\nFlagged (>15% median): '+report.flaggedSegments.join(', ')+'\n';
+  return '# Monthly model accuracy — method 2.3.0\n\n'+report.reason+'\n\n| Evaluation | n | Median before | Median after | p80 before | p80 after |\n|---|---:|---:|---:|---:|---:|\n'+Object.entries(report.cv).map(([name,m])=>`| ${name} | ${m.before.n} | ${m.before.median?.toFixed(2)} | ${m.after.median?.toFixed(2)} | ${m.before.p80?.toFixed(2)} | ${m.after.p80?.toFixed(2)} |`).join('\n')+'\n\n'+report.limitations.map(s=>'- '+s).join('\n')+'\n';
 }

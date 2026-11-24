@@ -28,7 +28,8 @@ export async function runValuationCalibration(db:Db,now=new Date(),force=false) 
     const [done]=await tx.select().from(valuationAccuracyReports).where(eq(valuationAccuracyReports.month,month));
     if(done&&!force)return {corrections:active!.snapshot,report:done.report,markdown:done.markdown,drift:done.drift};
     const [samples,sales]=await Promise.all([tx.select().from(marketSamples),readCalibrationSales(tx)]);
-    const previous=correctionSchema.parse(active!.snapshot);
+    const parsed=correctionSchema.safeParse(active!.snapshot);
+    const previous=parsed.success?parsed.data:committedCorrections;
     const result=fitBiasCorrections(samples,sales,loadReferences(),previous,now);
     const [last]=await tx.select().from(valuationAccuracyReports).where(lt(valuationAccuracyReports.month,month)).orderBy(desc(valuationAccuracyReports.month)).limit(1);
     const drift=result.report.metrics.map(m=>{

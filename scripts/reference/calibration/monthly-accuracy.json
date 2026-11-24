@@ -1,16 +1,16 @@
 {
-  "fittedAt": "2026-11-24T03:01:59.989Z",
+  "fittedAt": "2026-11-24T03:10:59.632Z",
   "dataWindow": {
     "from": "2026-11-01",
     "to": "2026-11-24"
   },
   "accepted": true,
-  "reason": "Non-worsening overall holdout median and p80.",
+  "reason": "Published CV-improving family corrections; segment fallbacks separately guarded by family-holdout CV.",
   "matching": {
     "received": 4714,
     "totalStored": 4714,
-    "matched": 3640,
-    "modeled": 3622,
+    "matched": 4338,
+    "modeled": 4320,
     "skipped": [
       {
         "id": "market:2c0979878b602172196b647e7db973be4f991fe703dabe428046f4918ffe1fc4",
@@ -85,7 +85,7 @@
         "reason": "Not enough data to estimate this vehicle: the anchor year has no CPI observation."
       }
     ],
-    "rate": 0.7721680101824353
+    "rate": 0.9202375901569793
   },
   "dealerFactor": {
     "factor": 0.9,
@@ -97,760 +97,2966 @@
     "overlap": [],
     "note": "Retain configured 0.90: insufficient contemporaneous EV families/cells or excessive uncertainty. WA has unknown trim and covers one state."
   },
-  "split": {
-    "chevrolet/ss": "train",
-    "nissan/frontier": "holdout",
-    "chevrolet/cobalt": "train",
-    "chevrolet/astro": "holdout",
-    "nissan/titan": "train",
-    "dodge/charger": "holdout",
-    "buick/lesabre": "train",
-    "toyota/tacoma": "holdout",
-    "chevrolet/aveo": "train",
-    "gmc/terrain": "holdout",
-    "gmc/yukon": "train",
-    "chevrolet/camaro": "holdout",
-    "honda/ridgeline": "train",
-    "chevrolet/cruze": "holdout",
-    "ford/flex": "train",
-    "gmc/sierra 1500": "holdout",
-    "gmc/yukon xl": "train",
-    "jeep/gladiator": "holdout",
-    "lexus/rx": "train",
-    "lexus/nx": "holdout",
-    "lexus/ls": "train",
-    "dodge/challenger": "holdout",
-    "buick/lacrosse": "train",
-    "chevrolet/bolt ev": "holdout",
-    "chevrolet/cavalier": "train",
-    "honda/cr-v": "holdout",
-    "buick/century": "train",
-    "chevrolet/corvette": "holdout",
-    "gmc/acadia": "train",
-    "gmc/envoy": "holdout",
-    "dodge/viper": "train",
-    "volkswagen/passat": "holdout"
-  },
   "counts": {
-    "train": 1252,
-    "holdout": 2370,
-    "trainFamilies": 16,
-    "holdoutFamilies": 16
+    "observations": 4320,
+    "families": 66
   },
   "decisions": [
     {
-      "segment": "economy",
-      "n": 13,
-      "holdoutN": 74,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "family": "gmc/sierra 1500/gmt900",
+      "segment": "truck",
+      "n": 1,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
     },
     {
-      "segment": "ev",
-      "n": 0,
-      "holdoutN": 22,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "family": "honda/ridgeline/yk2",
+      "segment": "truck",
+      "n": 124,
+      "accepted": true,
+      "before": {
+        "n": 124,
+        "median": 31.875993059948136,
+        "p80": 46.415704710743135
+      },
+      "after": {
+        "n": 124,
+        "median": 7.192217874197265,
+        "p80": 12.244848020268178
+      }
     },
     {
-      "segment": "fullsize",
-      "n": 27,
-      "holdoutN": 231,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "family": "honda/ridgeline/yk1",
+      "segment": "truck",
+      "n": 17,
+      "accepted": true,
+      "before": {
+        "n": 17,
+        "median": 49.954290243247755,
+        "p80": 70.68880985408683
+      },
+      "after": {
+        "n": 17,
+        "median": 16.770672954861066,
+        "p80": 28.016607390565117
+      }
     },
     {
+      "family": "jeep/gladiator/jt",
+      "segment": "truck",
+      "n": 178,
+      "accepted": true,
+      "before": {
+        "n": 178,
+        "median": 20.516591807729757,
+        "p80": 28.435224037108057
+      },
+      "after": {
+        "n": 178,
+        "median": 6.94499564017626,
+        "p80": 12.661303137523639
+      }
+    },
+    {
+      "family": "nissan/frontier/d41",
+      "segment": "truck",
+      "n": 162,
+      "accepted": true,
+      "before": {
+        "n": 162,
+        "median": 6.614589615851052,
+        "p80": 14.43538244347847
+      },
+      "after": {
+        "n": 162,
+        "median": 6.283944801874997,
+        "p80": 13.17589598949103
+      }
+    },
+    {
+      "family": "nissan/frontier/d40",
+      "segment": "truck",
+      "n": 118,
+      "accepted": true,
+      "before": {
+        "n": 118,
+        "median": 14.398041092605684,
+        "p80": 31.053184408693358
+      },
+      "after": {
+        "n": 118,
+        "median": 13.971627664999724,
+        "p80": 26.19045384931594
+      }
+    },
+    {
+      "family": "nissan/titan/a61",
+      "segment": "truck",
+      "n": 94,
+      "accepted": true,
+      "before": {
+        "n": 94,
+        "median": 39.15113169029867,
+        "p80": 63.74479199682839
+      },
+      "after": {
+        "n": 94,
+        "median": 10.873351352084914,
+        "p80": 22.808593997621287
+      }
+    },
+    {
+      "family": "nissan/titan/a60",
+      "segment": "truck",
+      "n": 21,
+      "accepted": true,
+      "before": {
+        "n": 21,
+        "median": 27.53650065728519,
+        "p80": 65.39886848668135
+      },
+      "after": {
+        "n": 21,
+        "median": 14.934598472324655,
+        "p80": 41.24795734489777
+      }
+    },
+    {
+      "family": "toyota/tacoma/n300",
+      "segment": "truck",
+      "n": 243,
+      "accepted": true,
+      "before": {
+        "n": 243,
+        "median": 10.5859568842813,
+        "p80": 18.253826155223024
+      },
+      "after": {
+        "n": 243,
+        "median": 7.664805534933228,
+        "p80": 15.763884662504134
+      }
+    },
+    {
+      "family": "toyota/tacoma/n400",
+      "segment": "truck",
+      "n": 66,
+      "accepted": false,
+      "before": {
+        "n": 66,
+        "median": 8.208004220218845,
+        "p80": 15.984083894902934
+      },
+      "after": {
+        "n": 66,
+        "median": 8.545342348854884,
+        "p80": 16.04727334071061
+      }
+    },
+    {
+      "family": "toyota/tacoma/n220",
+      "segment": "truck",
+      "n": 88,
+      "accepted": true,
+      "before": {
+        "n": 88,
+        "median": 38.053205367366935,
+        "p80": 48.85326197548856
+      },
+      "after": {
+        "n": 88,
+        "median": 23.267738315278457,
+        "p80": 36.066577469360695
+      }
+    },
+    {
+      "family": "toyota/tacoma/n140",
+      "segment": "truck",
+      "n": 19,
+      "accepted": true,
+      "before": {
+        "n": 19,
+        "median": 32.155508510125806,
+        "p80": 54.36719576487016
+      },
+      "after": {
+        "n": 19,
+        "median": 19.234800553090135,
+        "p80": 42.958994706087694
+      }
+    },
+    {
+      "family": "ford/flex/d471",
+      "segment": "suv",
+      "n": 20,
+      "accepted": true,
+      "before": {
+        "n": 20,
+        "median": 81.13218348986499,
+        "p80": 110.08020838317965
+      },
+      "after": {
+        "n": 20,
+        "median": 35.849137617398725,
+        "p80": 57.560156287384736
+      }
+    },
+    {
+      "family": "gmc/acadia/c1xx",
+      "segment": "suv",
+      "n": 162,
+      "accepted": true,
+      "before": {
+        "n": 162,
+        "median": 54.695078354506805,
+        "p80": 82.32592943280265
+      },
+      "after": {
+        "n": 162,
+        "median": 9.96172445126891,
+        "p80": 22.787292839041065
+      }
+    },
+    {
+      "family": "gmc/acadia/gen3",
+      "segment": "suv",
+      "n": 36,
+      "accepted": true,
+      "before": {
+        "n": 36,
+        "median": 20.27726037640125,
+        "p80": 32.60145427533483
+      },
+      "after": {
+        "n": 36,
+        "median": 5.115921857774596,
+        "p80": 10.33962742140362
+      }
+    },
+    {
+      "family": "gmc/acadia/lambda",
+      "segment": "suv",
+      "n": 90,
+      "accepted": true,
+      "before": {
+        "n": 90,
+        "median": 114.79753173869061,
+        "p80": 178.94533583090808
+      },
+      "after": {
+        "n": 90,
+        "median": 61.09814880401794,
+        "p80": 109.20900187318107
+      }
+    },
+    {
+      "family": "gmc/envoy/gmt360",
+      "segment": "suv",
+      "n": 14,
+      "accepted": true,
+      "before": {
+        "n": 14,
+        "median": 102.4147567280489,
+        "p80": 183.07151338517346
+      },
+      "after": {
+        "n": 14,
+        "median": 51.81106754603667,
+        "p80": 112.30363503888009
+      }
+    },
+    {
+      "family": "lexus/nx/az20",
+      "segment": "suv",
+      "n": 47,
+      "accepted": true,
+      "before": {
+        "n": 47,
+        "median": 5.937648988128097,
+        "p80": 13.260151253844345
+      },
+      "after": {
+        "n": 47,
+        "median": 4.4495474416039515,
+        "p80": 8.986444849361451
+      }
+    },
+    {
+      "family": "gmc/terrain/gen2",
+      "segment": "suv",
+      "n": 211,
+      "accepted": true,
+      "before": {
+        "n": 211,
+        "median": 49.74259906630645,
+        "p80": 68.79213887640576
+      },
+      "after": {
+        "n": 211,
+        "median": 9.06250074782613,
+        "p80": 16.66877160851016
+      }
+    },
+    {
+      "family": "gmc/terrain/gen1",
+      "segment": "suv",
+      "n": 75,
+      "accepted": true,
+      "before": {
+        "n": 75,
+        "median": 73.4939710683249,
+        "p80": 114.15227681423748
+      },
+      "after": {
+        "n": 75,
+        "median": 30.820324502008578,
+        "p80": 60.6142076106781
+      }
+    },
+    {
+      "family": "lexus/nx/az10",
+      "segment": "suv",
+      "n": 97,
+      "accepted": true,
+      "before": {
+        "n": 97,
+        "median": 19.364775156871517,
+        "p80": 29.933724995582335
+      },
+      "after": {
+        "n": 97,
+        "median": 8.032377263372204,
+        "p80": 16.42552988520172
+      }
+    },
+    {
+      "family": "gmc/yukon/t1",
+      "segment": "suv",
+      "n": 143,
+      "accepted": true,
+      "before": {
+        "n": 143,
+        "median": 17.443794300066926,
+        "p80": 24.452755664916058
+      },
+      "after": {
+        "n": 143,
+        "median": 6.425891147325591,
+        "p80": 15.101855115368593
+      }
+    },
+    {
+      "family": "gmc/yukon/k2xx",
+      "segment": "suv",
+      "n": 112,
+      "accepted": true,
+      "before": {
+        "n": 112,
+        "median": 58.52228315534764,
+        "p80": 79.45578303107631
+      },
+      "after": {
+        "n": 112,
+        "median": 18.89171236651074,
+        "p80": 34.59183727330721
+      }
+    },
+    {
+      "family": "lexus/rx/al20",
+      "segment": "suv",
+      "n": 116,
+      "accepted": true,
+      "before": {
+        "n": 116,
+        "median": 15.40678489135744,
+        "p80": 20.77541919868311
+      },
+      "after": {
+        "n": 116,
+        "median": 5.422242808678412,
+        "p80": 10.343546822024475
+      }
+    },
+    {
+      "family": "gmc/yukon/gmt900",
+      "segment": "suv",
+      "n": 21,
+      "accepted": true,
+      "before": {
+        "n": 21,
+        "median": 94.26006682818897,
+        "p80": 127.66567247232983
+      },
+      "after": {
+        "n": 21,
+        "median": 45.69505012114172,
+        "p80": 70.74925435424737
+      }
+    },
+    {
+      "family": "lexus/rx/ala10",
+      "segment": "suv",
+      "n": 81,
+      "accepted": true,
+      "before": {
+        "n": 81,
+        "median": 7.178502617292493,
+        "p80": 12.151272456340534
+      },
+      "after": {
+        "n": 81,
+        "median": 6.8651920276715295,
+        "p80": 11.897050705098177
+      }
+    },
+    {
+      "family": "gmc/yukon/gmt800",
+      "segment": "suv",
+      "n": 6,
+      "accepted": false,
+      "before": {
+        "n": 6,
+        "median": 56.62130275281191,
+        "p80": 59.54945096597677
+      },
+      "after": {
+        "n": 6,
+        "median": 17.54881191207268,
+        "p80": 63.67824611797799
+      }
+    },
+    {
+      "family": "gmc/yukon xl/t1",
+      "segment": "suv",
+      "n": 113,
+      "accepted": true,
+      "before": {
+        "n": 113,
+        "median": 22.414769635218423,
+        "p80": 29.880311664661644
+      },
+      "after": {
+        "n": 113,
+        "median": 5.20918507270236,
+        "p80": 12.612249023925886
+      }
+    },
+    {
+      "family": "gmc/yukon xl/k2xx",
+      "segment": "suv",
+      "n": 80,
+      "accepted": true,
+      "before": {
+        "n": 80,
+        "median": 80.7406529132993,
+        "p80": 103.87016449238902
+      },
+      "after": {
+        "n": 80,
+        "median": 35.555489684974475,
+        "p80": 52.902623369291774
+      }
+    },
+    {
+      "family": "lexus/rx/al10",
+      "segment": "suv",
+      "n": 86,
+      "accepted": true,
+      "before": {
+        "n": 86,
+        "median": 25.886371157920728,
+        "p80": 48.72833133992034
+      },
+      "after": {
+        "n": 86,
+        "median": 10.749103408208743,
+        "p80": 21.329192042872826
+      }
+    },
+    {
+      "family": "gmc/yukon xl/gmt900",
+      "segment": "suv",
+      "n": 17,
+      "accepted": true,
+      "before": {
+        "n": 17,
+        "median": 126.63626244516482,
+        "p80": 148.0692597812818
+      },
+      "after": {
+        "n": 17,
+        "median": 69.97719683387362,
+        "p80": 86.05194483596135
+      }
+    },
+    {
+      "family": "gmc/yukon xl/gmt800",
+      "segment": "suv",
+      "n": 3,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "lexus/rx/xu10",
+      "segment": "suv",
+      "n": 2,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "honda/cr-v/rw",
+      "segment": "suv",
+      "n": 264,
+      "accepted": true,
+      "before": {
+        "n": 264,
+        "median": 12.13252234895521,
+        "p80": 21.863165001180032
+      },
+      "after": {
+        "n": 264,
+        "median": 6.94666951470121,
+        "p80": 12.207570768993326
+      }
+    },
+    {
+      "family": "honda/cr-v/rs",
+      "segment": "suv",
+      "n": 142,
+      "accepted": true,
+      "before": {
+        "n": 142,
+        "median": 9.260196466709703,
+        "p80": 18.281405699917123
+      },
+      "after": {
+        "n": 142,
+        "median": 5.70855192598127,
+        "p80": 9.68148223246216
+      }
+    },
+    {
+      "family": "lexus/rx/xu30",
+      "segment": "suv",
+      "n": 44,
+      "accepted": true,
+      "before": {
+        "n": 44,
+        "median": 52.68256907875001,
+        "p80": 143.94967565055302
+      },
+      "after": {
+        "n": 44,
+        "median": 23.411808492143912,
+        "p80": 82.96225673791479
+      }
+    },
+    {
+      "family": "honda/cr-v/re",
+      "segment": "suv",
+      "n": 22,
+      "accepted": true,
+      "before": {
+        "n": 22,
+        "median": 23.988488623346715,
+        "p80": 41.04440901672066
+      },
+      "after": {
+        "n": 22,
+        "median": 17.980299103332207,
+        "p80": 27.44487670856595
+      }
+    },
+    {
+      "family": "honda/cr-v/rm",
+      "segment": "suv",
+      "n": 184,
+      "accepted": true,
+      "before": {
+        "n": 184,
+        "median": 12.53145141454336,
+        "p80": 23.76918509785111
+      },
+      "after": {
+        "n": 184,
+        "median": 9.662622049867586,
+        "p80": 22.07822668457172
+      }
+    },
+    {
+      "family": "chevrolet/camaro/gen5",
+      "segment": "sports",
+      "n": 89,
+      "accepted": true,
+      "before": {
+        "n": 89,
+        "median": 48.1051472877075,
+        "p80": 56.19682577327585
+      },
+      "after": {
+        "n": 89,
+        "median": 35.220075479259194,
+        "p80": 45.32975619297786
+      }
+    },
+    {
+      "family": "chevrolet/camaro/gen6",
+      "segment": "sports",
+      "n": 21,
+      "accepted": true,
+      "before": {
+        "n": 21,
+        "median": 41.40510355091226,
+        "p80": 46.567913884877875
+      },
+      "after": {
+        "n": 21,
+        "median": 27.410001072651568,
+        "p80": 35.70428543685683
+      }
+    },
+    {
+      "family": "chevrolet/corvette/c8",
+      "segment": "sports",
+      "n": 110,
+      "accepted": true,
+      "before": {
+        "n": 110,
+        "median": 49.38205192925117,
+        "p80": 68.71213594782199
+      },
+      "after": {
+        "n": 110,
+        "median": 16.26533068435213,
+        "p80": 28.075465042934006
+      }
+    },
+    {
+      "family": "chevrolet/corvette/c7",
+      "segment": "sports",
+      "n": 57,
+      "accepted": true,
+      "before": {
+        "n": 57,
+        "median": 26.873230794865176,
+        "p80": 31.70561220511206
+      },
+      "after": {
+        "n": 57,
+        "median": 10.46642853638733,
+        "p80": 19.335932870774233
+      }
+    },
+    {
+      "family": "chevrolet/corvette/c6",
+      "segment": "sports",
+      "n": 68,
+      "accepted": true,
+      "before": {
+        "n": 68,
+        "median": 20.704117243284266,
+        "p80": 27.637951728868092
+      },
+      "after": {
+        "n": 68,
+        "median": 7.646798317116454,
+        "p80": 13.16885811432006
+      }
+    },
+    {
+      "family": "chevrolet/corvette/c5",
+      "segment": "sports",
+      "n": 26,
+      "accepted": true,
+      "before": {
+        "n": 26,
+        "median": 8.397105186918902,
+        "p80": 20.73142917023403
+      },
+      "after": {
+        "n": 26,
+        "median": 7.737613317535735,
+        "p80": 16.750652051098
+      }
+    },
+    {
+      "family": "chevrolet/ss/vf",
+      "segment": "sports",
+      "n": 3,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "dodge/challenger/lc",
+      "segment": "sports",
+      "n": 215,
+      "accepted": true,
+      "before": {
+        "n": 215,
+        "median": 30.186178119077546,
+        "p80": 46.60968406448852
+      },
+      "after": {
+        "n": 215,
+        "median": 23.437906599331846,
+        "p80": 36.07197120466484
+      }
+    },
+    {
+      "family": "dodge/viper/zb i",
+      "segment": "sports",
+      "n": 1,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "dodge/viper/zb ii",
+      "segment": "sports",
+      "n": 8,
+      "accepted": true,
+      "before": {
+        "n": 8,
+        "median": 66.66997648822564,
+        "p80": 69.95849532583225
+      },
+      "after": {
+        "n": 8,
+        "median": 58.33747061028204,
+        "p80": 62.448119157290314
+      }
+    },
+    {
+      "family": "lexus/ls/xf40",
+      "segment": "luxury",
+      "n": 16,
+      "accepted": true,
+      "before": {
+        "n": 16,
+        "median": 85.84681060587388,
+        "p80": 166.67133945295163
+      },
+      "after": {
+        "n": 16,
+        "median": 39.385107954405406,
+        "p80": 100.00350458971371
+      }
+    },
+    {
+      "family": "lexus/ls/xf30",
       "segment": "luxury",
       "n": 8,
-      "holdoutN": 0,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "accepted": true,
+      "before": {
+        "n": 8,
+        "median": 136.29796130432385,
+        "p80": 227.34796645443316
+      },
+      "after": {
+        "n": 8,
+        "median": 77.22347097824289,
+        "p80": 145.51097484082484
+      }
     },
     {
+      "family": "volkswagen/passat/b5",
+      "segment": "midsize",
+      "n": 2,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "volkswagen/passat/b6",
+      "segment": "midsize",
+      "n": 3,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "buick/century/gen6",
       "segment": "midsize",
       "n": 1,
-      "holdoutN": 5,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
     },
     {
-      "segment": "sports",
+      "family": "buick/lacrosse/gen3",
+      "segment": "fullsize",
+      "n": 5,
+      "accepted": true,
+      "before": {
+        "n": 5,
+        "median": 21.726688999733803,
+        "p80": 44.65766811169289
+      },
+      "after": {
+        "n": 5,
+        "median": 12.605291745903124,
+        "p80": 23.475940799064617
+      }
+    },
+    {
+      "family": "buick/lacrosse/gen2",
+      "segment": "fullsize",
+      "n": 8,
+      "accepted": true,
+      "before": {
+        "n": 8,
+        "median": 78.7849992353438,
+        "p80": 109.36482907375847
+      },
+      "after": {
+        "n": 8,
+        "median": 34.08874942650786,
+        "p80": 57.023621805318854
+      }
+    },
+    {
+      "family": "buick/lacrosse/gen1",
+      "segment": "fullsize",
+      "n": 10,
+      "accepted": false,
+      "before": {
+        "n": 10,
+        "median": 28.057237735123152,
+        "p80": 70.96621040025403
+      },
+      "after": {
+        "n": 10,
+        "median": 30.580218797403774,
+        "p80": 51.40015518033699
+      }
+    },
+    {
+      "family": "buick/lesabre/gen8",
+      "segment": "fullsize",
       "n": 4,
-      "holdoutN": 458,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "dodge/charger/ld",
+      "segment": "fullsize",
+      "n": 225,
+      "accepted": true,
+      "before": {
+        "n": 225,
+        "median": 27.827193803936336,
+        "p80": 39.37565321399515
+      },
+      "after": {
+        "n": 225,
+        "median": 16.87808587493955,
+        "p80": 32.11527145148895
+      }
+    },
+    {
+      "family": "dodge/charger/lb",
+      "segment": "fullsize",
+      "n": 3,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "dodge/charger/lx",
+      "segment": "fullsize",
+      "n": 7,
+      "accepted": false,
+      "before": {
+        "n": 7,
+        "median": 16.428133652759257,
+        "p80": 24.72360994816674
+      },
+      "after": {
+        "n": 7,
+        "median": 31.27898601207333,
+        "p80": 36.44363568181417
+      }
+    },
+    {
+      "family": "chevrolet/astro/gen2",
+      "segment": "van",
+      "n": 2,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "chevrolet/aveo/t250",
+      "segment": "economy",
+      "n": 2,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "chevrolet/cavalier/j-body gen3",
+      "segment": "economy",
+      "n": 1,
+      "accepted": false,
+      "before": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      },
+      "after": {
+        "n": 0,
+        "median": null,
+        "p80": null
+      }
+    },
+    {
+      "family": "chevrolet/cobalt/delta",
+      "segment": "economy",
+      "n": 10,
+      "accepted": true,
+      "before": {
+        "n": 10,
+        "median": 37.66143286954367,
+        "p80": 50.486234258058744
+      },
+      "after": {
+        "n": 10,
+        "median": 31.17594011443536,
+        "p80": 48.77665787566296
+      }
+    },
+    {
+      "family": "chevrolet/cruze/j400",
+      "segment": "economy",
+      "n": 74,
+      "accepted": false,
+      "before": {
+        "n": 74,
+        "median": 18.2548200287722,
+        "p80": 49.201515591620876
+      },
+      "after": {
+        "n": 74,
+        "median": 19.706812256207442,
+        "p80": 36.203242419019965
+      }
+    },
+    {
+      "family": "chevrolet/bolt ev/gen1",
+      "segment": "ev",
+      "n": 22,
+      "accepted": true,
+      "before": {
+        "n": 22,
+        "median": 24.139737979933493,
+        "p80": 31.961538849897714
+      },
+      "after": {
+        "n": 22,
+        "median": 13.79343971288774,
+        "p80": 20.027682024098162
+      }
+    }
+  ],
+  "segmentDecisions": [
+    {
+      "segment": "truck",
+      "accepted": true,
+      "before": {
+        "n": 1131,
+        "median": 17.168785863141988,
+        "p80": 35.85841231241136
+      },
+      "after": {
+        "n": 1131,
+        "median": 17.027846275154168,
+        "p80": 33.3704327035528
+      }
     },
     {
       "segment": "suv",
-      "n": 955,
-      "holdoutN": 930,
-      "proposedFactor": 0.7818831701261457,
-      "shrinkage": 0.9408866995073891,
+      "accepted": true,
       "before": {
-        "n": 930,
-        "families": 4,
-        "median": 15.673263684138815,
-        "p80": 26.538183717304705
+        "n": 2188,
+        "median": 23.860583504533007,
+        "p80": 63.10790500663799
       },
       "after": {
-        "n": 930,
-        "families": 4,
-        "median": 15.673263684138815,
-        "p80": 26.538183717304705
-      },
-      "reason": "Accepted: sample, family, cap and holdout guards pass."
+        "n": 2188,
+        "median": 17.12503412730218,
+        "p80": 29.812110866555386
+      }
     },
     {
-      "segment": "truck",
-      "n": 244,
-      "holdoutN": 648,
-      "proposedFactor": 0.7787217133933794,
-      "shrinkage": 0.8026315789473685,
+      "segment": "sports",
+      "accepted": false,
       "before": {
-        "n": 648,
-        "families": 4,
-        "median": 14.02447957457198,
-        "p80": 27.78775927878274
+        "n": 598,
+        "median": 32.92183657135536,
+        "p80": 52.02297551228653
       },
       "after": {
-        "n": 648,
-        "families": 4,
-        "median": 23.721833960099268,
-        "p80": 37.34311702705497
+        "n": 598,
+        "median": 28.459825389839978,
+        "p80": 53.56817807074568
+      }
+    },
+    {
+      "segment": "luxury",
+      "accepted": false,
+      "before": {
+        "n": 24,
+        "median": 123.66638888918631,
+        "p80": 194.20711625150807
       },
-      "reason": "Retain previous: holdout median or p80 worsened."
+      "after": {
+        "n": 24,
+        "median": 74.23378918294128,
+        "p80": 120.65533718863105
+      }
+    },
+    {
+      "segment": "midsize",
+      "accepted": true,
+      "before": {
+        "n": 6,
+        "median": 136.3124724273246,
+        "p80": 193.2658649082597
+      },
+      "after": {
+        "n": 6,
+        "median": 77.23435432049348,
+        "p80": 119.94939868119477
+      }
+    },
+    {
+      "segment": "fullsize",
+      "accepted": false,
+      "before": {
+        "n": 262,
+        "median": 28.237621403121302,
+        "p80": 41.01303216904908
+      },
+      "after": {
+        "n": 262,
+        "median": 42.12323403564339,
+        "p80": 52.63731537676096
+      }
     },
     {
       "segment": "van",
-      "n": 0,
-      "holdoutN": 2,
-      "reason": "Retain previous: need >=30 observations and >=2 families in EACH partition."
+      "accepted": false,
+      "before": {
+        "n": 2,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      },
+      "after": {
+        "n": 2,
+        "median": 32.495128508075226,
+        "p80": 43.562375242262775
+      }
+    },
+    {
+      "segment": "economy",
+      "accepted": false,
+      "before": {
+        "n": 87,
+        "median": 21.12124087318349,
+        "p80": 49.51778288278823
+      },
+      "after": {
+        "n": 87,
+        "median": 35.74106919642735,
+        "p80": 79.27039556889007
+      }
+    },
+    {
+      "segment": "ev",
+      "accepted": false,
+      "before": {
+        "n": 22,
+        "median": 24.139737979933493,
+        "p80": 31.961538849897714
+      },
+      "after": {
+        "n": 22,
+        "median": 24.139737979933493,
+        "p80": 31.961538849897714
+      }
+    }
+  ],
+  "proposedFamilies": [
+    {
+      "family": "gmc/sierra 1500/gmt900",
+      "segment": "truck",
+      "n": 1,
+      "factor": 1.1009341498505534,
+      "shrinkage": 0.9770032721729053,
+      "ci": [
+        1.1044431844231033,
+        1.1044431844231033
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/ridgeline/yk2",
+      "segment": "truck",
+      "n": 124,
+      "factor": 0.7587024060847675,
+      "shrinkage": 0.9977041091861267,
+      "ci": [
+        0.7311252053099251,
+        0.765907765824087
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "honda/ridgeline/yk1",
+      "segment": "truck",
+      "n": 17,
+      "factor": 0.75,
+      "shrinkage": 0.9350799222965502,
+      "ci": [
+        0.60286128852012,
+        0.7696072509606976
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "jeep/gladiator/jt",
+      "segment": "truck",
+      "n": 178,
+      "factor": 0.8382428429874258,
+      "shrinkage": 0.9985932144848844,
+      "ci": [
+        0.8175269891078615,
+        0.8445211345468369
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/frontier/d41",
+      "segment": "truck",
+      "n": 162,
+      "factor": 0.972453651418147,
+      "shrinkage": 0.9985063130633971,
+      "ci": [
+        0.9625749540677957,
+        0.9834845410110422
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/frontier/d40",
+      "segment": "truck",
+      "n": 118,
+      "factor": 0.8987579635450842,
+      "shrinkage": 0.9897443739642915,
+      "ci": [
+        0.8756085601772965,
+        0.932993198393991
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/titan/a61",
+      "segment": "truck",
+      "n": 94,
+      "factor": 0.75,
+      "shrinkage": 0.9920394665595305,
+      "ci": [
+        0.6934300775540162,
+        0.7357129713009825
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "nissan/titan/a60",
+      "segment": "truck",
+      "n": 21,
+      "factor": 0.8163289523737515,
+      "shrinkage": 0.9670732587745468,
+      "ci": [
+        0.7097746356428917,
+        0.8774481860824203
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "toyota/tacoma/n300",
+      "segment": "truck",
+      "n": 243,
+      "factor": 1.0996186197077444,
+      "shrinkage": 0.9986858250305154,
+      "ci": [
+        1.089156924949011,
+        1.1075223078567418
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "toyota/tacoma/n400",
+      "segment": "truck",
+      "n": 66,
+      "factor": 0.9980288190783457,
+      "shrinkage": 0.9934557324333605,
+      "ci": [
+        0.9704784344393627,
+        1.0351000774626493
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "toyota/tacoma/n220",
+      "segment": "truck",
+      "n": 88,
+      "factor": 1.25,
+      "shrinkage": 0.9808541326496486,
+      "ci": [
+        1.5038818602372936,
+        1.6688719513358614
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "toyota/tacoma/n140",
+      "segment": "truck",
+      "n": 19,
+      "factor": 1.25,
+      "shrinkage": 0.8825757972440251,
+      "ci": [
+        1.3036301016977212,
+        1.6539757200149559
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "ford/flex/d471",
+      "segment": "suv",
+      "n": 20,
+      "factor": 0.75,
+      "shrinkage": 0.9386448373753515,
+      "ci": [
+        0.5105662869948459,
+        0.5888765099716249
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/acadia/c1xx",
+      "segment": "suv",
+      "n": 162,
+      "factor": 0.6467638823314121,
+      "shrinkage": 0.9961272762623478,
+      "ci": [
+        0.6330659524361038,
+        0.6524575947392466
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/acadia/gen3",
+      "segment": "suv",
+      "n": 36,
+      "factor": 0.8309605216775977,
+      "shrinkage": 0.9954516543286998,
+      "ci": [
+        0.8008436034106143,
+        0.8552476630920213
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/acadia/lambda",
+      "segment": "suv",
+      "n": 90,
+      "factor": 0.75,
+      "shrinkage": 0.9706626027534913,
+      "ci": [
+        0.4450166408038132,
+        0.4844056221870628
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/envoy/gmt360",
+      "segment": "suv",
+      "n": 14,
+      "factor": 0.75,
+      "shrinkage": 0.7625751104578401,
+      "ci": [
+        0.40831086193030697,
+        0.569464107061218
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/nx/az20",
+      "segment": "suv",
+      "n": 47,
+      "factor": 0.9433668893807935,
+      "shrinkage": 0.9974865018929051,
+      "ci": [
+        0.9239037031160521,
+        0.9558716713300875
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/terrain/gen2",
+      "segment": "suv",
+      "n": 211,
+      "factor": 0.6679727679066348,
+      "shrinkage": 0.9975928860887712,
+      "ci": [
+        0.6595383444484135,
+        0.6818794072838089
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/terrain/gen1",
+      "segment": "suv",
+      "n": 75,
+      "factor": 0.75,
+      "shrinkage": 0.9744452791287445,
+      "ci": [
+        0.5412776384656314,
+        0.5827273034960035
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/nx/az10",
+      "segment": "suv",
+      "n": 97,
+      "factor": 0.8373125008746327,
+      "shrinkage": 0.9957212333056183,
+      "ci": [
+        0.8254384913463648,
+        0.8502248711880095
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon/t1",
+      "segment": "suv",
+      "n": 143,
+      "factor": 0.8521034981854736,
+      "shrinkage": 0.9983808124230673,
+      "ci": [
+        0.8430958832176507,
+        0.8639003409617799
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon/k2xx",
+      "segment": "suv",
+      "n": 112,
+      "factor": 0.6313692646981872,
+      "shrinkage": 0.9945089874728466,
+      "ci": [
+        0.6206068043464912,
+        0.6469257572018605
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "lexus/rx/al20",
+      "segment": "suv",
+      "n": 116,
+      "factor": 0.8662960635564589,
+      "shrinkage": 0.9985334147940172,
+      "ci": [
+        0.8572281771259372,
+        0.8754398046697303
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon/gmt900",
+      "segment": "suv",
+      "n": 21,
+      "factor": 0.75,
+      "shrinkage": 0.8520016079094974,
+      "ci": [
+        0.4975161303620234,
+        0.6750744756470156
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/rx/ala10",
+      "segment": "suv",
+      "n": 81,
+      "factor": 0.9611373456778602,
+      "shrinkage": 0.9969331799962626,
+      "ci": [
+        0.9455976209397233,
+        0.9779266083503876
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon/gmt800",
+      "segment": "suv",
+      "n": 6,
+      "factor": 0.75,
+      "shrinkage": 0.9662614654605582,
+      "ci": [
+        0.6267649270778409,
+        0.7035173333161123
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon xl/t1",
+      "segment": "suv",
+      "n": 113,
+      "factor": 0.8167735852929723,
+      "shrinkage": 0.9985426105564387,
+      "ci": [
+        0.81109879036229,
+        0.8262393931926757
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon xl/k2xx",
+      "segment": "suv",
+      "n": 80,
+      "factor": 0.75,
+      "shrinkage": 0.9913547352118128,
+      "ci": [
+        0.5370417300121405,
+        0.5612356823906491
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/rx/al10",
+      "segment": "suv",
+      "n": 86,
+      "factor": 0.7938156131141063,
+      "shrinkage": 0.9906056958842242,
+      "ci": [
+        0.7845547981507571,
+        0.8204878749036838
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon xl/gmt900",
+      "segment": "suv",
+      "n": 17,
+      "factor": 0.75,
+      "shrinkage": 0.9002648035452788,
+      "ci": [
+        0.4197008952169988,
+        0.5074409166317392
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon xl/gmt800",
+      "segment": "suv",
+      "n": 3,
+      "factor": 0.75,
+      "shrinkage": 0.8845585306780319,
+      "ci": [
+        0.4400679510475421,
+        0.7638985905592868
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/rx/xu10",
+      "segment": "suv",
+      "n": 2,
+      "factor": 0.75,
+      "shrinkage": 0.7396265250301027,
+      "ci": [
+        0.4441559212219832,
+        0.548919372078659
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/rw",
+      "segment": "suv",
+      "n": 264,
+      "factor": 0.8962518742367691,
+      "shrinkage": 0.9988398836488782,
+      "ci": [
+        0.887714732571843,
+        0.9074561143842673
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "honda/cr-v/rs",
+      "segment": "suv",
+      "n": 142,
+      "factor": 0.9149613238446839,
+      "shrinkage": 0.9985550098151823,
+      "ci": [
+        0.8995465541170808,
+        0.9225676951246495
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "lexus/rx/xu30",
+      "segment": "suv",
+      "n": 44,
+      "factor": 0.75,
+      "shrinkage": 0.9211371823809287,
+      "ci": [
+        0.5841659930362522,
+        0.6965754154526246
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/re",
+      "segment": "suv",
+      "n": 22,
+      "factor": 0.8222683039364725,
+      "shrinkage": 0.9354925239573125,
+      "ci": [
+        0.7411604926053446,
+        0.9254864496762505
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/rm",
+      "segment": "suv",
+      "n": 184,
+      "factor": 0.9279600556208589,
+      "shrinkage": 0.9967000060662198,
+      "ci": [
+        0.9045980274617837,
+        0.9381058677089996
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "chevrolet/camaro/gen5",
+      "segment": "sports",
+      "n": 89,
+      "factor": 1.25,
+      "shrinkage": 0.993510837015051,
+      "ci": [
+        1.847991179370659,
+        2.0595767986740365
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/camaro/gen6",
+      "segment": "sports",
+      "n": 21,
+      "factor": 1.25,
+      "shrinkage": 0.995433450426115,
+      "ci": [
+        1.6608102972557124,
+        1.7220003009657847
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c8",
+      "segment": "sports",
+      "n": 110,
+      "factor": 0.6706449578307052,
+      "shrinkage": 0.9968987972108894,
+      "ci": [
+        0.6451014758145703,
+        0.6840452681490798
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "chevrolet/corvette/c7",
+      "segment": "sports",
+      "n": 57,
+      "factor": 1.25,
+      "shrinkage": 0.997886254501888,
+      "ci": [
+        1.3354580011584745,
+        1.3904313119012517
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c6",
+      "segment": "sports",
+      "n": 68,
+      "factor": 1.25,
+      "shrinkage": 0.99822420084496,
+      "ci": [
+        1.2408218008256509,
+        1.288107199271158
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c5",
+      "segment": "sports",
+      "n": 26,
+      "factor": 1.0398439515213138,
+      "shrinkage": 0.9944261060453992,
+      "ci": [
+        1.0306090414856122,
+        1.0880810808520556
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/ss/vf",
+      "segment": "sports",
+      "n": 3,
+      "factor": 1.25,
+      "shrinkage": 0.9426288615852808,
+      "ci": [
+        1.6359222057852767,
+        2.455632829804553
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/challenger/lc",
+      "segment": "sports",
+      "n": 215,
+      "factor": 1.3882713528808315,
+      "shrinkage": 0.9942215464944121,
+      "ci": [
+        1.349877313035903,
+        1.453376950476175
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "dodge/viper/zb i",
+      "segment": "sports",
+      "n": 1,
+      "factor": 1.0689671613644844,
+      "shrinkage": 0.990323527697677,
+      "ci": [
+        1.0677264045436308,
+        1.0677264045436308
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/viper/zb ii",
+      "segment": "sports",
+      "n": 8,
+      "factor": 1.25,
+      "shrinkage": 0.9501474749921879,
+      "ci": [
+        2.648658122742399,
+        3.271009194598087
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/ls/xf40",
+      "segment": "luxury",
+      "n": 16,
+      "factor": 0.75,
+      "shrinkage": 0.10804111530576074,
+      "ci": [
+        0.3957883891800287,
+        0.6233736656982549
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/ls/xf30",
+      "segment": "luxury",
+      "n": 8,
+      "factor": 0.75,
+      "shrinkage": 0.21405019725281213,
+      "ci": [
+        0.3958878991547312,
+        0.4781652714277653
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "volkswagen/passat/b5",
+      "segment": "midsize",
+      "n": 2,
+      "factor": 0.75,
+      "shrinkage": 0.06327597571270568,
+      "ci": [
+        0.42313292215715703,
+        0.5670897881010952
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "volkswagen/passat/b6",
+      "segment": "midsize",
+      "n": 3,
+      "factor": 0.75,
+      "shrinkage": 0.019519952786910266,
+      "ci": [
+        0.2450671110006341,
+        0.7428947796417167
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/century/gen6",
+      "segment": "midsize",
+      "n": 1,
+      "factor": 0.75,
+      "shrinkage": 0.6387789907631676,
+      "ci": [
+        0.42320413048113464,
+        0.42320413048113464
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lacrosse/gen3",
+      "segment": "fullsize",
+      "n": 5,
+      "factor": 0.8244533795551838,
+      "shrinkage": 0.9618965802320114,
+      "ci": [
+        0.7132090200912428,
+        0.8856720041439886
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lacrosse/gen2",
+      "segment": "fullsize",
+      "n": 8,
+      "factor": 0.75,
+      "shrinkage": 0.9594813237577438,
+      "ci": [
+        0.50391974164146,
+        0.6199107237334739
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lacrosse/gen1",
+      "segment": "fullsize",
+      "n": 10,
+      "factor": 0.7990351566155319,
+      "shrinkage": 0.8717546967737432,
+      "ci": [
+        0.6066770557965673,
+        0.8971015294176878
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lesabre/gen8",
+      "segment": "fullsize",
+      "n": 4,
+      "factor": 0.75,
+      "shrinkage": 0.6879298266721523,
+      "ci": [
+        0.4876790419564581,
+        0.7946621645485652
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/charger/ld",
+      "segment": "fullsize",
+      "n": 225,
+      "factor": 1.3551217599799985,
+      "shrinkage": 0.9957373853612037,
+      "ci": [
+        1.2933376901162552,
+        1.3855634174503533
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "dodge/charger/lb",
+      "segment": "fullsize",
+      "n": 3,
+      "factor": 0.75,
+      "shrinkage": 0.9440218325109194,
+      "ci": [
+        0.5428864003670747,
+        0.7320457604734882
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/charger/lx",
+      "segment": "fullsize",
+      "n": 7,
+      "factor": 1.0482314096830458,
+      "shrinkage": 0.856737658588378,
+      "ci": [
+        0.8588989350138061,
+        1.2533939436260693
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/astro/gen2",
+      "segment": "van",
+      "n": 2,
+      "factor": 1.0215106301182006,
+      "shrinkage": 0.008073595025265877,
+      "ci": [
+        0.876810590863714,
+        2.0383428487218507
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/aveo/t250",
+      "segment": "economy",
+      "n": 2,
+      "factor": 1.1349783630412895,
+      "shrinkage": 0.5109085540085787,
+      "ci": [
+        1.0486297005717051,
+        1.3544099735589774
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/cavalier/j-body gen3",
+      "segment": "economy",
+      "n": 1,
+      "factor": 1.25,
+      "shrinkage": 0.954297807403358,
+      "ci": [
+        1.2918389781951833,
+        1.2918389781951833
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/cobalt/delta",
+      "segment": "economy",
+      "n": 10,
+      "factor": 1.2458880539458133,
+      "shrinkage": 0.5416732897298204,
+      "ci": [
+        1.1297937853468842,
+        1.664839464280103
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/cruze/j400",
+      "segment": "economy",
+      "n": 74,
+      "factor": 0.8876714806215662,
+      "shrinkage": 0.9292101724606017,
+      "ci": [
+        0.8352991248818369,
+        0.9225387361572318
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/bolt ev/gen1",
+      "segment": "ev",
+      "n": 22,
+      "factor": 0.8408778314317996,
+      "shrinkage": 0.5662999351517056,
+      "ci": [
+        0.7959439485293653,
+        0.913265070666874
+      ],
+      "wideCap": false
     }
   ],
   "proposedCells": [
     {
+      "segment": "truck",
+      "n": 1131,
+      "factor": 0.9617148006603122,
+      "shrinkage": 0.7911038806477628,
+      "ci": [
+        0.8622918430587532,
+        1.0507148068365482
+      ],
+      "wideCap": false
+    },
+    {
       "segment": "suv",
-      "n": 955,
-      "families": 5,
-      "factor": 0.7818831701261457,
-      "shrinkage": 0.9408866995073891,
-      "holdout": {
-        "n": 930,
-        "families": 4,
-        "before": 15.673263684138815,
-        "after": 15.673263684138815,
-        "p80Before": 26.538183717304705,
-        "p80After": 26.538183717304705
+      "n": 2188,
+      "factor": 0.75,
+      "shrinkage": 0.8973919907376937,
+      "ci": [
+        0.6676803543479602,
+        0.7604110074021504
+      ],
+      "wideCap": false
+    },
+    {
+      "segment": "midsize",
+      "n": 6,
+      "factor": 0.75,
+      "shrinkage": 0.7045654220049713,
+      "ci": [
+        0.37856435792325444,
+        0.4856226710869113
+      ],
+      "wideCap": false
+    }
+  ],
+  "rawCV": {
+    "seen": {
+      "before": {
+        "n": 4292,
+        "median": 23.52461685239433,
+        "p80": 51.46985871764279
+      },
+      "after": {
+        "n": 4292,
+        "median": 10.457573213804789,
+        "p80": 26.24405820459631
       }
+    },
+    "unseen": {
+      "before": {
+        "n": 4320,
+        "median": 23.643723841723684,
+        "p80": 51.73756742761992
+      },
+      "after": {
+        "n": 4320,
+        "median": 19.227802364277235,
+        "p80": 38.68504171688321
+      }
+    }
+  },
+  "cv": {
+    "seen": {
+      "before": {
+        "n": 4292,
+        "median": 23.52461685239433,
+        "p80": 51.46985871764279
+      },
+      "after": {
+        "n": 4292,
+        "median": 10.457573213804789,
+        "p80": 26.237254430856044
+      },
+      "folds": [
+        {
+          "fold": 0,
+          "train": 3426,
+          "test": 894,
+          "trainFamilies": 62,
+          "testFamilies": 66
+        },
+        {
+          "fold": 1,
+          "train": 3442,
+          "test": 878,
+          "trainFamilies": 66,
+          "testFamilies": 62
+        },
+        {
+          "fold": 2,
+          "train": 3458,
+          "test": 862,
+          "trainFamilies": 66,
+          "testFamilies": 58
+        },
+        {
+          "fold": 3,
+          "train": 3472,
+          "test": 848,
+          "trainFamilies": 66,
+          "testFamilies": 54
+        },
+        {
+          "fold": 4,
+          "train": 3482,
+          "test": 838,
+          "trainFamilies": 66,
+          "testFamilies": 53
+        }
+      ]
+    },
+    "unseen": {
+      "before": {
+        "n": 4320,
+        "median": 23.643723841723684,
+        "p80": 51.73756742761992
+      },
+      "after": {
+        "n": 4320,
+        "median": 19.294212040378163,
+        "p80": 37.324204248717066
+      },
+      "folds": [
+        {
+          "fold": 0,
+          "train": 3084,
+          "test": 1236,
+          "trainFamilies": 55,
+          "testFamilies": 11
+        },
+        {
+          "fold": 1,
+          "train": 3523,
+          "test": 797,
+          "trainFamilies": 53,
+          "testFamilies": 13
+        },
+        {
+          "fold": 2,
+          "train": 3551,
+          "test": 769,
+          "trainFamilies": 53,
+          "testFamilies": 13
+        },
+        {
+          "fold": 3,
+          "train": 3553,
+          "test": 767,
+          "trainFamilies": 51,
+          "testFamilies": 15
+        },
+        {
+          "fold": 4,
+          "train": 3569,
+          "test": 751,
+          "trainFamilies": 52,
+          "testFamilies": 14
+        }
+      ]
+    }
+  },
+  "mileage": [
+    {
+      "family": "chevrolet/camaro/gen5",
+      "n": 89,
+      "deltaMiles": 89792,
+      "logResidualPer10k": -0.01810121054164975,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/acadia/c1xx",
+      "n": 162,
+      "deltaMiles": 83949,
+      "logResidualPer10k": -0.028385739098502824,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "honda/ridgeline/yk2",
+      "n": 124,
+      "deltaMiles": 70040,
+      "logResidualPer10k": -0.005421357536839136,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/acadia/gen3",
+      "n": 36,
+      "deltaMiles": 23859,
+      "logResidualPer10k": 0.059445768075327136,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "chevrolet/corvette/c8",
+      "n": 110,
+      "deltaMiles": 16544,
+      "logResidualPer10k": 0.18882464078856653,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/acadia/lambda",
+      "n": 90,
+      "deltaMiles": 65703,
+      "logResidualPer10k": -0.06523702891630509,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "chevrolet/corvette/c7",
+      "n": 57,
+      "deltaMiles": 62134,
+      "logResidualPer10k": 0.02122484553630223,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "jeep/gladiator/jt",
+      "n": 178,
+      "deltaMiles": 56989,
+      "logResidualPer10k": 0.011527425665239848,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "chevrolet/corvette/c6",
+      "n": 68,
+      "deltaMiles": 88564,
+      "logResidualPer10k": 0.013539663015029306,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "nissan/frontier/d41",
+      "n": 162,
+      "deltaMiles": 49899,
+      "logResidualPer10k": 0.025260506858693205,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "nissan/frontier/d40",
+      "n": 118,
+      "deltaMiles": 102664,
+      "logResidualPer10k": -0.019753250506555676,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/nx/az20",
+      "n": 47,
+      "deltaMiles": 38183,
+      "logResidualPer10k": 0.018577531619407277,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/terrain/gen2",
+      "n": 211,
+      "deltaMiles": 71727.5,
+      "logResidualPer10k": 0.004977798522992472,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/terrain/gen1",
+      "n": 75,
+      "deltaMiles": 55347,
+      "logResidualPer10k": -0.04662893156762349,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/nx/az10",
+      "n": 97,
+      "deltaMiles": 67217.5,
+      "logResidualPer10k": 0.004526197150044353,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "nissan/titan/a61",
+      "n": 94,
+      "deltaMiles": 93760,
+      "logResidualPer10k": -0.022301410613799682,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "dodge/challenger/lc",
+      "n": 215,
+      "deltaMiles": 74554,
+      "logResidualPer10k": 0.022680512784503688,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/yukon/t1",
+      "n": 143,
+      "deltaMiles": 56688,
+      "logResidualPer10k": -0.011310470691542509,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/yukon/k2xx",
+      "n": 112,
+      "deltaMiles": 64891,
+      "logResidualPer10k": -0.025316362449842266,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/rx/al20",
+      "n": 116,
+      "deltaMiles": 69079.5,
+      "logResidualPer10k": -0.0051635925861765195,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/rx/ala10",
+      "n": 81,
+      "deltaMiles": 33106,
+      "logResidualPer10k": 0.03798755905581671,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "dodge/charger/ld",
+      "n": 225,
+      "deltaMiles": 77807,
+      "logResidualPer10k": -0.018885181286639813,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/yukon xl/t1",
+      "n": 113,
+      "deltaMiles": 54504,
+      "logResidualPer10k": -0.011479367496625,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "gmc/yukon xl/k2xx",
+      "n": 80,
+      "deltaMiles": 64191,
+      "logResidualPer10k": -0.035833764238212676,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/rx/al10",
+      "n": 86,
+      "deltaMiles": 78799.5,
+      "logResidualPer10k": -0.036326874152810606,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "toyota/tacoma/n300",
+      "n": 243,
+      "deltaMiles": 81629,
+      "logResidualPer10k": 0.007016182684197399,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "honda/cr-v/rw",
+      "n": 264,
+      "deltaMiles": 75509,
+      "logResidualPer10k": -0.007613264618230365,
+      "clearSlope": false,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "toyota/tacoma/n400",
+      "n": 66,
+      "deltaMiles": 32127.5,
+      "logResidualPer10k": 0.060320195146013784,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "honda/cr-v/rs",
+      "n": 142,
+      "deltaMiles": 37474,
+      "logResidualPer10k": 0.03125159761708716,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "lexus/rx/xu30",
+      "n": 44,
+      "deltaMiles": 93562.5,
+      "logResidualPer10k": -0.03330448162333991,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "toyota/tacoma/n220",
+      "n": 88,
+      "deltaMiles": 93827,
+      "logResidualPer10k": -0.028990173009097522,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "honda/cr-v/rm",
+      "n": 184,
+      "deltaMiles": 74025,
+      "logResidualPer10k": -0.02367581055404213,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
+    },
+    {
+      "family": "chevrolet/cruze/j400",
+      "n": 74,
+      "deltaMiles": 72392,
+      "logResidualPer10k": -0.068805414117032,
+      "clearSlope": true,
+      "note": "Diagnostic only: low/high mileage thirds; age and trim may confound. No mileage slope correction fitted."
     }
   ],
   "baseline": {
-    "n": 2370,
-    "families": 16,
-    "median": 20.516534651162438,
-    "p80": 44.97313604153886
+    "n": 4292,
+    "median": 23.52461685239433,
+    "p80": 51.46985871764279
   },
   "before": {
-    "n": 2370,
-    "families": 16,
-    "median": 18.430121431897405,
-    "p80": 36.552996714938345
+    "n": 4292,
+    "median": 23.52461685239433,
+    "p80": 51.46985871764279
   },
   "after": {
-    "n": 2370,
-    "families": 16,
-    "median": 18.430121431897405,
-    "p80": 36.552996714938345
+    "n": 4292,
+    "median": 10.457573213804789,
+    "p80": 26.237254430856044
   },
   "metrics": [
     {
       "bucket": "age:0-5",
       "before": {
-        "n": 1008,
-        "families": 10,
-        "median": 16.781623116135414,
-        "p80": 37.84346484619361
+        "n": 1776,
+        "median": 18.206962033492758,
+        "p80": 35.862556206939644
       },
       "after": {
-        "n": 1008,
-        "families": 10,
-        "median": 15.201302886349156,
-        "p80": 29.459413919030688
+        "n": 1776,
+        "median": 7.535595118043398,
+        "p80": 16.381012137172203
       }
     },
     {
       "bucket": "age:11-20",
       "before": {
-        "n": 536,
-        "families": 12,
-        "median": 31.959965686794877,
-        "p80": 54.825280868550806
+        "n": 993,
+        "median": 37.339190069584895,
+        "p80": 71.78256934644935
       },
       "after": {
-        "n": 536,
-        "families": 12,
-        "median": 29.67283181836531,
-        "p80": 49.70659252079439
+        "n": 993,
+        "median": 20.251942225254783,
+        "p80": 43.48547262517237
       }
     },
     {
       "bucket": "age:21+",
       "before": {
-        "n": 34,
-        "families": 6,
-        "median": 39.34978196931499,
-        "p80": 83.44880875177739
+        "n": 93,
+        "median": 26.215210810043022,
+        "p80": 67.24649580485499
       },
       "after": {
-        "n": 34,
-        "families": 6,
-        "median": 37.49866638724491,
-        "p80": 64.51093306530352
+        "n": 93,
+        "median": 14.284551643510257,
+        "p80": 54.73610619478065
       }
     },
     {
       "bucket": "age:6-10",
       "before": {
-        "n": 792,
-        "families": 11,
-        "median": 20.109057635428464,
-        "p80": 40.101799483566346
+        "n": 1430,
+        "median": 26.781237202059373,
+        "p80": 55.91440525236691
       },
       "after": {
-        "n": 792,
-        "families": 11,
-        "median": 17.288658432382725,
-        "p80": 33.00083355427382
+        "n": 1430,
+        "median": 11.472966582266984,
+        "p80": 25.795845904043908
       }
     },
     {
       "bucket": "segment-age:economy/11-20",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 8,
+        "median": 40.394032415811544,
+        "p80": 51.9895666076792
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 8,
+        "median": 31.17594011443536,
+        "p80": 40.48568354977511
       }
     },
     {
       "bucket": "segment-age:economy/21+",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 2,
+        "median": 35.49923642947925,
+        "p80": 38.880715975863595
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 2,
+        "median": 44.37404553684907,
+        "p80": 63.60089496982951
       }
     },
     {
       "bucket": "segment-age:economy/6-10",
       "before": {
         "n": 74,
-        "families": 1,
         "median": 18.2548200287722,
         "p80": 49.201515591620876
       },
       "after": {
         "n": 74,
-        "families": 1,
-        "median": 18.2548200287722,
-        "p80": 49.201515591620876
+        "median": 19.706812256207442,
+        "p80": 36.203242419019965
       }
     },
     {
       "bucket": "segment-age:ev/0-5",
       "before": {
         "n": 9,
-        "families": 1,
         "median": 30.188336612792476,
         "p80": 40.008360043257795
       },
       "after": {
         "n": 9,
-        "families": 1,
-        "median": 30.188336612792476,
-        "p80": 40.008360043257795
+        "median": 9.994416252991844,
+        "p80": 19.8992040919649
       }
     },
     {
       "bucket": "segment-age:ev/6-10",
       "before": {
         "n": 13,
-        "families": 1,
         "median": 10.11887556247636,
         "p80": 25.08811152361793
       },
       "after": {
         "n": 13,
-        "families": 1,
-        "median": 10.11887556247636,
-        "p80": 25.08811152361793
+        "median": 14.109998671562495,
+        "p80": 19.919255566085443
       }
     },
     {
       "bucket": "segment-age:fullsize/0-5",
       "before": {
-        "n": 90,
-        "families": 1,
-        "median": 24.698505636788127,
-        "p80": 37.12792778030592
+        "n": 87,
+        "median": 22.680672832621752,
+        "p80": 36.35839680105118
       },
       "after": {
-        "n": 90,
-        "families": 1,
-        "median": 24.698505636788127,
-        "p80": 37.12792778030592
+        "n": 87,
+        "median": 16.541519785573733,
+        "p80": 31.714763613803317
       }
     },
     {
       "bucket": "segment-age:fullsize/11-20",
       "before": {
-        "n": 32,
-        "families": 1,
-        "median": 26.92702063134818,
-        "p80": 35.783842591653176
+        "n": 49,
+        "median": 28.652423896911795,
+        "p80": 61.02169728649234
       },
       "after": {
-        "n": 32,
-        "families": 1,
-        "median": 26.92702063134818,
-        "p80": 35.783842591653176
+        "n": 49,
+        "median": 24.82802303155818,
+        "p80": 38.38899506350161
       }
     },
     {
       "bucket": "segment-age:fullsize/21+",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 2,
+        "median": 40.12447151848377,
+        "p80": 57.31709255309253
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 2,
+        "median": 32.94552903408831,
+        "p80": 42.874392861902436
       }
     },
     {
       "bucket": "segment-age:fullsize/6-10",
       "before": {
-        "n": 109,
-        "families": 1,
-        "median": 32.57752275402551,
-        "p80": 44.233983153042495
+        "n": 117,
+        "median": 32.3572305269771,
+        "p80": 43.69248800556418
       },
       "after": {
-        "n": 109,
-        "families": 1,
-        "median": 32.57752275402551,
-        "p80": 44.233983153042495
+        "n": 117,
+        "median": 17.52309806706267,
+        "p80": 31.914585665680796
       }
     },
     {
       "bucket": "segment-age:luxury/11-20",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 15,
+        "median": 97.98404074779612,
+        "p80": 180.43922785222986
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 15,
+        "median": 48.48803056084707,
+        "p80": 110.32942088917238
       }
     },
     {
       "bucket": "segment-age:luxury/21+",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 6,
+        "median": 148.05943323309776,
+        "p80": 277.18210518478884
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 6,
+        "median": 86.04457492482331,
+        "p80": 182.8865788885916
+      }
+    },
+    {
+      "bucket": "segment-age:luxury/6-10",
+      "before": {
+        "n": 3,
+        "median": 60.41742778464623,
+        "p80": 117.23321750988268
+      },
+      "after": {
+        "n": 3,
+        "median": 20.31307083848466,
+        "p80": 62.92491313241199
       }
     },
     {
       "bucket": "segment-age:midsize/11-20",
       "before": {
-        "n": 3,
-        "families": 1,
-        "median": 193.2658649082597,
-        "p80": 262.137240468135
+        "n": 0,
+        "median": null,
+        "p80": null
       },
       "after": {
-        "n": 3,
-        "families": 1,
-        "median": 193.2658649082597,
-        "p80": 262.137240468135
+        "n": 0,
+        "median": null,
+        "p80": null
       }
     },
     {
       "bucket": "segment-age:midsize/21+",
       "before": {
-        "n": 2,
-        "families": 1,
-        "median": 106.33563684887781,
-        "p80": 124.33366778005953
+        "n": 0,
+        "median": null,
+        "p80": null
       },
       "after": {
-        "n": 2,
-        "families": 1,
-        "median": 106.33563684887781,
-        "p80": 124.33366778005953
+        "n": 0,
+        "median": null,
+        "p80": null
       }
     },
     {
       "bucket": "segment-age:sports/0-5",
       "before": {
         "n": 187,
-        "families": 2,
         "median": 30.792288134794354,
         "p80": 59.86068344093049
       },
       "after": {
         "n": 187,
-        "families": 2,
-        "median": 30.792288134794354,
-        "p80": 59.86068344093049
+        "median": 20.386445067819015,
+        "p80": 34.93434255444079
       }
     },
     {
       "bucket": "segment-age:sports/11-20",
       "before": {
-        "n": 155,
-        "families": 3,
-        "median": 45.13984749421303,
-        "p80": 55.10460614338108
+        "n": 244,
+        "median": 39.62436983900275,
+        "p80": 54.541386732240674
       },
       "after": {
-        "n": 155,
-        "families": 3,
-        "median": 45.13984749421303,
-        "p80": 55.10460614338108
+        "n": 244,
+        "median": 22.295673192761605,
+        "p80": 40.516991328326476
       }
     },
     {
       "bucket": "segment-age:sports/21+",
       "before": {
-        "n": 3,
-        "families": 1,
-        "median": 8.465742853404345,
-        "p80": 24.88873063981324
+        "n": 37,
+        "median": 15.578115040106832,
+        "p80": 25.486606898784636
       },
       "after": {
-        "n": 3,
-        "families": 1,
-        "median": 8.465742853404345,
-        "p80": 24.88873063981324
+        "n": 37,
+        "median": 7.372907026850772,
+        "p80": 14.083247950235963
       }
     },
     {
       "bucket": "segment-age:sports/6-10",
       "before": {
-        "n": 113,
-        "families": 3,
-        "median": 31.110334112181626,
-        "p80": 41.130104300315764
+        "n": 126,
+        "median": 31.89739149404312,
+        "p80": 43.07623413307346
       },
       "after": {
-        "n": 113,
-        "families": 3,
-        "median": 31.110334112181626,
-        "p80": 41.130104300315764
+        "n": 126,
+        "median": 15.399774834475565,
+        "p80": 27.558779761066845
       }
     },
     {
       "bucket": "segment-age:suv/0-5",
       "before": {
-        "n": 308,
-        "families": 3,
-        "median": 20.286316303589437,
-        "p80": 51.99270301189152
+        "n": 864,
+        "median": 18.67758758480955,
+        "p80": 37.14589674428379
       },
       "after": {
-        "n": 308,
-        "families": 3,
-        "median": 15.15353392218254,
-        "p80": 22.493572015485512
+        "n": 864,
+        "median": 6.044872258731409,
+        "p80": 12.146479394561243
       }
     },
     {
       "bucket": "segment-age:suv/11-20",
       "before": {
-        "n": 251,
-        "families": 4,
-        "median": 17.965897873289983,
-        "p80": 71.68382246962837
+        "n": 513,
+        "median": 36.48933429361543,
+        "p80": 103.22480764576223
       },
       "after": {
-        "n": 251,
-        "families": 4,
-        "median": 21.454209895213506,
-        "p80": 36.314105197346876
+        "n": 513,
+        "median": 17.922290609738067,
+        "p80": 54.30967750044009
       }
     },
     {
       "bucket": "segment-age:suv/21+",
       "before": {
-        "n": 6,
-        "families": 1,
-        "median": 102.4147567280489,
-        "p80": 200.0651402285031
+        "n": 22,
+        "median": 76.83154745002885,
+        "p80": 171.35418431824016
       },
       "after": {
-        "n": 6,
-        "families": 1,
-        "median": 58.264691670839454,
-        "p80": 134.6158830862085
+        "n": 22,
+        "median": 45.84212397404447,
+        "p80": 103.51563823868011
       }
     },
     {
       "bucket": "segment-age:suv/6-10",
       "before": {
-        "n": 365,
-        "families": 3,
-        "median": 17.596665540688882,
-        "p80": 41.37470531323478
+        "n": 784,
+        "median": 31.2796722941326,
+        "p80": 70.58849849818417
       },
       "after": {
-        "n": 365,
-        "families": 3,
-        "median": 14.059598520128558,
-        "p80": 22.088863921025226
+        "n": 784,
+        "median": 10.195499036995336,
+        "p80": 25.845562880943962
       }
     },
     {
       "bucket": "segment-age:truck/0-5",
       "before": {
-        "n": 414,
-        "families": 3,
-        "median": 10.585303552997788,
-        "p80": 22.369628096095447
+        "n": 629,
+        "median": 14.456018719861618,
+        "p80": 28.297564784995927
       },
       "after": {
-        "n": 414,
-        "families": 3,
-        "median": 10.585303552997788,
-        "p80": 22.369628096095447
+        "n": 629,
+        "median": 7.238031016979241,
+        "p80": 14.171023669182413
       }
     },
     {
       "bucket": "segment-age:truck/11-20",
       "before": {
-        "n": 95,
-        "families": 3,
-        "median": 37.27296881684955,
-        "p80": 47.60147435294463
+        "n": 164,
+        "median": 32.133737775778435,
+        "p80": 52.18526309353078
       },
       "after": {
-        "n": 95,
-        "families": 3,
-        "median": 37.27296881684955,
-        "p80": 47.60147435294463
+        "n": 164,
+        "median": 19.128012601618998,
+        "p80": 35.25549037968731
       }
     },
     {
       "bucket": "segment-age:truck/21+",
       "before": {
-        "n": 21,
-        "families": 2,
-        "median": 32.155508510125806,
-        "p80": 61.675982725576795
+        "n": 24,
+        "median": 31.770382569751348,
+        "p80": 54.36719576487018
       },
       "after": {
-        "n": 21,
-        "families": 2,
-        "median": 32.155508510125806,
-        "p80": 61.675982725576795
+        "n": 24,
+        "median": 17.214593095373697,
+        "p80": 47.36137017777079
       }
     },
     {
       "bucket": "segment-age:truck/6-10",
       "before": {
-        "n": 118,
-        "families": 2,
-        "median": 13.782275726331466,
-        "p80": 23.560264168286864
+        "n": 313,
+        "median": 16.69678352583974,
+        "p80": 36.34241236699248
       },
       "after": {
-        "n": 118,
-        "families": 2,
-        "median": 13.782275726331466,
-        "p80": 23.560264168286864
+        "n": 313,
+        "median": 8.742207496924737,
+        "p80": 18.91286185417032
       }
     },
     {
       "bucket": "segment-age:van/21+",
       "before": {
-        "n": 2,
-        "families": 1,
-        "median": 32.495128508075226,
-        "p80": 43.562375242262775
+        "n": 0,
+        "median": null,
+        "p80": null
       },
       "after": {
-        "n": 2,
-        "families": 1,
-        "median": 32.495128508075226,
-        "p80": 43.562375242262775
+        "n": 0,
+        "median": null,
+        "p80": null
       }
     },
     {
       "bucket": "segment:economy",
       "before": {
-        "n": 74,
-        "families": 1,
-        "median": 18.2548200287722,
-        "p80": 49.201515591620876
+        "n": 84,
+        "median": 21.055773791067132,
+        "p80": 49.85187119300172
       },
       "after": {
-        "n": 74,
-        "families": 1,
-        "median": 18.2548200287722,
-        "p80": 49.201515591620876
+        "n": 84,
+        "median": 20.375341352274944,
+        "p80": 39.56564754910661
       }
     },
     {
       "bucket": "segment:ev",
       "before": {
         "n": 22,
-        "families": 1,
         "median": 24.139737979933493,
         "p80": 31.961538849897714
       },
       "after": {
         "n": 22,
-        "families": 1,
-        "median": 24.139737979933493,
-        "p80": 31.961538849897714
+        "median": 13.79343971288774,
+        "p80": 20.027682024098162
       }
     },
     {
       "bucket": "segment:fullsize",
       "before": {
-        "n": 231,
-        "families": 1,
-        "median": 27.827193803936336,
-        "p80": 39.448085536217256
+        "n": 255,
+        "median": 28.023317868339724,
+        "p80": 40.40712701103605
       },
       "after": {
-        "n": 231,
-        "families": 1,
-        "median": 27.827193803936336,
-        "p80": 39.448085536217256
+        "n": 255,
+        "median": 17.71790074096222,
+        "p80": 34.568794120744904
       }
     },
     {
       "bucket": "segment:luxury",
       "before": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 24,
+        "median": 123.66638888918631,
+        "p80": 194.20711625150807
       },
       "after": {
-        "n": 0,
-        "families": 0,
-        "median": null,
-        "p80": null
+        "n": 24,
+        "median": 67.7497916668897,
+        "p80": 120.65533718863105
       }
     },
     {
       "bucket": "segment:midsize",
       "before": {
-        "n": 5,
-        "families": 1,
-        "median": 136.332355067514,
-        "p80": 216.22299009488484
+        "n": 0,
+        "median": null,
+        "p80": null
       },
       "after": {
-        "n": 5,
-        "families": 1,
-        "median": 136.332355067514,
-        "p80": 216.22299009488484
+        "n": 0,
+        "median": null,
+        "p80": null
       }
     },
     {
       "bucket": "segment:sports",
       "before": {
-        "n": 458,
-        "families": 3,
-        "median": 35.66895608096168,
-        "p80": 54.586509962034086
+        "n": 594,
+        "median": 32.630996814814345,
+        "p80": 51.67349382631749
       },
       "after": {
-        "n": 458,
-        "families": 3,
-        "median": 35.66895608096168,
-        "p80": 54.586509962034086
+        "n": 594,
+        "median": 19.121276707573756,
+        "p80": 35.17337184547709
       }
     },
     {
       "bucket": "segment:suv",
       "before": {
-        "n": 930,
-        "families": 4,
-        "median": 18.877656495597982,
-        "p80": 50.94972001924212
+        "n": 2183,
+        "median": 23.751141081762928,
+        "p80": 62.73797158419205
       },
       "after": {
-        "n": 930,
-        "families": 4,
-        "median": 15.673263684138815,
-        "p80": 26.538183717304705
+        "n": 2183,
+        "median": 9.125756483407098,
+        "p80": 22.936411807595817
       }
     },
     {
       "bucket": "segment:truck",
       "before": {
-        "n": 648,
-        "families": 4,
-        "median": 14.02447957457198,
-        "p80": 27.78775927878274
+        "n": 1130,
+        "median": 17.169384860203692,
+        "p80": 35.862767401036216
       },
       "after": {
-        "n": 648,
-        "families": 4,
-        "median": 14.02447957457198,
-        "p80": 27.78775927878274
+        "n": 1130,
+        "median": 8.673823547247517,
+        "p80": 18.973274041665398
       }
     },
     {
       "bucket": "segment:van",
       "before": {
-        "n": 2,
-        "families": 1,
-        "median": 32.495128508075226,
-        "p80": 43.562375242262775
+        "n": 0,
+        "median": null,
+        "p80": null
       },
       "after": {
-        "n": 2,
-        "families": 1,
-        "median": 32.495128508075226,
-        "p80": 43.562375242262775
+        "n": 0,
+        "median": null,
+        "p80": null
       }
     }
   ],
   "flaggedSegments": [
     "segment:economy",
-    "segment:ev",
     "segment:fullsize",
-    "segment:midsize",
-    "segment:sports",
-    "segment:suv",
-    "segment:van"
+    "segment:luxury",
+    "segment:sports"
+  ],
+  "limitations": [
+    "One month: no temporal validation.",
+    "Five folds balanced within canonical make/model/generation, deduplicated by listing hash.",
+    "Family holdout is stratified by segment and greedily balanced by sample count; indivisible large families cause imbalance.",
+    "CV also selects publication guards; no independent final test. Metrics describe guarded out-of-fit candidates; publication guards reuse CV. Families with fewer than five listings are excluded from seen metrics.",
+    "Dealer asks × configured private-equivalent factor are proxies, not transaction truth."
   ],
   "drift": [
     {
@@ -929,6 +3135,11 @@
       "p80Delta": null
     },
     {
+      "bucket": "segment-age:luxury/6-10",
+      "medianDelta": null,
+      "p80Delta": null
+    },
+    {
       "bucket": "segment-age:midsize/11-20",
       "medianDelta": null,
       "p80Delta": null
@@ -1049,5 +3260,5 @@
       "p80Delta": null
     }
   ],
-  "runtimeSeconds": 30.535194791000002
+  "runtimeSeconds": 24.47341125
 }

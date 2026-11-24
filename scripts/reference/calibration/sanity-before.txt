@@ -1,0 +1,12 @@
+[train] 2017 TOYOTA Camry LE 90k: $13,830 ($11,140-17,180)  expect $13-15k  D=0.00 msrp=22500
+[unseen] 2019 FORD Mustang GT 50k: $20,020 ($11,480-34,920)  expect $29-33k  D=0.33 msrp=32100
+[holdout] 2015 NISSAN Altima 2.5 S 120k: $9,560 ($7,700-11,870)  expect $7-8.5k  D=0.00 msrp=22500
+[train] 2018 FORD F-150 XLT 80k: $19,680 ($14,380-26,930)  expect $25-30k  D=0.07 msrp=31500
+[train] 2020 HONDA CR-V EX 60k: $16,870 ($12,080-23,560)  expect $22-25k  D=0.00 msrp=26695
+[holdout] 2016 JEEP Wrangler Sahara 90k: $11,680 ($8,360-16,320)  expect $20-25k  D=0.21 msrp=23000
+[train] 2001 HONDA S2000 Base 60k: $30,620 ($16,220-57,820)  expect $25-32k  D=0.75 msrp=32000
+[holdout] 2019 TOYOTA Tacoma TRD Off-Road 60k: $26,780 ($19,570-36,650)  expect $31-35k  D=0.12 msrp=31750
+[train] 2010 TOYOTA Corolla LE 150k: $6,420 ($5,210-7,910)  expect $5.5-7k  D=0.00 msrp=16100
+[holdout] 2008 PORSCHE 911 GT3 30k: $104,310 ($55,240-196,980)  expect $140-170k  D=0.75 msrp=106000
+[holdout] 2013 HONDA Civic LX 110k: $8,110 ($6,580-9,990)  expect $8.5-10.5k  D=0.07 msrp=17805
+[train] 2021 TOYOTA RAV4 XLE 40k: $20,110 ($14,400-28,090)  expect $25-28k  D=0.00 msrp=27300

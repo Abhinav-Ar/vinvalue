@@ -1,0 +1,690 @@
+{
+  "received": 4714,
+  "matched": 4338,
+  "families": {
+    "buick/century": {
+      "received": 1,
+      "matched": 1
+    },
+    "buick/lacrosse": {
+      "received": 46,
+      "matched": 23
+    },
+    "buick/lesabre": {
+      "received": 4,
+      "matched": 4
+    },
+    "chevrolet/astro": {
+      "received": 2,
+      "matched": 2
+    },
+    "chevrolet/aveo": {
+      "received": 2,
+      "matched": 2
+    },
+    "chevrolet/bolt ev": {
+      "received": 22,
+      "matched": 22
+    },
+    "chevrolet/camaro": {
+      "received": 110,
+      "matched": 110
+    },
+    "chevrolet/cavalier": {
+      "received": 1,
+      "matched": 1
+    },
+    "chevrolet/cobalt": {
+      "received": 10,
+      "matched": 10
+    },
+    "chevrolet/corvette": {
+      "received": 317,
+      "matched": 261
+    },
+    "chevrolet/cruze": {
+      "received": 74,
+      "matched": 74
+    },
+    "chevrolet/ss": {
+      "received": 3,
+      "matched": 3
+    },
+    "dodge/challenger": {
+      "received": 290,
+      "matched": 215
+    },
+    "dodge/charger": {
+      "received": 320,
+      "matched": 235
+    },
+    "dodge/viper": {
+      "received": 16,
+      "matched": 9
+    },
+    "ford/flex": {
+      "received": 20,
+      "matched": 20
+    },
+    "ford/gt": {
+      "received": 1,
+      "matched": 0
+    },
+    "gmc/acadia": {
+      "received": 304,
+      "matched": 288
+    },
+    "gmc/envoy": {
+      "received": 14,
+      "matched": 14
+    },
+    "gmc/sierra 1500": {
+      "received": 1,
+      "matched": 1
+    },
+    "gmc/terrain": {
+      "received": 316,
+      "matched": 304
+    },
+    "gmc/yukon xl": {
+      "received": 219,
+      "matched": 213
+    },
+    "gmc/yukon": {
+      "received": 292,
+      "matched": 282
+    },
+    "honda/cr-v": {
+      "received": 626,
+      "matched": 612
+    },
+    "honda/ridgeline": {
+      "received": 180,
+      "matched": 141
+    },
+    "jeep/gladiator": {
+      "received": 178,
+      "matched": 178
+    },
+    "lexus/ls": {
+      "received": 24,
+      "matched": 24
+    },
+    "lexus/nx": {
+      "received": 144,
+      "matched": 144
+    },
+    "lexus/rx": {
+      "received": 339,
+      "matched": 329
+    },
+    "nissan/frontier": {
+      "received": 291,
+      "matched": 280
+    },
+    "nissan/titan": {
+      "received": 118,
+      "matched": 115
+    },
+    "ram/1500": {
+      "received": 1,
+      "matched": 0
+    },
+    "toyota/tacoma": {
+      "received": 420,
+      "matched": 416
+    },
+    "volkswagen/passat": {
+      "received": 8,
+      "matched": 5
+    }
+  },
+  "unmatched": [
+    {
+      "make": "Dodge",
+      "model": "Challenger",
+      "trim": "SRT",
+      "reason": "trim name mismatch",
+      "n": 45,
+      "years": [
+        2015,
+        2016,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Charger",
+      "trim": "GT",
+      "reason": "trim name mismatch",
+      "n": 45,
+      "years": [
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Corvette",
+      "trim": "3LZ",
+      "reason": "trim name mismatch",
+      "n": 36,
+      "years": [
+        2016,
+        2017,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Challenger",
+      "trim": "GT",
+      "reason": "trim name mismatch",
+      "n": 30,
+      "years": [
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "Ridgeline",
+      "trim": "Sport",
+      "reason": "trim name mismatch",
+      "n": 22,
+      "years": [
+        2013,
+        2014,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Charger",
+      "trim": "SRT",
+      "reason": "trim name mismatch",
+      "n": 19,
+      "years": [
+        2017,
+        2018,
+        2020,
+        2021,
+        2022,
+        2023
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Charger",
+      "trim": "Police",
+      "reason": "trim name mismatch",
+      "n": 17,
+      "years": [
+        2012,
+        2013,
+        2015,
+        2018,
+        2019,
+        2021,
+        2022
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "CR-V",
+      "trim": "SE",
+      "reason": "trim name mismatch",
+      "n": 14,
+      "years": [
+        2011,
+        2016,
+        2021,
+        2022
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "Ridgeline",
+      "trim": "TrailSport",
+      "reason": "trim name mismatch",
+      "n": 13,
+      "years": [
+        2024,
+        2025
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Acadia",
+      "trim": "AT4",
+      "reason": "trim name mismatch",
+      "n": 11,
+      "years": [
+        2020,
+        2021,
+        2022,
+        2023
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Terrain",
+      "trim": "AT4",
+      "reason": "trim name mismatch",
+      "n": 11,
+      "years": [
+        2022,
+        2023,
+        2024
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Corvette",
+      "trim": "2LZ",
+      "reason": "trim name mismatch",
+      "n": 9,
+      "years": [
+        2016,
+        2017,
+        2024,
+        2025
+      ]
+    },
+    {
+      "make": "Lexus",
+      "model": "RX",
+      "trim": "350 F SPORT",
+      "reason": "trim name mismatch",
+      "n": 9,
+      "years": [
+        2023,
+        2024
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Corvette",
+      "trim": "1LZ",
+      "reason": "trim name mismatch",
+      "n": 7,
+      "years": [
+        2016,
+        2017,
+        2024,
+        2025
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Frontier",
+      "trim": "SL",
+      "reason": "trim name mismatch",
+      "n": 7,
+      "years": [
+        2012,
+        2013,
+        2015,
+        2019,
+        2024
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon",
+      "trim": "Elevation",
+      "reason": "trim name mismatch",
+      "n": 7,
+      "years": [
+        2025
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Premium 1",
+      "reason": "trim name mismatch",
+      "n": 6,
+      "years": [
+        2012,
+        2014
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Viper",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 6,
+      "years": [
+        2013,
+        2014
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Acadia",
+      "trim": "SL",
+      "reason": "trim name mismatch",
+      "n": 5,
+      "years": [
+        2012
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Leather",
+      "reason": "trim name mismatch",
+      "n": 5,
+      "years": [
+        2012,
+        2013,
+        2015,
+        2016
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Premium 2",
+      "reason": "trim name mismatch",
+      "n": 4,
+      "years": [
+        2013,
+        2014
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Charger",
+      "trim": "Daytona",
+      "reason": "trim name mismatch",
+      "n": 4,
+      "years": [
+        2017,
+        2018
+      ]
+    },
+    {
+      "make": "Volkswagen",
+      "model": "Passat",
+      "trim": "Komfort",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2008,
+        2009
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Corvette",
+      "trim": "427",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2013
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Frontier",
+      "trim": "Desert Runner",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2014,
+        2016,
+        2017
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Base",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2012,
+        2015
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Premium",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2015
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Titan",
+      "trim": "PRO-4X",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2014,
+        2015
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon XL",
+      "trim": "ELEVATION",
+      "reason": "trim name mismatch",
+      "n": 3,
+      "years": [
+        2025
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "Ridgeline",
+      "trim": "SE",
+      "reason": "trim name mismatch",
+      "n": 2,
+      "years": [
+        2014
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "Ridgeline",
+      "trim": "RTX",
+      "reason": "trim name mismatch",
+      "n": 2,
+      "years": [
+        2008
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 2,
+      "years": [
+        2007,
+        2008
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon XL",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 2,
+      "years": [
+        2007,
+        2008
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Tacoma",
+      "trim": "TRD Pro",
+      "reason": "trim name mismatch",
+      "n": 2,
+      "years": [
+        2015
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Touring",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2012
+      ]
+    },
+    {
+      "make": "Buick",
+      "model": "LaCrosse",
+      "trim": "Convenience",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2012
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Frontier",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2014
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Corvette",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2008
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Terrain",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2013
+      ]
+    },
+    {
+      "make": "Lexus",
+      "model": "RX",
+      "trim": "LUXURY",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2018
+      ]
+    },
+    {
+      "make": "RAM",
+      "model": "1500",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2014
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon",
+      "trim": "Hybrid",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2008
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon XL",
+      "trim": "3SA",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2008
+      ]
+    },
+    {
+      "make": "Dodge",
+      "model": "Viper",
+      "trim": "GT",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2015
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Tacoma",
+      "trim": "Trail",
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2023
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Tacoma",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2015
+      ]
+    },
+    {
+      "make": "Ford",
+      "model": "GT",
+      "trim": null,
+      "reason": "trim name mismatch",
+      "n": 1,
+      "years": [
+        2019
+      ]
+    }
+  ]
+}

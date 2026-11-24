@@ -1,56 +1,47 @@
-# Model correction, method 2.2.0
+# Model correction, method 2.3.0
 
-Run locally with Node 22, PROVIDERS unset and an explicit local DATABASE_URL:
-`npx tsx scripts/calibrate.ts --local-db`. Apply migration 0005 first.
-This command never invokes a provider. It writes the versioned JSON fallback,
-monthly JSON/Markdown reports, and the local DB active snapshot/report.
+Run `npx tsx --tsconfig tsconfig.json scripts/calibrate.ts --local-db` with Node 22,
+PROVIDERS unset and explicit local DATABASE_URL. Migration 0005 is required.
+The command uses stored samples and WA sales only, writes the JSON fallback and
+monthly accuracy report, and publishes guarded corrections to the local DB.
+The authenticated monthly cron uses the same fitter and row lock. Invalid/old
+DB snapshots fall back to the versioned committed JSON; other DB errors propagate.
 
-The monthly authenticated cron at /api/cron/calibrate runs on day 17 after the
-sampling window. It uses stored samples only, serializes publication with a row
-lock, and is idempotent per month. It stores JSON, Markdown and drift in
-valuation_accuracy_reports; Vercel never writes files. The local script forces
-recomputation for reproducibility. Deployment must apply 0005; 0004 is reserved
-for the separate sale-feedback branch. Export a reviewed DB snapshot to update
-the repository fallback in subsequent months.
+Fit current-month unique listings against the uncorrected surface (G=0). The
+primary unit is canonical make/model/generation. Use median log(private-equivalent
+ask / surface) and MAD residual spread. Median sampling variance is approximated
+by pi/2 × robust spread squared / n. Segment pooling uses family median precision
+weights capped by a 0.01 variance floor. Between-family variance is estimated
+empirically after subtracting within-family variance, with a 0.0025 floor.
+Segment means shrink toward log(1) under a 0.15 log-scale prior; family medians
+shrink toward that segment estimate by between/(between + sampling variance).
 
-Only current-month, uniquely joined MSRP samples enter fitting. Exact make/model,
-model aliases, year, trim aliases and transmission constraints are honored.
-Unknown/ambiguous trims are excluded. Each make/model family is deterministically
-assigned to exactly one of two equally sized family partitions. No brand or age
-terms are fitted; segment-only cells avoid small-cell overfitting.
+Family median intervals are deterministic 300-resample percentile bootstrap 80%
+intervals. Factors stay in [0.75,1.25] unless n>=100 and both CI bounds are within
+10% of the raw median, permitting [0.5,2]. Segment fallback stays in [0.75,1.25].
+Low/high mileage thirds report residual change per 10k miles and flag separated
+80% intervals with >10% log change and >=20k mileage separation. These are
+confounded diagnostics, not fitted mileage slopes or a causal mileage adjustment.
 
-Training medians of log(private-equivalent ask / uncorrected surface) are shrunk
-by n/(n+60), then exponentiated and clamped to [0.75, 1.25]. Each partition needs
-30 observations and two families in the segment. Candidate holdout median and
-p80 percentage errors must both be no worse than the active correction. Overall
-holdout median and p80 must also be non-worsening. Failed cells retain their
-previous correction; absent cells use 1.0. Reports record decisions and candidate
-metrics, including retained cells. The same holdout is used to guard publication,
-so it is a validation set, not an untouched estimate of future accuracy.
+Five-fold listing CV balances observations within each family. Families with
+fewer than five listings are excluded from seen-family error metrics. Separately,
+segment-stratified greedy five-fold family holdout evaluates segment fallback on
+never-seen generations. Large indivisible families prevent exact fold balance.
+Family cells require improving median and non-worsening p80 listing CV errors.
+Segment fallback requires at least three families and improving family-holdout
+median with non-worsening p80. Guarded predictions are re-evaluated out of fit;
+publication also requires overall improvement over neutral and previous active
+corrections. Empty/failed months retain the previous snapshot. Guards reuse CV:
+this is validation, not an independent final test. Raw and guarded CV are saved.
 
-Apply the correction after the surface only in model mode, before history
-adjustments and rounding. Comp normalization never uses it. Appraisals read the
-validated DB snapshot and fall back to committed JSON for missing/invalid rows
-or a missing migration table. Other DB failures propagate. Report notes include
-the factor and snapshot timestamp. Historical appraisals retain their audit.
+Only model mode applies the family factor (or accepted segment fallback, else 1)
+after the surface, before condition/history adjustments. Comps are market prices
+and receive no correction; comp surface normalization also remains uncorrected.
+Historical appraisals retain their audit, method version and snapshot timestamp.
 
-Dealer conversion defaults to 0.90. WA comparison uses medians in canonical
-make/model/year/10,000-mile/calendar-month cells, requiring five observations on
-each side. At least ten overlapping cells and five independent EV families,
-a family-ratio range no wider than 0.10, and a plausible estimate are necessary
-to replace 0.90. The family range is a conservative uncertainty interval, not a
-causal confidence interval. WA lacks trims and is geographically restricted.
-There is no supported inference when contemporary overlap is absent.
-
-Monthly errors are absolute percentage errors against converted asks. Metrics
-include median/p80 by segment, age and segment/age on held-out families, month
-over month percentage-point drift, and flags for segment median error >15%.
-No prior month means unavailable drift, never zero drift.
-
-The legacy proposal comparison retains original observation weights and exact
-grid arithmetic. Per-observation joins/surface components are computed once;
-only the final market multiplier varies in the grid. WA medians are used by
-the new bias/dealer-factor pipeline, not substituted into the legacy objective
-(which would change its numerical results). MSRP lookup is indexed by canonical
-make and model aliases; reference snapshots must be treated as immutable.
-Skipped proposal rows are summarized by reason instead of repeating DMV hashes.
+Dealer conversion defaults to 0.90. WA overlap needs contemporaneous canonical
+make/model/year/10k-mile/month cells, >=5 rows per source/cell, >=10 cells and
+>=5 independent EV models with plausible tight family ratios before replacing it.
+WA trim/geography limitations and dealer asks versus transactions remain explicit.
+Monthly reports include CV, segment/age metrics, mileage diagnostics and drift.
+Matching diagnostics list make/model/trim counts, years and exclusion reasons.

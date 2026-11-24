@@ -1,12 +1,12 @@
-/** Multiplicative correction is applied only after the model surface, never to comp ratios. */
+/** Model-only corrections, keyed by canonical make/model/generation. */
 import committed from '@/models/reference/data/bias-corrections.json';
 import { z } from 'zod';
-export const correctionSchema=z.object({
-  version:z.literal(1), fittedAt:z.string(), dataWindow:z.object({from:z.string(),to:z.string()}),
-  cells:z.array(z.object({segment:z.string(),n:z.number().int().min(30),families:z.number().int().min(2),factor:z.number().min(.75).max(1.25),shrinkage:z.number().min(0).max(1),holdout:z.object({n:z.number().int().min(30),families:z.number().int().min(2),before:z.number(),after:z.number(),p80Before:z.number(),p80After:z.number()})})),
-});
+import { exactName } from '@/models/reference';
+const cell=z.object({segment:z.string(),n:z.number().int().positive(),factor:z.number().min(.5).max(2),shrinkage:z.number().min(0).max(1),ci:z.tuple([z.number().positive(),z.number().positive()]),wideCap:z.boolean()}).refine(c=>c.wideCap||c.factor>=.75&&c.factor<=1.25,'Sparse/uncertain factors must stay within ±25%').refine(c=>!c.wideCap||c.n>=100&&c.ci[1]/c.ci[0]<=1.1/.9,'Wide cap requires n>=100 and tight CI');
+export const correctionSchema=z.object({version:z.literal(2),methodVersion:z.literal('2.3.0'),fittedAt:z.string(),dataWindow:z.object({from:z.string(),to:z.string()}),cells:z.array(cell),families:z.array(cell.and(z.object({family:z.string()})))});
 export type Corrections=z.infer<typeof correctionSchema>;
 export const committedCorrections:Corrections=correctionSchema.parse(committed);
-export function correctionFactor(c:Corrections,segment:string) {
-  return c.cells.find(x=>x.segment===segment)?.factor??1;
+export const correctionFamily=(r:{make:string;model:string;generation:string})=>[r.make,r.model,r.generation].map(exactName).join('/');
+export function correctionFactor(c:Corrections,segment:string,family?:string) {
+  return (family?c.families.find(x=>x.family===family)?.factor:undefined)??c.cells.find(x=>x.segment===segment)?.factor??1;
 }

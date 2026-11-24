@@ -1,25 +1,622 @@
 {
-  "version": 1,
-  "fittedAt": "2026-11-24T03:01:59.989Z",
+  "version": 2,
+  "methodVersion": "2.3.0",
+  "fittedAt": "2026-11-24T03:10:59.632Z",
   "dataWindow": {
     "from": "2026-11-01",
     "to": "2026-11-24"
   },
   "cells": [
     {
+      "segment": "truck",
+      "n": 1131,
+      "factor": 0.9617148006603122,
+      "shrinkage": 0.7911038806477628,
+      "ci": [
+        0.8622918430587532,
+        1.0507148068365482
+      ],
+      "wideCap": false
+    },
+    {
       "segment": "suv",
-      "n": 955,
-      "families": 5,
-      "factor": 0.7818831701261457,
-      "shrinkage": 0.9408866995073891,
-      "holdout": {
-        "n": 930,
-        "families": 4,
-        "before": 15.673263684138815,
-        "after": 15.673263684138815,
-        "p80Before": 26.538183717304705,
-        "p80After": 26.538183717304705
-      }
+      "n": 2188,
+      "factor": 0.75,
+      "shrinkage": 0.8973919907376937,
+      "ci": [
+        0.6676803543479602,
+        0.7604110074021504
+      ],
+      "wideCap": false
+    },
+    {
+      "segment": "midsize",
+      "n": 6,
+      "factor": 0.75,
+      "shrinkage": 0.7045654220049713,
+      "ci": [
+        0.37856435792325444,
+        0.4856226710869113
+      ],
+      "wideCap": false
+    }
+  ],
+  "families": [
+    {
+      "family": "honda/ridgeline/yk2",
+      "segment": "truck",
+      "n": 124,
+      "factor": 0.7587024060847675,
+      "shrinkage": 0.9977041091861267,
+      "ci": [
+        0.7311252053099251,
+        0.765907765824087
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "honda/ridgeline/yk1",
+      "segment": "truck",
+      "n": 17,
+      "factor": 0.75,
+      "shrinkage": 0.9350799222965502,
+      "ci": [
+        0.60286128852012,
+        0.7696072509606976
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "jeep/gladiator/jt",
+      "segment": "truck",
+      "n": 178,
+      "factor": 0.8382428429874258,
+      "shrinkage": 0.9985932144848844,
+      "ci": [
+        0.8175269891078615,
+        0.8445211345468369
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/frontier/d41",
+      "segment": "truck",
+      "n": 162,
+      "factor": 0.972453651418147,
+      "shrinkage": 0.9985063130633971,
+      "ci": [
+        0.9625749540677957,
+        0.9834845410110422
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/frontier/d40",
+      "segment": "truck",
+      "n": 118,
+      "factor": 0.8987579635450842,
+      "shrinkage": 0.9897443739642915,
+      "ci": [
+        0.8756085601772965,
+        0.932993198393991
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "nissan/titan/a61",
+      "segment": "truck",
+      "n": 94,
+      "factor": 0.75,
+      "shrinkage": 0.9920394665595305,
+      "ci": [
+        0.6934300775540162,
+        0.7357129713009825
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "nissan/titan/a60",
+      "segment": "truck",
+      "n": 21,
+      "factor": 0.8163289523737515,
+      "shrinkage": 0.9670732587745468,
+      "ci": [
+        0.7097746356428917,
+        0.8774481860824203
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "toyota/tacoma/n300",
+      "segment": "truck",
+      "n": 243,
+      "factor": 1.0996186197077444,
+      "shrinkage": 0.9986858250305154,
+      "ci": [
+        1.089156924949011,
+        1.1075223078567418
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "toyota/tacoma/n220",
+      "segment": "truck",
+      "n": 88,
+      "factor": 1.25,
+      "shrinkage": 0.9808541326496486,
+      "ci": [
+        1.5038818602372936,
+        1.6688719513358614
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "toyota/tacoma/n140",
+      "segment": "truck",
+      "n": 19,
+      "factor": 1.25,
+      "shrinkage": 0.8825757972440251,
+      "ci": [
+        1.3036301016977212,
+        1.6539757200149559
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "ford/flex/d471",
+      "segment": "suv",
+      "n": 20,
+      "factor": 0.75,
+      "shrinkage": 0.9386448373753515,
+      "ci": [
+        0.5105662869948459,
+        0.5888765099716249
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/acadia/c1xx",
+      "segment": "suv",
+      "n": 162,
+      "factor": 0.6467638823314121,
+      "shrinkage": 0.9961272762623478,
+      "ci": [
+        0.6330659524361038,
+        0.6524575947392466
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/acadia/gen3",
+      "segment": "suv",
+      "n": 36,
+      "factor": 0.8309605216775977,
+      "shrinkage": 0.9954516543286998,
+      "ci": [
+        0.8008436034106143,
+        0.8552476630920213
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/acadia/lambda",
+      "segment": "suv",
+      "n": 90,
+      "factor": 0.75,
+      "shrinkage": 0.9706626027534913,
+      "ci": [
+        0.4450166408038132,
+        0.4844056221870628
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/envoy/gmt360",
+      "segment": "suv",
+      "n": 14,
+      "factor": 0.75,
+      "shrinkage": 0.7625751104578401,
+      "ci": [
+        0.40831086193030697,
+        0.569464107061218
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/nx/az20",
+      "segment": "suv",
+      "n": 47,
+      "factor": 0.9433668893807935,
+      "shrinkage": 0.9974865018929051,
+      "ci": [
+        0.9239037031160521,
+        0.9558716713300875
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/terrain/gen2",
+      "segment": "suv",
+      "n": 211,
+      "factor": 0.6679727679066348,
+      "shrinkage": 0.9975928860887712,
+      "ci": [
+        0.6595383444484135,
+        0.6818794072838089
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/terrain/gen1",
+      "segment": "suv",
+      "n": 75,
+      "factor": 0.75,
+      "shrinkage": 0.9744452791287445,
+      "ci": [
+        0.5412776384656314,
+        0.5827273034960035
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/nx/az10",
+      "segment": "suv",
+      "n": 97,
+      "factor": 0.8373125008746327,
+      "shrinkage": 0.9957212333056183,
+      "ci": [
+        0.8254384913463648,
+        0.8502248711880095
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon/t1",
+      "segment": "suv",
+      "n": 143,
+      "factor": 0.8521034981854736,
+      "shrinkage": 0.9983808124230673,
+      "ci": [
+        0.8430958832176507,
+        0.8639003409617799
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon/k2xx",
+      "segment": "suv",
+      "n": 112,
+      "factor": 0.6313692646981872,
+      "shrinkage": 0.9945089874728466,
+      "ci": [
+        0.6206068043464912,
+        0.6469257572018605
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "lexus/rx/al20",
+      "segment": "suv",
+      "n": 116,
+      "factor": 0.8662960635564589,
+      "shrinkage": 0.9985334147940172,
+      "ci": [
+        0.8572281771259372,
+        0.8754398046697303
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon/gmt900",
+      "segment": "suv",
+      "n": 21,
+      "factor": 0.75,
+      "shrinkage": 0.8520016079094974,
+      "ci": [
+        0.4975161303620234,
+        0.6750744756470156
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/rx/ala10",
+      "segment": "suv",
+      "n": 81,
+      "factor": 0.9611373456778602,
+      "shrinkage": 0.9969331799962626,
+      "ci": [
+        0.9455976209397233,
+        0.9779266083503876
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon xl/t1",
+      "segment": "suv",
+      "n": 113,
+      "factor": 0.8167735852929723,
+      "shrinkage": 0.9985426105564387,
+      "ci": [
+        0.81109879036229,
+        0.8262393931926757
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "gmc/yukon xl/k2xx",
+      "segment": "suv",
+      "n": 80,
+      "factor": 0.75,
+      "shrinkage": 0.9913547352118128,
+      "ci": [
+        0.5370417300121405,
+        0.5612356823906491
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/rx/al10",
+      "segment": "suv",
+      "n": 86,
+      "factor": 0.7938156131141063,
+      "shrinkage": 0.9906056958842242,
+      "ci": [
+        0.7845547981507571,
+        0.8204878749036838
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "gmc/yukon xl/gmt900",
+      "segment": "suv",
+      "n": 17,
+      "factor": 0.75,
+      "shrinkage": 0.9002648035452788,
+      "ci": [
+        0.4197008952169988,
+        0.5074409166317392
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/rw",
+      "segment": "suv",
+      "n": 264,
+      "factor": 0.8962518742367691,
+      "shrinkage": 0.9988398836488782,
+      "ci": [
+        0.887714732571843,
+        0.9074561143842673
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "honda/cr-v/rs",
+      "segment": "suv",
+      "n": 142,
+      "factor": 0.9149613238446839,
+      "shrinkage": 0.9985550098151823,
+      "ci": [
+        0.8995465541170808,
+        0.9225676951246495
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "lexus/rx/xu30",
+      "segment": "suv",
+      "n": 44,
+      "factor": 0.75,
+      "shrinkage": 0.9211371823809287,
+      "ci": [
+        0.5841659930362522,
+        0.6965754154526246
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/re",
+      "segment": "suv",
+      "n": 22,
+      "factor": 0.8222683039364725,
+      "shrinkage": 0.9354925239573125,
+      "ci": [
+        0.7411604926053446,
+        0.9254864496762505
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "honda/cr-v/rm",
+      "segment": "suv",
+      "n": 184,
+      "factor": 0.9279600556208589,
+      "shrinkage": 0.9967000060662198,
+      "ci": [
+        0.9045980274617837,
+        0.9381058677089996
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "chevrolet/camaro/gen5",
+      "segment": "sports",
+      "n": 89,
+      "factor": 1.25,
+      "shrinkage": 0.993510837015051,
+      "ci": [
+        1.847991179370659,
+        2.0595767986740365
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/camaro/gen6",
+      "segment": "sports",
+      "n": 21,
+      "factor": 1.25,
+      "shrinkage": 0.995433450426115,
+      "ci": [
+        1.6608102972557124,
+        1.7220003009657847
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c8",
+      "segment": "sports",
+      "n": 110,
+      "factor": 0.6706449578307052,
+      "shrinkage": 0.9968987972108894,
+      "ci": [
+        0.6451014758145703,
+        0.6840452681490798
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "chevrolet/corvette/c7",
+      "segment": "sports",
+      "n": 57,
+      "factor": 1.25,
+      "shrinkage": 0.997886254501888,
+      "ci": [
+        1.3354580011584745,
+        1.3904313119012517
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c6",
+      "segment": "sports",
+      "n": 68,
+      "factor": 1.25,
+      "shrinkage": 0.99822420084496,
+      "ci": [
+        1.2408218008256509,
+        1.288107199271158
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/corvette/c5",
+      "segment": "sports",
+      "n": 26,
+      "factor": 1.0398439515213138,
+      "shrinkage": 0.9944261060453992,
+      "ci": [
+        1.0306090414856122,
+        1.0880810808520556
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/challenger/lc",
+      "segment": "sports",
+      "n": 215,
+      "factor": 1.3882713528808315,
+      "shrinkage": 0.9942215464944121,
+      "ci": [
+        1.349877313035903,
+        1.453376950476175
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "dodge/viper/zb ii",
+      "segment": "sports",
+      "n": 8,
+      "factor": 1.25,
+      "shrinkage": 0.9501474749921879,
+      "ci": [
+        2.648658122742399,
+        3.271009194598087
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/ls/xf40",
+      "segment": "luxury",
+      "n": 16,
+      "factor": 0.75,
+      "shrinkage": 0.10804111530576074,
+      "ci": [
+        0.3957883891800287,
+        0.6233736656982549
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "lexus/ls/xf30",
+      "segment": "luxury",
+      "n": 8,
+      "factor": 0.75,
+      "shrinkage": 0.21405019725281213,
+      "ci": [
+        0.3958878991547312,
+        0.4781652714277653
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lacrosse/gen3",
+      "segment": "fullsize",
+      "n": 5,
+      "factor": 0.8244533795551838,
+      "shrinkage": 0.9618965802320114,
+      "ci": [
+        0.7132090200912428,
+        0.8856720041439886
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "buick/lacrosse/gen2",
+      "segment": "fullsize",
+      "n": 8,
+      "factor": 0.75,
+      "shrinkage": 0.9594813237577438,
+      "ci": [
+        0.50391974164146,
+        0.6199107237334739
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "dodge/charger/ld",
+      "segment": "fullsize",
+      "n": 225,
+      "factor": 1.3551217599799985,
+      "shrinkage": 0.9957373853612037,
+      "ci": [
+        1.2933376901162552,
+        1.3855634174503533
+      ],
+      "wideCap": true
+    },
+    {
+      "family": "chevrolet/cobalt/delta",
+      "segment": "economy",
+      "n": 10,
+      "factor": 1.2458880539458133,
+      "shrinkage": 0.5416732897298204,
+      "ci": [
+        1.1297937853468842,
+        1.664839464280103
+      ],
+      "wideCap": false
+    },
+    {
+      "family": "chevrolet/bolt ev/gen1",
+      "segment": "ev",
+      "n": 22,
+      "factor": 0.8408778314317996,
+      "shrinkage": 0.5662999351517056,
+      "ci": [
+        0.7959439485293653,
+        0.913265070666874
+      ],
+      "wideCap": false
     }
   ]
 }

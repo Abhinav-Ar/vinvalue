@@ -1,4 +1,4 @@
-import { committedCorrections, correctionFactor, type Corrections } from './biasCorrections';
+import { committedCorrections, correctionFamily, correctionFactor, type Corrections } from './biasCorrections';
 import type { DecodedSpecs, AppraisalInputs, ValueRange, Adjustment, CompStats, Confidence } from '@/models/db/schema';
 import type { ValuationAudit } from '@/shared/valuation';
 import { loadReferences, type ReferenceData } from '@/models/reference';
@@ -460,7 +460,7 @@ export function computeValuation(args: ComputeArgs): ValuationResult {
   }
   const model = !result, p = config.surface;
   const snapshot=args.corrections??committedCorrections;
-  const correction=model?correctionFactor(snapshot,subject.segment):1;
+  const correction=model?correctionFactor(snapshot,subject.segment,correctionFamily(subject.msrpRow!)):1;
   const base = result?.stats.weightedMedian ?? subject.H*correction;
   const adjustments = result?.adjustments ?? historyAdjustments(base, args.inputs, config);
   const value = result?.private.value ?? roundTo(Math.max(base+adjustments.reduce((a,x) => a+x.amount,0),base*config.floorPct),config.roundTo);

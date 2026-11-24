@@ -1,6 +1,7 @@
 import { describe,it,expect } from 'vitest';
 import { loadReferences, resolveReference } from '@/models/reference';
 import { evaluateSurface, NotEnoughDataError } from '@/models/valuation/surface';
+import { correctionFamily, type Corrections } from '@/models/valuation/biasCorrections';
 import { computeValuation } from '@/models/valuation';
 import { valuationConfig as C } from '@/models/config/valuation';
 import { exampleReference } from '../fixtures/reference/factory';
@@ -8,6 +9,7 @@ import type { DecodedSpecs } from '@/models/db/schema';
 const now = new Date('2026-11-16Z');
 const data = exampleReference();
 const specs: DecodedSpecs = {year:2017,make:'Toyota',model:'Camry LE',body:null,drive:null,engine:null,fuel:null,doors:null,plant:null,trimRaw:'Base',trimCandidates:['Base'],checkDigitValid:true};
+const neutral:Corrections={version:2,methodVersion:'2.3.0',fittedAt:'2026-11-23',dataWindow:{from:'',to:''},cells:[],families:[]};
 const inputs = {vin:'FIXTURE',trim:'Base',mileage:90000,zip:'98001',condition:'good' as const,title:'clean' as const,accidents:'none' as const,serviceHistory:null,owners:null,keys:null,warningLights:null};
 describe('reference-backed model and differential contracts',()=>{
  it('resolves exact case-insensitive aliases and never substring matches',()=>{
@@ -17,7 +19,7 @@ describe('reference-backed model and differential contracts',()=>{
  });
  it('raises a typed friendly error without a documented anchor',()=>expect(()=>computeValuation({specs,inputs,listings:[],references:{...data,msrp:[]},now})).toThrow(NotEnoughDataError));
  it('retains Camry value better and reports calibrated model ranges with no fake comps',()=>{
-   const r=computeValuation({specs,inputs,listings:[],references:data,now});
+   const r=computeValuation({specs,inputs,listings:[],references:data,now,corrections:neutral});
    expect(r.private.value).toBeGreaterThan(13000); expect(r.private.value).toBeLessThan(15000);
    expect(r.stats.used).toBe(0); expect(r.stats.weightedMedian).toBe(0);
    expect(r.private.low/r.private.value).toBeGreaterThan(.75);
@@ -31,6 +33,14 @@ describe('reference-backed model and differential contracts',()=>{
    expect(r.audit?.normalizations.every(a=>a.ratio===1)).toBe(true);
    const unknown=computeValuation({specs,inputs,listings:ls.map(l=>({...l,trim:null,inventoryType:'public_record'})),references:data,now});
    expect(unknown.comps.every(c=>c.trimMatch==='adjusted')).toBe(true);
+ });
+ it('applies family corrections only to model values before condition adjustments',()=>{
+   const c:Corrections={...neutral,families:[{family:correctionFamily(data.msrp[0]!),segment:'midsize',n:50,factor:1.2,ci:[1.15,1.25],shrinkage:.9,wideCap:false}]};
+   const base=computeValuation({specs,inputs,listings:[],references:data,now,corrections:neutral});
+   const corrected=computeValuation({specs,inputs,listings:[],references:data,now,corrections:c});
+   expect(corrected.private.value/base.private.value).toBeCloseTo(1.2,2);
+   const listings=Array.from({length:10},(_,i)=>({id:String(i),vin:null,inventoryType:'used',price:14000,miles:90000,distance:10,year:2017,make:specs.make,model:specs.model,trim:'Base',sellerType:'private' as const,daysOnMarket:0}));
+   expect(computeValuation({specs,inputs,listings,references:data,now,corrections:c}).private.value).toBe(14000);
  });
  it('is monotone in mileage and supports evidenced generation overrides while G=0 ignores them',()=>{
    const d=exampleReference(6),s={year:1995,make:'Toyota',model:'Supra Turbo',transmission:'manual'};
