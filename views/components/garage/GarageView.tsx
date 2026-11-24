@@ -1,6 +1,7 @@
 'use client';
 /** /garage, ported from design/Garage.dc.html. Data: GET /api/vehicles. */
 import Link from 'next/link';
+import { SaleOutcomePrompts, VehicleSaleActions } from './SaleOutcomeCard';
 import { useState } from 'react';
 import { CarDrawing } from '@/views/components/CarDrawing';
 import { VehiclePhoto } from '@/views/components/VehiclePhoto';
@@ -41,6 +42,7 @@ export function GarageView() {
         )}
       </div>
       <GarageTabs on="vehicles" />
+      <SaleOutcomePrompts />
 
       {error && <div style={{ marginTop: 40 }}><ErrorNote error={error} onRetry={reload} /></div>}
 
@@ -131,6 +133,7 @@ function VehicleCard({ v, onRefreshed }: { v: GarageVehicle; onRefreshed: () => 
           {busy ? 'Refreshing' : 'Refresh value'}
         </button>
       </div>
+      <VehicleSaleActions vehicleId={v.id} onChanged={onRefreshed} />
       {err && <p className="err" role="alert">{err.message}</p>}
     </article>
   );

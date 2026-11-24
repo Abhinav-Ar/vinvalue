@@ -1,0 +1,4 @@
+source,url,saleDate,make,model,generation,trim,year,mileage,salePriceUsd,transmission,notes,example
+Bring a Trailer,https://example.invalid/fake-sale-1,2025-01-01,FORD,F-150,PN96,XL,2001,80000,12000,manual,FAKE EXAMPLE ONLY,true
+Cars & Bids,https://example.invalid/fake-sale-2,2025-01-02,FORD,F-150,PN96,XLT,2002,75000,14000,automatic,FAKE EXAMPLE ONLY,true
+Bring a Trailer,https://example.invalid/fake-sale-3,2025-01-03,FORD,F-150,PN96,XL,2003,90000,11000,automatic,FAKE EXAMPLE ONLY,true

@@ -5,6 +5,7 @@
  * /api/maintenance/upcoming?vehicleId (the server's date). Actions: odometer, refresh value, documents.
  */
 import Link from 'next/link';
+import { SaleOutcomePrompts, VehicleSaleActions } from './SaleOutcomeCard';
 import { notFound } from 'next/navigation';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { CarDrawing } from '@/views/components/CarDrawing';
@@ -248,6 +249,8 @@ export function VehicleView({ id }: { id: string }) {
             {refreshed && <p className="small" role="status" style={{ margin: '12px 0 0', color: 'var(--ink)' }}>{refreshed}</p>}
           </div>
 
+          <SaleOutcomePrompts vehicleId={id} />
+          <VehicleSaleActions vehicleId={id} />
           <OdometerForm id={id} current={d?.vehicle.odometer ?? null} today={today} onSaved={() => void ov.reload()} />
 
           <Documents id={id} summary={d?.documents ?? null} docs={docs.data?.documents ?? null} docsError={docs.error} today={today}

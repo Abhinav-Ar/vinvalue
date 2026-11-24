@@ -3,6 +3,7 @@
  * Sell or trade (design/Sell): instant offer vs trade-in vs private sale, state checklist, listing kit.
  */
 import Link from 'next/link';
+import { SaleOutcomePrompts } from '@/views/components/garage/SaleOutcomeCard';
 import { useEffect, useRef, useState } from 'react';
 import type { SellPlanView } from '@/models/sell/service';
 import { api, ApiError, useApi } from '@/views/components/client/api';
@@ -106,6 +107,7 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
   return (
     <section className="wrap page">
       <VehicleHeader vehicle={vehicle.data} vehicleId={vehicleId} section="sell" />
+      {plan && vehicle.data && <SaleOutcomePrompts vehicleId={vehicleId} planned />}
       {vehicle.error && <div style={{ marginTop: 24 }}><ErrorNote error={vehicle.error} onRetry={vehicle.reload} /></div>}
 
       {error?.status === 409 ? (
