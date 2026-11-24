@@ -20,6 +20,8 @@ const CALLOUTS: Callout[] = [
   { x: 560, y: 104, label: 'trim + options', lx: 470, ly: 26 },
   { x: 784, y: 226, label: 'mileage + tires', lx: 790, ly: 60 },
 ];
+// The imported car's roof sits lower than the line drawing's, so its roof callout drops onto the glass.
+const CALLOUTS_3D: Callout[] = CALLOUTS.map((c) => (c.label === 'trim + options' ? { ...c, y: 121 } : c));
 
 const dim = { stroke: 'currentColor', strokeWidth: 0.9, fill: 'none' } as const;
 
@@ -171,7 +173,7 @@ function HeroCar({ progress }: { progress: ProgressSource }) {
         viewBox={VIEWBOX}
         hudClassName={styles.hud}
         label={use3d ? undefined : 'The AIQ-01 concept coupe, with its dimensions'}
-        callouts={CALLOUTS}
+        callouts={ready ? CALLOUTS_3D : CALLOUTS}
         style={{ pointerEvents: 'none' }}
       >
         <g className={styles.hud}>

@@ -292,6 +292,11 @@ export function setColors(model: CarModel, c: CarColors) {
       xray.roughness = 0.28;
       xray.normalScale.setScalar(0.05);
     }
+    // Cutaway mechanicals and cabin take a wash of the theme accent so they read as part of the drawing.
+    if (xray !== solid && xray instanceof THREE.MeshStandardMaterial && !solid.name.startsWith('Paint ') && solid.name !== 'Glass') {
+      if (solid.name === 'Mechanical') xray.color.setHex(0xb0b8c1).lerp(c.accent, night ? 0.4 : 0.3);
+      else if (/Interior/.test(solid.name)) xray.color.setHex(solid.name.includes('Interior 3') ? 0x82909f : 0x4e5864).lerp(c.accent, night ? 0.3 : 0.22);
+    }
     if (solid.name === 'Mechanical') {
       solid.color.setHex(0x79828b);
       solid.metalness = 0.65;
