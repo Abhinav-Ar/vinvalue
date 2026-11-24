@@ -13,6 +13,7 @@ export type DecodeResult = {
   make: string;
   model: string;
   trimCandidates: string[];
+  trimSource?: 'vpic' | 'reference' | null;
   needsTrimChoice: boolean;
   decodeStatus: 'clean' | 'check_digit_mismatch' | 'partial';
   needsConfirmation: boolean;

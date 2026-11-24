@@ -194,7 +194,7 @@ export function DetailsStep() {
   const d = stored.decode;
   const warnings = d.warnings.map((w) => WARNING_TEXT[w]).filter(Boolean) as string[];
   const line = specLine(d.specs);
-  const trimSummary = trims.length > 1 ? trim ?? 'Not picked yet' : trims.length === 1 ? (trimConfirmed ? trims[0]! : `${trims[0]} (from the VIN)`) : trimText.trim() || 'Not given';
+  const trimSummary = trims.length > 1 ? trim ?? 'Not picked yet' : trims.length === 1 ? (trimConfirmed ? trims[0]! : `${trims[0]} (from ${d.trimSource === 'reference' ? 'reference data' : 'the VIN'})`) : trimText.trim() || 'Not given';
 
   return (
     <>
@@ -236,10 +236,10 @@ export function DetailsStep() {
           )}
 
           {trims.length > 1 && (
-            <Group label={`Trim (your VIN matches ${countWord(trims.length)})`} errId="trim-err" errors={fields.trim}>
+            <Group label={d.trimSource === 'reference' ? 'Trim (from reference data for this year and model)' : `Trim (your VIN matches ${countWord(trims.length)})`} errId="trim-err" errors={fields.trim}>
               <SegmentedControl
                 name="trim"
-                label={`Trim, your VIN matches ${trims.length}`}
+                label={d.trimSource === 'reference' ? 'Choose your vehicle’s trim' : `Trim, your VIN matches ${trims.length}`}
                 value={trim}
                 onChange={(v) => { setTrim(v); clear('trim'); }}
                 options={trims.map((t) => ({ value: t, label: t }))}
