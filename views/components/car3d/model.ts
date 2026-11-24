@@ -186,8 +186,8 @@ export function buildCar(colors: CarColors): CarModel {
   // Solid look.
   const paint = new THREE.MeshPhysicalMaterial({
     color: acc,
-    metalness: 0.45,
-    roughness: 0.32,
+    metalness: 0.2,
+    roughness: 0.38,
     clearcoat: 1,
     clearcoatRoughness: 0.06,
     side: THREE.DoubleSide,
@@ -679,7 +679,7 @@ export function setColors(model: CarModel, colors: CarColors) {
   model.colors.ink.copy(colors.ink);
   model.colors.accent.copy(colors.accent);
   const hsl = { h: 0, s: 0, l: 0 };
-  model.solid.paint.color.copy(colors.accent).lerp(colors.paper, 0.17);
+  model.solid.paint.color.copy(colors.accent);
   const dark = colors.ink.getHSL(hsl).l < 0.5 ? colors.ink : colors.paper;
   for (const material of model.solid.all) {
     if (!(material instanceof THREE.MeshStandardMaterial || material instanceof THREE.LineBasicMaterial)) continue;
