@@ -66,6 +66,8 @@ export function Nav() {
             </Link>
           );
         })}
+        {me && !me.signedIn && <Link className="signin-m" href="/sign-in">Sign in</Link>}
+        {me?.signedIn && <Link className="signin-m" href="/history">History</Link>}
       </nav>
       <div className="navr">
         {me?.signedIn && (
@@ -92,11 +94,11 @@ export function Nav() {
         )}
         <ThemeToggle />
         {me?.signedIn ? (
-          <Link className="btn-o" href="/history">
+          <Link className="btn-o signin" href="/history">
             History
           </Link>
         ) : (
-          <Link className="btn-o" href="/sign-in" style={{ visibility: me ? 'visible' : 'hidden' }}>
+          <Link className="btn-o signin" href="/sign-in" style={{ visibility: me ? 'visible' : 'hidden' }}>
             Sign in
           </Link>
         )}

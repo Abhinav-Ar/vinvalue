@@ -119,3 +119,88 @@ html[data-theme=night]{background:#1D3B6E}
 
 .nav-menu{display:none;min-height:44px;min-width:44px;align-items:center;justify-content:center;background:transparent;border:1px solid var(--line);color:var(--ink);cursor:pointer;font:inherit}
 @media (max-width:760px){.nav{min-height:64px}.nav .links{display:none;width:100%;flex-direction:column;gap:0;border-top:1px solid var(--line)}.nav.menu-open .links{display:flex}.nav .links a{padding:14px 0;min-height:44px}.nav .navr{margin-left:auto}.nav-menu{display:inline-flex}.wrap{padding-left:20px;padding-right:20px}}
+
+/* ---- Redesign v3: shared patterns (both themes read the same tokens) ---- */
+.bp{--paper-a:rgba(255,255,255,.86);--ok:#1F7A4D;--warn:#A8431F}
+[data-theme=night] .bp{--paper-a:rgba(29,59,110,.86);--ok:#9FE0B8;--warn:#FFB38A}
+.btn,.btn-o,.ghost,.seg,.links a{transition:background-color .18s,border-color .18s,color .18s}
+.btn .arr,.btn-o .arr{display:inline-block;transition:transform .18s}
+.btn:hover .arr,.btn-o:hover .arr{transform:translateX(3px)}
+
+/* Sticky drawing-sheet nav. */
+.nav{position:sticky;top:0;z-index:40;background:var(--paper-a);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);min-height:64px}
+.links a{padding:21px 0}
+.nav .ghost{min-height:40px}.nav .btn-o{min-height:40px}
+.theme-label{display:inline}
+@media (max-width:760px){.theme-label{display:none}.nav .ghost{min-width:44px;justify-content:center;padding:0}.nav .navr .signin{display:none}.nav.menu-open .links .signin-m{display:block}}
+.links .signin-m{display:none}
+
+/* Section header: mono index, rule, title. Like a sheet heading on a drawing. */
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:baseline}
+.sec-head .idx{font:500 12px/1 var(--font-mono),monospace;letter-spacing:.08em;color:var(--blue);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.sec-head .idx::after{content:'';width:28px;height:1px;background:var(--blue)}
+.sec-head .rule{height:1px;background:var(--line);align-self:center}
+.sec-head h2{grid-column:1/-1}
+.kicker{font:500 12px/1.2 var(--font-mono),monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin:0}
+.figure{font-size:clamp(56px,9vw,96px);line-height:.95;letter-spacing:-.045em;font-weight:500;margin:0}
+.sheet.lift{transition:border-color .2s,transform .2s}
+.sheet.lift:hover{border-color:var(--ink)}
+.tag{display:inline-flex;align-items:center;gap:6px;font:500 11px/1 var(--font-mono),monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border:1px solid var(--line);color:var(--mid);background:var(--fill)}
+.tag.on{border-color:var(--blue);color:var(--blue)}
+.tag i{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* Title block footer (the box in the corner of an engineering drawing). */
+.tblock{display:grid;grid-template-columns:1.3fr 1fr 1.4fr .9fr;border:1px solid var(--ink);background:var(--fill)}
+.tblock>*{padding:14px 18px;border-right:1px solid var(--line);min-width:0}
+.tblock>*:last-child{border-right:0}
+.tblock .kicker{margin-bottom:8px}
+.tblock a{text-decoration:none}.tblock a:hover{text-decoration:underline}
+@media (max-width:820px){.tblock{grid-template-columns:1fr 1fr}.tblock>*:nth-child(2n){border-right:0}.tblock>*:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+
+/* Report: price-route diagram and value waterfall. */
+.routes-svg text{font-family:var(--font-sans),sans-serif}
+.routes-svg .mono-t{font-family:var(--font-mono),monospace}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mid);margin:12px 0 0;padding:0;list-style:none}
+.legend li{display:flex;gap:6px;align-items:center}
+.sw{width:12px;height:12px;display:inline-block;border:1.5px solid var(--ink)}
+.sw.up{background:var(--blue);border-color:var(--blue)}.sw.down{background:repeating-linear-gradient(135deg,var(--ink) 0 2px,transparent 2px 5px)}
+@media print{.nav,.stepper,footer,.no-print{display:none!important}.grid{background:none}}
+@media (max-width:760px){.nav{gap:10px;flex-wrap:wrap}.nav .navr{order:2;margin-left:auto}.nav-menu{order:3}.nav .links{order:4}.nav .links a.signin-m{display:none}.nav.menu-open .links a.signin-m{display:block}}
+
+/* RouteDiagram */
+.route-labels{position:relative;height:74px}
+.route-label{position:absolute;bottom:0;left:var(--x);transform:translateX(-50%);text-align:center;white-space:nowrap}
+.route-label:first-child{transform:translateX(-30%)}.route-label:last-child{transform:translateX(-70%)}
+.route-v{margin:6px 0 0;font-size:clamp(20px,3.2vw,34px);letter-spacing:-.02em;font-weight:500}
+.route-label.on .kicker,.route-label.on .route-v{color:var(--blue)}
+.route-axis{position:relative;height:64px;margin-top:10px}
+.route-line{position:absolute;left:0;right:0;top:12px;height:1px;background:var(--ink)}
+.route-line::before,.route-line::after{content:'';position:absolute;top:-5px;width:1px;height:11px;background:var(--ink)}
+.route-line::before{left:0}.route-line::after{right:0}
+.route-range{position:absolute;top:6px;height:12px;background:var(--soft);border:1px solid var(--blue);box-sizing:border-box}
+.route-pin{position:absolute;top:6px;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);box-sizing:border-box}
+.route-pin.on{background:var(--blue);border-color:var(--blue);width:15px;height:15px;margin-left:-7.5px;top:5px}
+.route-gap{position:absolute;top:36px;height:1px;background:var(--mid)}
+.route-gap::before,.route-gap::after{content:'';position:absolute;top:-4px;width:1px;height:9px;background:var(--mid)}
+.route-gap::before{left:0}.route-gap::after{right:0}
+.route-gap b{position:absolute;left:50%;top:6px;transform:translateX(-50%);font:500 12px/1 var(--font-sans),sans-serif;color:var(--mid);white-space:nowrap}
+.route-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.route-notes li{padding:14px 18px 0 0;color:var(--mid);font-size:14px;line-height:1.5}
+.route-notes li.on{color:var(--ink)}
+@media (max-width:620px){.route-labels{height:62px}.route-label .kicker{font-size:10px}.route-notes{grid-template-columns:1fr}.route-notes li{padding:10px 0;border-bottom:1px solid var(--line)}}
+
+/* Waterfall: each step of the value as a horizontal bar on one scale. */
+.wf{list-style:none;margin:0;padding:0}
+.wf li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) 92px;gap:6px 16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.wf .wf-l{font-size:15px}
+.wf .wf-r{font-size:12.5px;color:var(--mid);grid-column:1/-1;margin:-2px 0 0;max-width:640px}
+.wf .wf-v{text-align:right}
+.wf .track{position:relative;height:14px;background:repeating-linear-gradient(90deg,var(--grid2) 0 1px,transparent 1px 10%)}
+.wf .bar{position:absolute;top:0;bottom:0;background:var(--ink);opacity:.85}
+.wf .bar.up{background:var(--blue);opacity:1}
+.wf .bar.down{background:repeating-linear-gradient(135deg,var(--ink) 0 2px,transparent 2px 5px);border:1px solid var(--ink);opacity:1;box-sizing:border-box}
+.wf .bar.zero{width:2px!important;margin-left:-1px;background:var(--mid)}
+.wf li.total{border-bottom:0;border-top:3px double var(--ink);font-weight:600}
+.wf li.total .bar{background:var(--blue);opacity:1}
+@media (max-width:620px){.wf li{grid-template-columns:minmax(0,1fr) 84px}.wf .track{grid-column:1/-1;order:3}}
+.tbl td.num,.tbl th.num{white-space:nowrap}

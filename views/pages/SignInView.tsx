@@ -14,8 +14,9 @@ function safeNext(v: string | string[] | undefined): string {
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const callbackUrl = safeNext((await searchParams).next);
   return (
-    <section className="wrap" style={{ paddingTop: 96, paddingBottom: 96, display: 'flex', justifyContent: 'center' }}>
-      <div className="sheet" style={{ width: '100%', maxWidth: 520, padding: 44, display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="grid"><section className="wrap" style={{ paddingTop: 96, paddingBottom: 96, display: 'flex', justifyContent: 'center' }}>
+      <div className="sheet frame" style={{ width: '100%', maxWidth: 520, padding: 44, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <p className="kicker" style={{ marginBottom: -8 }}>Account</p>
         <h1 className="title">Sign in to save your cars</h1>
         <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>
           Sign in to save cars to your garage and reopen any report later. Appraisals still work without an account.
@@ -29,6 +30,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
           {/* TODO: add the privacy policy link here once the policy page exists (design placeholder "[YOUR PRIVACY POLICY LINK]"). */}
         </div>
       </div>
-    </section>
+    </section></div>
   );
 }

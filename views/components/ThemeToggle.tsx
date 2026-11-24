@@ -36,7 +36,7 @@ export function ThemeToggle() {
         <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.3" />
         <path d="M8 1.5 A6.5 6.5 0 0 0 8 14.5 Z" fill="currentColor" />
       </svg>
-      <span suppressHydrationWarning>{next === 'night' ? 'Dark' : 'Light'}</span>
+      <span className="theme-label" suppressHydrationWarning>{next === 'night' ? 'Dark' : 'Light'}</span>
     </button>
   );
 }

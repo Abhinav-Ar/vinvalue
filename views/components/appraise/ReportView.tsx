@@ -3,12 +3,14 @@ import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
 import type { PublicReport } from '@/models/appraisals/report';
 import { api, ApiError, useApi } from '@/views/components/client/api';
-import { longDate, miles, num, usd, usdSigned } from '@/views/components/client/format';
+import { longDate, miles, num, usd } from '@/views/components/client/format';
 import { EmptyState, ErrorNote, Skeleton, Stepper } from '@/views/components/ui';
 import { RangeBar } from '@/views/components/RangeBar';
 import { CarDrawing } from '@/views/components/CarDrawing';
 import { VehiclePhoto } from '@/views/components/VehiclePhoto';
 import { CompsScatter } from './CompsScatter';
+import { RouteDiagram } from '@/views/components/RouteDiagram';
+import { Waterfall } from '@/views/components/Waterfall';
 import { carVariant } from './session';
 
 const ROWS_SHOWN = 6;
@@ -22,7 +24,6 @@ const FLAG_TEXT: Record<string, string> = {
   mileage_below_last_reading: 'This mileage is lower than the last reading saved for this car, so it was not added to the odometer history.',
 };
 
-const amount = (n: number) => (n === 0 ? '$0' : usdSigned(n));
 
 /** /report/[slug]: the public appraisal report. */
 export function ReportView({ slug }: { slug: string }) {
@@ -54,17 +55,24 @@ export function ReportView({ slug }: { slug: string }) {
 
   const signedIn = !!me.data?.signedIn;
 
+  const model = !!r.confidence?.flags.includes('model_estimate');
+  const recorded = r.compStats.source === 'recorded_sales';
+  const drawing = <CarDrawing variant={carVariant(r.vehicle.model)} label={`Line drawing of a ${r.vehicle.label}`} />;
+
   return (
     <div className="grid">
       <Stepper step={3} />
-      <section className="wrap" style={{ paddingTop: 48, paddingBottom: 96 }}>
+      <section className="wrap" style={{ paddingTop: 44, paddingBottom: 96 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
-          <h1 className="title">{r.vehicle.label}</h1>
-          <Actions report={r} signedIn={signedIn} onClaimed={(c) => setData(c)} />
+          <div>
+            <p className="kicker">Appraisal report · Method {r.methodVersion}</p>
+            <h1 className="title" style={{ marginTop: 10 }}>{r.vehicle.label}</h1>
+          </div>
+          <div className="no-print"><Actions report={r} signedIn={signedIn} onClaimed={(c) => setData(c)} /></div>
         </div>
         <SaveNote report={r} signedIn={signedIn} meLoading={me.loading} />
 
-        <div className="sheet frame" style={{ marginTop: 28, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))' }}>
+        <div className="sheet frame" style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))' }}>
           <Cell k="Vehicle" v={r.vehicle.label} />
           <Cell k="VIN" v={<span className="vin">{r.vin}</span>} />
           <Cell k="Mileage" v={<span className="mono">{num(r.mileage)} mi</span>} />
@@ -72,30 +80,50 @@ export function ReportView({ slug }: { slug: string }) {
           <Cell k="Date" v={longDate(r.date)} />
         </div>
 
-        <div className="g2" style={{ marginTop: 56, alignItems: 'center', gridTemplateColumns: '5fr 7fr' }}>
+        <div className="g2" style={{ marginTop: 56, alignItems: 'center', gridTemplateColumns: '6fr 6fr' }}>
           <div>
-            <VehiclePhoto car={r.vehicle} />
-            <h2 className="label" style={{ color: 'var(--blue)', fontSize: 13 }}>{r.confidence?.flags.includes('model_estimate') ? 'Model estimate (no local sales data)' : 'Private sale estimate'}</h2>
-            <p className="mono" style={{ margin: '10px 0 24px', fontSize: 84, letterSpacing: '-.04em', lineHeight: 1 }}>{usd(r.private.value)}</p>
-            <div style={{ fontSize: 14 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <h2 className="kicker" style={{ color: 'var(--blue)' }}>Private sale estimate</h2>
+              <span className={`tag${model ? '' : ' on'}`}><i />{model ? 'Model estimate' : recorded ? `${r.compStats.used} recorded sales` : `${r.compStats.used} listings`}</span>
+            </div>
+            <p className="figure mono" style={{ marginTop: 14 }}>{usd(r.private.value)}</p>
+            <div style={{ fontSize: 14, marginTop: 26, maxWidth: 520 }}>
               <RangeBar low={r.private.low} high={r.private.high} value={r.private.value} label={`Likely range ${usd(r.private.low)} to ${usd(r.private.high)}, estimate ${usd(r.private.value)}`} />
             </div>
-            <p className="small" style={{ marginTop: 12 }}>{r.confidence?.flags.includes('model_estimate') ? 'Wide model range from original MSRP, inflation, retention and mileage; limited market evidence.' : 'Likely range based on comparable listings'}</p>
+            <p className="small" style={{ marginTop: 12, maxWidth: 520, lineHeight: 1.5 }}>
+              {model
+                ? 'No local sales of this model, so the value comes from its original MSRP, age, mileage and collector demand, calibrated against real asking prices. The range is wider to reflect that.'
+                : recorded
+                  ? 'Likely range, from recorded sales of the same model in Washington State title records.'
+                  : 'Likely range, from comparable listings near you.'}
+            </p>
           </div>
-          <div><CarDrawing variant={carVariant(r.vehicle.model)} /></div>
+          <div><VehiclePhoto car={r.vehicle} fallback={drawing} /></div>
         </div>
 
-        <div className="g3" style={{ marginTop: 56 }}>
-          <ValueCard name="Instant sale" value={r.instant.value} note="Sell today to a dealer or instant buyer." />
-          <ValueCard name="Private sale" value={r.private.value} note="Most money. You run the sale." mine />
-          <ValueCard name="Dealer retail" value={r.retail.value} note="Same car on a lot, prep included." />
-        </div>
+        <Section idx="01" title="Your price depends on how you sell">
+          <RouteDiagram instant={r.instant.value} private={r.private.value} retail={r.retail.value} low={r.private.low} high={r.private.high} />
+        </Section>
 
         <Comps report={r} />
         <Ladder report={r} />
         <ConfidenceBlock report={r} />
       </section>
     </div>
+  );
+}
+
+function Section({ idx, title, id, children }: { idx: string; title: string; id?: string; children: ReactNode }) {
+  const hid = id ?? `sec-${idx}`;
+  return (
+    <section style={{ marginTop: 96 }} aria-labelledby={hid}>
+      <div className="sec-head">
+        <span className="idx">{idx}</span>
+        <span className="rule" />
+        <h2 id={hid} className="h2" style={{ fontSize: 30, margin: '4px 0 0' }}>{title}</h2>
+      </div>
+      <div style={{ marginTop: 28 }}>{children}</div>
+    </section>
   );
 }
 
@@ -149,7 +177,7 @@ function SaveNote({ report: r, signedIn, meLoading }: { report: PublicReport; si
   return (
     <p className="small" style={{ margin: '8px 0 0' }}>
       This report is not saved to an account.{expires}
-      {!signedIn && <> <Link href={`/sign-in?callbackUrl=${encodeURIComponent(`/report/${r.slug}`)}`}>Sign in to save it</Link>.</>}
+      {!signedIn && <> <Link href={`/sign-in?next=${encodeURIComponent(`/report/${r.slug}`)}`}>Sign in to save it</Link>.</>}
     </p>
   );
 }
@@ -159,16 +187,6 @@ function Cell({ k, v }: { k: string; v: ReactNode }) {
     <div className="cell">
       <p className="label">{k}</p>
       <p style={{ margin: '6px 0 0', fontSize: 15, overflowWrap: 'anywhere' }}>{v}</p>
-    </div>
-  );
-}
-
-function ValueCard({ name, value, note, mine }: { name: string; value: number; note: string; mine?: boolean }) {
-  return (
-    <div className="sheet" style={{ padding: '20px 22px', ...(mine ? { borderColor: 'var(--blue)', background: 'var(--soft)' } : {}) }}>
-      <p className="label" style={mine ? { color: 'var(--blue)' } : undefined}>{name}</p>
-      <p className="mono" style={{ margin: '8px 0 6px', fontSize: 28 }}>{usd(value)}</p>
-      <p className="small" style={{ margin: 0 }}>{note}</p>
     </div>
   );
 }
@@ -183,26 +201,29 @@ function Comps({ report: r }: { report: PublicReport }) {
   const [all, setAll] = useState(false);
   const rows = all ? r.comps : r.comps.slice(0, ROWS_SHOWN);
   const s = r.compStats;
+  const recorded = s.source === 'recorded_sales';
+  const showAway = r.comps.some((c) => c.distance != null);
+  const noun = recorded ? 'sales' : 'listings';
   const heading = s.summary.charAt(0).toUpperCase() + s.summary.slice(1);
+  if (!r.comps.length) {
+    return (
+      <Section idx="02" title="Market evidence">
+        <p className="lede" style={{ maxWidth: 720 }}>There are no recorded sales or listings of this model to compare with, so the estimate rests on the price model described below.</p>
+      </Section>
+    );
+  }
   return (
-    <>
-      <div style={{ marginTop: 96 }}>
-        <h2 className="h2" style={{ fontSize: 30, margin: 0 }}>{heading}</h2>
-      </div>
-      <div className="g2" style={{ marginTop: 28, alignItems: 'start' }}>
+    <Section idx="02" title={heading}>
+      <div className="g2" style={{ alignItems: 'start', gap: 24 }}>
         <div className="sheet" style={{ padding: 20 }}>
-          {r.comps.length ? (
-            <CompsScatter comps={r.comps} subject={{ miles: r.mileage, value: r.private.value }} />
-          ) : (
-            <p className="small" style={{ margin: 0 }}>No listing details were stored for this report.</p>
-          )}
+          <CompsScatter comps={r.comps} subject={{ miles: r.mileage, value: r.private.value }} />
         </div>
         <div className="sheet" style={{ padding: '8px 8px 4px' }}>
-          <div className="scroll-x" tabIndex={0} role="region" aria-label="Comparable listings table">
+          <div className="scroll-x" tabIndex={0} role="region" aria-label={`Comparable ${noun} table`}>
             <table className="tbl">
-              <caption className="sr">Comparable listings, asking prices as listed</caption>
+              <caption className="sr">{recorded ? 'Recorded sale prices' : 'Comparable listings, asking prices as listed'}</caption>
               <thead>
-                <tr><th scope="col">Year</th><th scope="col">Trim</th><th scope="col" className="num">Miles</th><th scope="col" className="num">Away</th><th scope="col" className="num">Asking price</th><th scope="col">Weight</th></tr>
+                <tr><th scope="col">Year</th><th scope="col">Trim</th><th scope="col" className="num">Miles</th>{showAway && <th scope="col" className="num">Away</th>}<th scope="col" className="num">{recorded ? 'Sale price' : 'Asking price'}</th><th scope="col">Weight</th></tr>
               </thead>
               <tbody>
                 {rows.map((c, i) => {
@@ -212,7 +233,7 @@ function Comps({ report: r }: { report: PublicReport }) {
                       <td className="mono">{c.year}</td>
                       <td>{c.trim ?? '–'}</td>
                       <td className="num">{num(c.miles)}</td>
-                      <td className="num">{c.distance == null ? '–' : miles(c.distance)}</td>
+                      {showAway && <td className="num">{c.distance == null ? '–' : miles(c.distance)}</td>}
                       <td className="num" style={out ? { textDecoration: 'line-through' } : undefined}>{usd(c.price)}</td>
                       <td className="mono">{weightText(c)}</td>
                     </tr>
@@ -224,50 +245,38 @@ function Comps({ report: r }: { report: PublicReport }) {
           <p className="small" style={{ padding: 12, margin: 0, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             Showing {rows.length} of {r.comps.length}.
             {r.comps.length > ROWS_SHOWN && (
-              <button type="button" className="btn-o" style={{ minHeight: 44 }} onClick={() => setAll(!all)} aria-expanded={all}>
-                {all ? 'Show fewer listings' : `Show all ${r.comps.length} listings`}
+              <button type="button" className="btn-o no-print" style={{ minHeight: 44 }} onClick={() => setAll(!all)} aria-expanded={all}>
+                {all ? `Show fewer ${noun}` : `Show all ${r.comps.length} ${noun}`}
               </button>
             )}
           </p>
         </div>
       </div>
-    </>
+    </Section>
   );
 }
 
 function Ladder({ report: r }: { report: PublicReport }) {
   return (
-    <div className="g2" style={{ marginTop: 96, alignItems: 'start', gridTemplateColumns: '7fr 5fr' }}>
-      <div>
-        <h2 className="h2" style={{ fontSize: 30, margin: '0 0 20px' }}>From the market median to your car</h2>
-        <LadderRow label={r.base.label} value={usd(r.base.amount)} />
-        {r.adjustments.map((a) => <LadderRow key={a.key} label={a.label} value={amount(a.amount)} reason={a.reason} />)}
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '16px 0 0', marginTop: 6, borderTop: '3px double var(--ink)', fontWeight: 600 }}>
-          <span>Private sale estimate</span>
-          <span className="mono" style={{ color: 'var(--blue)' }}>{usd(r.private.value)}</span>
+    <Section idx="03" title="From the starting value to your car">
+      <div className="g2" style={{ alignItems: 'start', gridTemplateColumns: '7fr 5fr' }}>
+        <div>
+          <Waterfall base={r.base} steps={r.adjustments} total={{ label: 'Private sale estimate', amount: r.private.value }} />
+          <ul className="legend" aria-hidden="true">
+            <li><span className="sw" style={{ background: 'var(--ink)' }} />Starting value</li>
+            <li><span className="sw up" />Adds value</li>
+            <li><span className="sw down" />Takes value away</li>
+          </ul>
         </div>
+        <aside className="sheet" style={{ padding: 28 }}>
+          <h3 className="kicker">Method notes</h3>
+          <ol style={{ fontSize: 15, lineHeight: 1.6, paddingLeft: 20, color: 'var(--ink)', margin: '14px 0 0' }}>
+            {r.methodNotes.map((n) => <li key={n} style={{ marginBottom: 6 }}>{n}</li>)}
+          </ol>
+          <p className="small" style={{ margin: '16px 0 0' }}>Valuation method version {r.methodVersion}</p>
+        </aside>
       </div>
-      <aside className="sheet" style={{ padding: 28 }}>
-        <h2 className="label" style={{ fontSize: 13 }}>Method notes</h2>
-        <ol style={{ fontSize: 15, lineHeight: 1.6, paddingLeft: 20, color: 'var(--ink)' }}>
-          {r.methodNotes.map((n) => <li key={n}>{n}</li>)}
-        </ol>
-        <p className="small" style={{ margin: '16px 0 0' }}>Valuation method version {r.methodVersion}</p>
-      </aside>
-    </div>
-  );
-}
-
-function LadderRow({ label, value, reason }: { label: string; value: string; reason?: string }) {
-  return (
-    <div style={{ padding: '12px 0' }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
-        <span>{label}</span>
-        <span style={{ flex: 1, borderBottom: '1px dotted var(--mid)', minWidth: 16 }} />
-        <span className="mono">{value}</span>
-      </div>
-      {reason && <p className="small" style={{ margin: '4px 0 0', maxWidth: 560 }}>{reason}</p>}
-    </div>
+    </Section>
   );
 }
 
@@ -297,8 +306,7 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
   const flags = c.flags.map((f) => FLAG_TEXT[f]).filter(Boolean) as string[];
 
   return (
-    <section style={{ marginTop: 96 }} aria-labelledby="trust-h">
-      <h2 id="trust-h" className="h2" style={{ fontSize: 30, margin: '0 0 28px' }}>How much to trust this number</h2>
+    <Section idx="04" id="trust-h" title="How much to trust this number">
       {flags.length > 0 && (
         <div className="notice" style={{ marginBottom: 28 }}>
           {flags.map((f) => <p key={f} style={{ margin: 0 }}>{f}</p>)}
@@ -311,7 +319,7 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
           <TrustList title={`Why the range is ${usd(r.private.low)} to ${usd(r.private.high)}`} items={c.rangeReasons} />
         )}
       </div>
-    </section>
+    </Section>
   );
 }
 
