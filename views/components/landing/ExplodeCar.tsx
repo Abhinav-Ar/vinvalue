@@ -51,7 +51,7 @@ export const EXPLODE_PARTS: CarParts = {
 export const anchors = [
   { x: 560, y: 90, lx: 550, ly: -32, label: 'VIN decode' },
   { x: 233, y: 261, lx: 320, ly: 466, label: 'Market evidence' },
-  { x: 743, y: 261, lx: 785, ly: 442, label: "Your car's history" },
+  { x: 743, y: 261, lx: 785, ly: 442, label: 'Vehicle history' },
 ];
 
 export function ExplodeLabels({ projected = false }: { projected?: boolean }) {
