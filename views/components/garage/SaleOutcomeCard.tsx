@@ -50,20 +50,34 @@ export function VehicleSaleActions({ vehicleId, onChanged }: { vehicleId: string
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [changed, setChanged] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   async function act(remove: boolean) {
     setBusy(true); setError('');
     try {
       if (remove) await api(`/api/vehicles/${vehicleId}`, { method: 'DELETE' });
       else await api(`/api/vehicles/${vehicleId}/sale-feedback`, { body: { reason: 'sold' } });
       setChanged(true);
+      setConfirming(false);
       window.dispatchEvent(new Event('sale-feedback-changed'));
       onChanged?.();
     } catch (e) { setError(asApiError(e).message); }
     finally { setBusy(false); }
   }
-  return <div style={{ marginTop: 12 }}>
-    <div style={{ display: 'flex', gap: 12 }}><button className="ghost" disabled={busy || changed} onClick={() => void act(false)}>Mark sold</button><button className="ghost" disabled={busy || changed} onClick={() => void act(true)}>Remove from garage</button></div>
-    <p className="small">Removing also deletes vehicle documents. Sale reporting is optional.</p>
+  return <div className="card-actions">
+    {confirming ? (
+      <div className="confirm" role="group" aria-label="Confirm removal">
+        <p className="small" style={{ margin: 0 }}>Remove this car? Its documents are deleted too.</p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" className="btn-o danger" disabled={busy} onClick={() => void act(true)}>{busy ? 'Removing' : 'Remove'}</button>
+          <button type="button" className="textbtn" disabled={busy} onClick={() => setConfirming(false)}>Cancel</button>
+        </div>
+      </div>
+    ) : (
+      <div style={{ display: 'flex', gap: 18 }}>
+        <button type="button" className="textbtn" disabled={busy || changed} onClick={() => void act(false)}>Mark sold</button>
+        <button type="button" className="textbtn" disabled={busy || changed} onClick={() => setConfirming(true)}>Remove</button>
+      </div>
+    )}
     {changed && <p role="status" className="small">Updated. You can optionally report the final sale price above.</p>}
     {error && <p className="err" role="alert">{error}</p>}
   </div>;

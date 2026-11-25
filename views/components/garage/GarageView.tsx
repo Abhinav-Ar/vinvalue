@@ -96,7 +96,8 @@ function VehicleCard({ v, onRefreshed }: { v: GarageVehicle; onRefreshed: () => 
   }
 
   const change = changeText(v);
-  const identity = v.label.match(/^(\d{4})\s+(.+?)\s+([^ ]+)$/);
+  // "2019 Ford Mustang GT" -> year, make (first word), model (the rest).
+  const identity = v.label.match(/^(\d{4})\s+(\S+)\s+(.+)$/);
   const photoCar = identity ? { year: identity[1], make: identity[2], model: identity[3] } : { model: v.label };
   return (
     <article className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>

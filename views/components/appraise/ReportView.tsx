@@ -256,7 +256,12 @@ function Comps({ report: r }: { report: PublicReport }) {
   );
 }
 
+/** Engine notes that are raw model inputs (scores, multipliers, timestamps) rather than plain explanations. */
+const TECHNICAL_NOTE = /score:|demand:|engineering:|status:|snapshot|correction:|\d\.\d{3,}|\d{4}-\d{2}-\d{2}T/i;
+
 function Ladder({ report: r }: { report: PublicReport }) {
+  const plain = r.methodNotes.filter((n) => !TECHNICAL_NOTE.test(n));
+  const technical = r.methodNotes.filter((n) => TECHNICAL_NOTE.test(n));
   return (
     <Section idx="03" title="From the starting value to your car">
       <div className="g2" style={{ alignItems: 'start', gridTemplateColumns: '7fr 5fr' }}>
@@ -271,8 +276,14 @@ function Ladder({ report: r }: { report: PublicReport }) {
         <aside className="sheet" style={{ padding: 28 }}>
           <h3 className="kicker">Method notes</h3>
           <ol style={{ fontSize: 15, lineHeight: 1.6, paddingLeft: 20, color: 'var(--ink)', margin: '14px 0 0' }}>
-            {r.methodNotes.map((n) => <li key={n} style={{ marginBottom: 6 }}>{n}</li>)}
+            {plain.map((n) => <li key={n} style={{ marginBottom: 6 }}>{n}</li>)}
           </ol>
+          {technical.length > 0 && (
+            <details className="tech">
+              <summary>Model inputs</summary>
+              <ul>{technical.map((n) => <li key={n}>{n}</li>)}</ul>
+            </details>
+          )}
           <p className="small" style={{ margin: '16px 0 0' }}>Valuation method version {r.methodVersion}</p>
         </aside>
       </div>

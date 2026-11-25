@@ -23,6 +23,6 @@ export function VehiclePhoto({ car, className = '', priority = false, interactiv
   const label = [year, make, model].filter(Boolean).join(' ') || 'Vehicle';
   const photo = photos[index];
   if (!photo && fallback) return <>{fallback}</>;
-  if (!photo) return <div className={`photo-frame photo-fallback ${className}`} role="img" aria-label={`${label}, line drawing (no photo found)`}><CarDrawing variant={carVariant(String(model ?? ''), car.body)} ink={false} /><small>Line drawing · no photo found</small></div>;
+  if (!photo) return <div className={`photo-frame photo-fallback ${className}`} role="img" aria-label={`${label}, line drawing (no photo found)`}><CarDrawing variant={carVariant(`${car.make ?? ''} ${model ?? ''}`, car.body)} ink={false} /><small>Line drawing · no photo found</small></div>;
   return <div className={`photo-frame ${className}`}><img key={photo} src={photo} alt={`Representative ${label}`} loading={priority ? 'eager' : 'lazy'} referrerPolicy="no-referrer" onError={() => setIndex((i) => i + 1)} /><span className="photo-scrim">Representative vehicle</span>{interactive && photos.length > 1 && <button type="button" className="photo-next" onClick={() => setIndex((i) => (i + 1) % photos.length)} aria-label="Show another representative photo">Another photo</button>}</div>;
 }

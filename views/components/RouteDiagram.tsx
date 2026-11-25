@@ -3,7 +3,6 @@
  * instant ---- private ---- retail, with the gap between each pair dimensioned underneath and the
  * private range bracketed. HTML positioned in percent so text stays readable at phone width.
  */
-import type { CSSProperties } from 'react';
 import { usd } from '@/views/components/client/format';
 
 type Route = { key: 'instant' | 'private' | 'retail'; name: string; value: number; note: string };
@@ -29,9 +28,10 @@ export function RouteDiagram({ instant, private: priv, retail, low, high, notes,
 
   return (
     <figure className="route" style={{ margin: 0 }} aria-label={label} role="group">
+      {/* Labels sit in three fixed columns so close prices never collide; pins below carry the scale. */}
       <div className="route-labels" aria-hidden="true">
         {routes.map((r) => (
-          <div key={r.key} className={`route-label${r.key === 'private' ? ' on' : ''}`} style={{ '--x': pct(r.value) } as CSSProperties}>
+          <div key={r.key} className={`route-label${r.key === 'private' ? ' on' : ''}`}>
             <p className="kicker">{r.name}</p>
             <p className="route-v">{usd(r.value)}</p>
           </div>
@@ -43,7 +43,7 @@ export function RouteDiagram({ instant, private: priv, retail, low, high, notes,
         {routes.map((r) => <span key={r.key} className={`route-pin${r.key === 'private' ? ' on' : ''}`} style={{ left: pct(r.value) }} />)}
         {[[instant, priv], [priv, retail]].map(([x, y], i) => (
           <span key={i} className="route-gap" style={{ left: pct(x), width: `${at(y) - at(x)}%` }}>
-            <b>+{usd(y - x)}</b>
+            {at(y) - at(x) > 11 && <b>+{usd(y - x)}</b>}
           </span>
         ))}
       </div>

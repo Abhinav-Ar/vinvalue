@@ -78,7 +78,7 @@ export function carVariant(model: string, body?: string | null): CarVariant {
   if (/\b(f[- ]?[123]50|silverado|ram|tacoma|tundra|ranger|sierra|frontier|colorado|ridgeline)\b/i.test(model)) return 'truck';
   if (/\b(rav[- ]?4|cr[- ]?v|explorer|wrangler|4runner|tahoe|model [xy]|highlander|outback|forester|pilot|escape|equinox|rogue|cx-?5|sienna|odyssey|pacifica|carnival|minivan)\b/i.test(model)) return 'suv';
   if (/\b(hatchback|golf|gti|fit|prius|leaf)\b/i.test(model)) return 'hatch';
-  if (/\b(coupe|corvette|mustang|brz|gr86|911)\b/i.test(model)) return 'gt';
+  if (/\b(coupe|corvette|mustang|brz|gr86|86|911|supra|cayman|370z|350z|nsx|gt-?r|rc ?f|m[248])\b/i.test(model)) return 'gt';
   return 'sedan';
 }
 
