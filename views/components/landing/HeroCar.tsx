@@ -20,8 +20,13 @@ const CALLOUTS: Callout[] = [
   { x: 560, y: 104, label: 'trim + options', lx: 470, ly: 26 },
   { x: 784, y: 226, label: 'mileage + tires', lx: 790, ly: 60 },
 ];
-// The imported car's roof sits lower than the line drawing's, so its roof callout drops onto the glass.
-const CALLOUTS_3D: Callout[] = CALLOUTS.map((c) => (c.label === 'trim + options' ? { ...c, y: 121 } : c));
+// Resting orthographic projection of the fascia, engine casting, canopy and rear tyre.
+const CALLOUTS_3D: Callout[] = [
+  { ...CALLOUTS[0], x: 112, y: 282 },
+  { ...CALLOUTS[1], x: 178, y: 243 },
+  { ...CALLOUTS[2], x: 560, y: 121 },
+  { ...CALLOUTS[3], x: 785, y: 214 },
+];
 
 const dim = { stroke: 'currentColor', strokeWidth: 0.9, fill: 'none' } as const;
 

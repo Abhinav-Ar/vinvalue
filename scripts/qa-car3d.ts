@@ -2,8 +2,9 @@
 import { chromium, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 const base = process.env.QA_BASE ?? 'http://localhost:3000';
-mkdirSync('qa/car', { recursive: true });
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const output = process.env.QA_OUT ?? 'qa/car';
+mkdirSync(output, { recursive: true });
+const browser = await chromium.launch({ args: process.platform === 'darwin' ? ['--use-angle=metal'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 try {
   for (const theme of ['light', 'night'])
     for (const width of [1440, 390]) {
@@ -37,7 +38,7 @@ try {
             .evaluate((el) => (el as HTMLElement).click());
           await page.mouse.move(0, 0);
           await page.waitForTimeout(800);
-          await page.screenshot({ style: 'nextjs-portal { display: none !important }', path: `qa/car/${tag}-${state}-${look}.png` });
+          await page.screenshot({ style: 'nextjs-portal { display: none !important }', path: `${output}/${tag}-${state}-${look}.png` });
         }
       }
       const canvas = viewer.locator('canvas');
@@ -58,6 +59,31 @@ try {
       if (!rest) throw Error('Missing assembled model');
       await page.mouse.click(rest.x + rest.width * 0.5, rest.y + rest.height * 0.5);
       await expect(viewer.locator('[aria-live]')).toContainText('Body');
+      if (width === 1440) {
+        await page.getByRole('button', { name: 'Reset view' }).click();
+        await page.getByRole('button', { name: 'X-ray', exact: true }).click();
+        await viewer.evaluate(el => el.scrollIntoView({ block: 'center' }));
+        await page.mouse.move(0, 0);
+        await viewer.focus();
+        await viewer.press('ArrowRight');
+        await viewer.press('ArrowDown');
+        await page.waitForTimeout(1200);
+        // Re-render at plate scale so the detail crops contain native resolution linework.
+        const detail = await page.addStyleTag({ content: `
+          [data-ready=true] { position:fixed !important; top:0; left:0; width:1440px !important; z-index:100; background:var(--paper); }
+          [data-ready=true] > svg, nextjs-portal {visibility:hidden}
+        ` });
+        await page.waitForTimeout(500);
+        const box = await canvas.boundingBox();
+        if (!box) throw Error('Missing detail view');
+        for (const [name, x, y, w, h] of [
+          ['front-quarter', .08, .26, .65, .60], ['wheel', .29, .57, .20, .32],
+        ] as const) {
+          await page.screenshot({ clip: { x: box.x + box.width*x, y: box.y + box.height*y,
+            width: box.width*w, height: box.height*h }, path: `${output}/${theme}-${name}.png` });
+        }
+        await detail.evaluate(el => el.parentNode?.removeChild(el));
+      }
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await expect(canvas).toHaveCount(0);
       expect(errors).toEqual([]);

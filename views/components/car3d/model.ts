@@ -9,13 +9,12 @@ import type { PartId } from './parts';
 
 export type { PartId } from './parts';
 export type CarLook = 'xray' | 'solid';
-export type CarColors = Record<'ink' | 'accent' | 'paper' | 'mid' | 'grid', THREE.Color>;
+export type CarColors = Record<'ink' | 'accent' | 'paper', THREE.Color>;
 type Phase = 'lift' | 'out' | 'down';
 type Motion = {
   group: THREE.Object3D;
   home: THREE.Vector3;
   offset: THREE.Vector3;
-  swing: number;
   phase: Phase;
   guide?: THREE.Line;
 };
@@ -28,16 +27,18 @@ type Surface = {
 };
 const v = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 
+// Draw the opaque section first. The shell then deposits only its grazing rim
+// and depth, hiding far-side panel lines without veiling the cabin beneath.
+export const SHELL_LAYER = 1;
+
 function shell() {
   return new THREE.ShaderMaterial({
     transparent: true,
-    depthWrite: false,
-    side: THREE.FrontSide,
-    uniforms: {
-      ink: { value: new THREE.Color() },
-      light: { value: new THREE.Color() },
-      density: { value: 0.24 },
-    },
+    depthWrite: true,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+    uniforms: { ink: { value: new THREE.Color() }, mask: { value: null }, texel: { value: new THREE.Vector2() } },
     vertexShader: `
       varying vec3 n;
       void main() {
@@ -45,37 +46,48 @@ function shell() {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
       }`,
     fragmentShader: `
-      uniform vec3 ink, light;
-      uniform float density;
+      uniform vec3 ink;
+      uniform sampler2D mask;
+      uniform vec2 texel;
       varying vec3 n;
       void main() {
-        vec3 normal = normalize(n);
-        float rim = pow(1. - abs(normal.z), 2.);
-        float key = smoothstep(-.72, .9, dot(normal, normalize(vec3(-.45,.85,.38))));
-        gl_FragColor = vec4(mix(ink, light, .78 * key), density + .46 * rim);
+        float facing = abs(normalize(n).z);
+        float rim = 1. - smoothstep(0., clamp(1.6*fwidth(facing), .08, .46), facing);
+        vec2 uv = gl_FragCoord.xy * texel;
+        vec4 center = texture2D(mask, uv);
+        vec4 dx = texture2D(mask, uv + vec2(texel.x, 0.)) - texture2D(mask, uv - vec2(texel.x, 0.));
+        vec4 dy = texture2D(mask, uv + vec2(0., texel.y)) - texture2D(mask, uv - vec2(0., texel.y));
+        float border = max(abs(dx.a), abs(dy.a));
+        float crease = smoothstep(.43,.84,max(length(dx.rgb), length(dy.rgb)));
+        gl_FragColor = vec4(ink, max(.46*rim, max(border*.96, crease*.57)*center.a));
         #include <colorspace_fragment>
       }`,
   });
 }
 
-// Let clearcoat reflections describe the silhouette while the side facing the reader opens onto the cabin.
-function phantomPaint(original: THREE.MeshStandardMaterial) {
-  const finish = original.clone();
-  finish.transparent = true;
-  finish.depthWrite = false;
-  finish.side = THREE.FrontSide;
-  finish.onBeforeCompile = (shader) => {
-    shader.fragmentShader = shader.fragmentShader.replace(
-      '#include <opaque_fragment>',
-      `
-      float grazing = pow(1.0 - abs(normal.z), 2.0);
-      float shoulder = smoothstep(.32, .82, normal.y);
-      diffuseColor.a = .12 + .46 * grazing + .24 * shoulder;
-      #include <opaque_fragment>
-    `,
+// Retain the authored relief on the brake discs, tread and engine casting.
+// Quantise the light after applying that relief, independent of studio lighting.
+function section(original: THREE.MeshStandardMaterial, paper: THREE.Color, ink: THREE.Color) {
+  const material = new THREE.MeshNormalMaterial({ normalMap: original.normalMap,
+    polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const tone = /^Tire/.test(original.name) ? .36 : /Mechanical|Rim1|Hardware/.test(original.name) ? .19 : .055;
+  material.onBeforeCompile = shader => {
+    shader.uniforms.paper = { value: paper };
+    shader.uniforms.ink = { value: ink };
+    shader.fragmentShader = 'uniform vec3 paper, ink;\n' + shader.fragmentShader.replace(
+      'gl_FragColor = vec4( normalize( normal ) * 0.5 + 0.5, diffuseColor.a );',
+      `float light = dot(normalize(normal), normalize(vec3(-.4,.8,.45)));
+       float aa = clamp(fwidth(light), .015, .12);
+       float shade = .19*(1.-smoothstep(-.25-aa,-.25+aa,light))
+                   + .16*(1.-smoothstep(.42-aa,.42+aa,light));
+       float contour = 1. - smoothstep(.025,.135,abs(normalize(vNormal).z));
+       vec3 tint = mix(sRGBTransferOETF(vec4(paper,1.)).rgb, sRGBTransferOETF(vec4(ink,1.)).rgb, max(${tone} + shade, .65*contour));
+       gl_FragColor = sRGBTransferEOTF(vec4(tint, 1.));
+       #include <colorspace_fragment>`
     );
   };
-  return finish;
+  material.customProgramCacheKey = () => String(tone);
+  return material;
 }
 
 function ground() {
@@ -83,15 +95,13 @@ function ground() {
     transparent: true,
     depthWrite: false,
     side: THREE.DoubleSide,
-    uniforms: { color: { value: new THREE.Color() }, grid: { value: new THREE.Color() } },
+    uniforms: { color: { value: new THREE.Color() } },
     vertexShader: `varying vec2 p; void main() { p=position.xz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
-    fragmentShader: `varying vec2 p; uniform vec3 color,grid;
+    fragmentShader: `varying vec2 p; uniform vec3 color;
       void main() {
-        vec2 uv=p*2.;
-        vec2 cell=abs(fract(uv-.5)-.5)/max(fwidth(uv),vec2(.001));
-        float line=(1.-min(min(cell.x,cell.y),1.))*(1.-smoothstep(.42,1.,length(p/vec2(5.8,3.7))));
-        float ao=.23*exp(-pow(p.x/3.55,4.)-pow(p.y/1.52,4.));
-        gl_FragColor=vec4(mix(grid,color,smoothstep(.0,.15,ao)),ao+.13*line);
+        float bed = .18 * exp(-pow(abs((p.x+.15)/3.4),4.)-pow(abs(p.y/1.36),4.));
+        vec2 tyre = vec2(min(abs(p.x+2.57), abs(p.x-2.27)), abs(p.y)-1.69)/vec2(.52,.27);
+        gl_FragColor = vec4(color, bed + .29*exp(-dot(tyre,tyre)));
         #include <colorspace_fragment>
       }`,
   });
@@ -105,11 +115,11 @@ function ground() {
 export function buildCar(source: THREE.Group, colors: CarColors) {
   const root = source.clone(true);
   const shadow = ground();
-  const paintShell = shell(),
-    glazing = shell();
-  paintShell.uniforms.density.value = 0.17;
-  glazing.uniforms.density.value = 0.075;
-  const outlines = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.33, depthWrite: false });
+  const paintShell = shell();
+  const paper = new THREE.Color(), ink = new THREE.Color();
+  const outlines = new THREE.LineBasicMaterial({ transparent: true, opacity: .88, depthWrite: false, toneMapped: false });
+  const detailLines = outlines.clone();
+  detailLines.opacity = .54;
   const guides = new THREE.LineDashedMaterial({
     transparent: true,
     opacity: 0.48,
@@ -117,16 +127,16 @@ export function buildCar(source: THREE.Group, colors: CarColors) {
     gapSize: 0.055,
     depthWrite: false,
   });
-  const selectedLine = new THREE.LineBasicMaterial();
+  const selectedLine = new THREE.LineBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false });
   const selected = new THREE.MeshStandardMaterial({ metalness: 0.45, roughness: 0.33 });
   const finishes = new Map<THREE.Material, THREE.MeshStandardMaterial>();
-  const cutawayFinishes = new Map<THREE.Material, THREE.MeshStandardMaterial>();
+  const cutawayFinishes = new Map<THREE.Material, THREE.MeshNormalMaterial>();
   const surfaces: Surface[] = [];
   const motions: Motion[] = [];
   const owned = new Set<THREE.Material>([
     shadow.material,
     paintShell,
-    glazing,
+    detailLines,
     outlines,
     guides,
     selectedLine,
@@ -140,11 +150,10 @@ export function buildCar(source: THREE.Group, colors: CarColors) {
     part: PartId,
     phase: Phase,
     offset: THREE.Vector3,
-    swing = 0,
     anchor?: THREE.Vector3,
   ) {
     const group = node(name);
-    const motion: Motion = { group, home: group.position.clone(), offset, phase, swing };
+    const motion: Motion = { group, home: group.position.clone(), offset, phase };
     motions.push(motion);
     if (anchor) {
       const geometry = new THREE.BufferGeometry().setFromPoints([v(), v(0, 1)]);
@@ -168,44 +177,26 @@ export function buildCar(source: THREE.Group, colors: CarColors) {
       }
       const glass = original.name === 'Glass';
       const exterior = part === 'body' || part === 'glass';
-      let xray: THREE.Material = glass ? glazing : paintShell;
       const painted = original.name.startsWith('Paint ');
-      if (painted) {
+      let xray: THREE.Material = paintShell;
+      if (!exterior) {
         let finish = cutawayFinishes.get(original);
         if (!finish) {
-          finish = phantomPaint(solid);
+          finish = section(original, paper, ink);
           cutawayFinishes.set(original, finish);
           owned.add(finish);
-        }
-        xray = finish;
-      } else if (/Headlight|Brakelight|Signallight|Mirror/.test(original.name)) {
-        xray = solid;
-      } else if (!exterior && part !== 'chassis') {
-        // Preserve AO, tread, perforations and the baked mechanical normal map in the lighter cutaway finishes.
-        let finish = cutawayFinishes.get(original);
-        if (!finish) {
-          finish = solid.clone();
-          cutawayFinishes.set(original, finish);
-          owned.add(finish);
-          if (original.name === 'Mechanical') {
-            finish.color.setHex(0xb0b8c1);
-            finish.metalness = 0.58;
-            finish.roughness = 0.49;
-          } else if (part === 'interior') {
-            finish.color.setHex(original.name.includes('Interior 3') ? 0x82909f : 0x4e5864);
-            finish.roughness = 0.66;
-          }
         }
         xray = finish;
       }
       const surface: Surface = { mesh: object, part: glass ? 'glass' : part, solid, xray };
       object.userData.part = surface.part;
       surfaces.push(surface);
-      if (painted || glass || /Rim2|Brake$/.test(original.name)) {
-        const geometry = new THREE.EdgesGeometry(object.geometry, 32);
+      if (painted || glass) object.layers.enable(SHELL_LAYER);
+      if (painted || glass || !exterior || /light|Mirror/.test(original.name)) {
+        const geometry = new THREE.EdgesGeometry(object.geometry, exterior ? 38 : 58);
         geometries.add(geometry);
         const edges = new THREE.LineSegments(geometry, outlines);
-        edges.renderOrder = 5;
+        edges.renderOrder = exterior ? 5 : 1;
         edges.raycast = () => {};
         object.add(edges);
         surface.edges = edges;
@@ -213,46 +204,67 @@ export function buildCar(source: THREE.Group, colors: CarColors) {
     });
   }
 
-  assembly('Shell', 'body', 'lift', v(0, 0.52));
-  assembly('Canopy', 'glass', 'lift', v(0, 1.04), 0, v(-0.25, 2.05, -0.93));
-  assembly('BodyHood', 'body', 'lift', v(-0.08, 0.82), 0, v(-3.35, 0.89, -0.45));
-  assembly('BodyRearPanelsColor1', 'body', 'lift', v(0.1, 0.78), 0, v(3.04, 1.2, -0.52));
-  assembly('Cabin', 'interior', 'lift', v(0, 0.18));
-  assembly('Engine', 'engine', 'down', v(-0.14, -0.28));
-  assembly('Axles', 'drivetrain', 'down', v(0, -0.27));
-  assembly('Undertray', 'chassis', 'down', v(0, -0.33));
+  const lift = v(0, 1.80);
+  assembly('Shell', 'body', 'lift', lift, v(2.1, .57, 1.5));
+  assembly('Canopy', 'glass', 'lift', lift);
+  assembly('BodyHood', 'body', 'lift', lift, v(-3.35, .89, -.45));
+  assembly('BodyRearPanelsColor1', 'body', 'lift', lift);
+  assembly('Cabin', 'interior', 'lift', v());
+  assembly('Engine', 'engine', 'down', v(0, -.56), node('Engine').position);
+  assembly('Axles', 'drivetrain', 'down', v(0, -.56));
+  assembly('Undertray', 'chassis', 'down', v(0, -.56));
   for (const [side, sign] of [
     ['L', 1],
     ['R', -1],
   ] as const) {
-    assembly('BodyDoor' + side + 'Color1', 'body', 'out', v(0, 0.48, sign * 0.1), -sign * 0.81);
+    assembly('BodyDoor' + side + 'Color1', 'body', 'out', v(0, 0, sign * 1.64), v(-.45, 1.2, sign * 1.8));
     for (const axle of ['Front', 'Rear'] as const) {
       const name = 'Wheel' + axle + side;
       assembly(
         name,
         axle === 'Front' ? 'frontWheel' : 'rearWheel',
         'out',
-        v(0, 0, sign * 1.15),
-        0,
+        v(0, 0, sign * 1.58),
         node(name).position,
       );
     }
   }
+  root.updateMatrixWorld(true);
+  function surfacePoint(group: THREE.Object3D, material: string, target: THREE.Vector3) {
+    const point = v(), best = v();
+    let distance = Infinity;
+    group.traverse(child => {
+      if (!(child instanceof THREE.Mesh) || child.material.name !== material) return;
+      const positions = child.geometry.getAttribute('position');
+      for (let i = 0; i < positions.count; i++) {
+        point.fromBufferAttribute(positions, i).applyMatrix4(child.matrixWorld);
+        const d = point.distanceToSquared(target);
+        if (d < distance) { best.copy(point); distance = d; }
+      }
+    });
+    return group.worldToLocal(best);
+  }
+  const wheels = ['WheelFrontL', 'WheelFrontR', 'WheelRearL', 'WheelRearR'].map(node);
+  const wheelPins = wheels.map(wheel => surfacePoint(wheel, 'Rim1',
+    wheel.position.clone().add(v(0, 0, Math.sign(wheel.position.z)*.22))));
+  const wheelHomes = wheels.map(wheel => wheel.position.clone());
+  const canopy = node('Canopy');
+  const glassPins = [1,-1].map(sign => surfacePoint(canopy, 'Glass', v(-1.35, 1.94, sign*.86)));
   root.add(shadow);
   const model = {
     root,
     motions,
     shadow,
     paintShell,
-    glazing,
+    detailLines,
+    paper, ink,
     guides,
     outlines,
     selectedLine,
     selected,
     surfaces,
     looks: { look: 'xray' as CarLook, selected: null as PartId | null, hovered: null as PartId | null },
-    canopy: node('Canopy'),
-    wheels: [node('WheelFrontL'), node('WheelFrontR'), node('WheelRearL'), node('WheelRearR')],
+    canopy, wheels, wheelHomes, wheelPins, glassPins,
     dispose() {
       owned.forEach((m) => m.dispose());
       geometries.forEach((g) => g.dispose());
@@ -267,35 +279,30 @@ export type CarModel = ReturnType<typeof buildCar>;
 
 export function setColors(model: CarModel, c: CarColors) {
   const night = c.paper.r < 0.2;
-  for (const shell of [model.paintShell, model.glazing]) {
-    shell.uniforms.ink.value.copy(night ? c.accent : c.ink);
-    shell.uniforms.light.value.copy(night ? c.ink : c.accent);
-  }
+  model.paper.copy(c.paper);
+  model.ink.copy(night ? c.ink : c.accent);
+  model.paintShell.uniforms.ink.value.copy(model.ink);
+  model.detailLines.color.copy(model.ink);
   model.shadow.material.uniforms.color.value.setHex(0x09192c);
-  model.shadow.material.uniforms.grid.value.copy(c.grid);
-  model.outlines.color.copy(c.accent).lerp(c.ink, 0.42);
+
+  model.outlines.color.copy(model.ink);
   model.guides.color.copy(c.accent);
   model.selected.color.copy(c.accent);
-  model.selectedLine.color.copy(c.accent);
-  for (const { solid, xray } of model.surfaces) {
+  model.selectedLine.color.copy(night ? c.accent : c.ink);
+  for (const { solid } of model.surfaces) {
     if (solid.name.startsWith('Paint 1') && solid instanceof THREE.MeshPhysicalMaterial) {
       solid.color.copy(night ? c.paper : c.accent);
-      solid.metalness = 0.62;
-      solid.roughness = 0.28;
+      solid.metalness = 0.72;
+      solid.roughness = 0.23;
       solid.clearcoat = 1;
       solid.clearcoatRoughness = 0.1;
       solid.normalScale.setScalar(0.06);
     }
-    if (solid.name.startsWith('Paint ') && xray instanceof THREE.MeshStandardMaterial) {
-      xray.color.copy(c.accent).lerp(night ? c.paper : c.mid, night ? 0.65 : 0.32);
-      xray.metalness = 0.45;
-      xray.roughness = 0.28;
-      xray.normalScale.setScalar(0.05);
-    }
-    // Cutaway mechanicals and cabin take a wash of the theme accent so they read as part of the drawing.
-    if (xray !== solid && xray instanceof THREE.MeshStandardMaterial && !solid.name.startsWith('Paint ') && solid.name !== 'Glass') {
-      if (solid.name === 'Mechanical') xray.color.setHex(0xb0b8c1).lerp(c.accent, night ? 0.4 : 0.3);
-      else if (/Interior/.test(solid.name)) xray.color.setHex(solid.name.includes('Interior 3') ? 0x82909f : 0x4e5864).lerp(c.accent, night ? 0.3 : 0.22);
+    if (solid.name === 'Glass') {
+      solid.color.setHex(night ? 0x32475c : 0x586a7a);
+      solid.opacity = .54;
+      solid.roughness = .13;
+      solid.depthWrite = false;
     }
     if (solid.name === 'Mechanical') {
       solid.color.setHex(0x79828b);
@@ -308,18 +315,19 @@ export function setColors(model: CarModel, c: CarColors) {
 
 export function setLook(model: CarModel, look: CarLook) {
   model.looks.look = look;
+  model.shadow.visible = look === 'solid';
   for (const { mesh, part, solid, xray, edges } of model.surfaces) {
     const active = model.looks.selected === part;
-    mesh.material = active ? model.selected : look === 'solid' ? solid : xray;
+    mesh.material = look === 'solid' ? (active ? model.selected : solid) : xray;
     mesh.renderOrder = mesh.material.transparent
-      ? mesh.material === model.glazing || solid.name === 'Glass'
+      ? solid.name === 'Glass'
         ? 3
         : 2
       : 0;
     if (edges) {
       const focus = active || model.looks.hovered === part;
       edges.visible = look === 'xray' || focus;
-      edges.material = focus ? model.selectedLine : model.outlines;
+      edges.material = focus ? model.selectedLine : xray === model.paintShell ? model.outlines : model.detailLines;
     }
   }
 }

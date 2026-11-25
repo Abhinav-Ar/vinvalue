@@ -49,16 +49,16 @@ export const EXPLODE_PARTS: CarParts = {
 
 /** The three step labels, in drawing coordinates. Lit by data-step on an ancestor. */
 export const anchors = [
-  { x: 560, y: 90, label: 'VIN decode' },
-  { x: 233, y: 261, label: 'Market evidence' },
-  { x: 743, y: 261, label: "Your car's history" },
+  { x: 560, y: 90, lx: 550, ly: -32, label: 'VIN decode' },
+  { x: 233, y: 261, lx: 320, ly: 466, label: 'Market evidence' },
+  { x: 743, y: 261, lx: 785, ly: 442, label: "Your car's history" },
 ];
 
 export function ExplodeLabels({ projected = false }: { projected?: boolean }) {
   return <g stroke="var(--blue)" fill="var(--blue)">
-    {anchors.map(({ x, y, label }, i) => {
+    {anchors.map(({ x, y, lx, ly, label }, i) => {
       const dx = i === 0 ? 36 : i === 1 ? 18 : 114;
-      const dy = i === 0 ? (projected ? -98 : -54) : i === 2 ? 112 : 70;
+      const dy = i === 0 ? -54 : i === 2 ? 112 : 70;
       return <g key={label} className={`${styles.lab} ${[styles.l1, styles.l2, styles.l3][i]}`}>
         <g className={styles.svgGuide} transform={`translate(${x} ${y})`}>
           <line x2={i === 1 ? -92 : 0} y2={i === 0 ? -78 : i === 2 ? 84 : 0}
@@ -66,10 +66,15 @@ export function ExplodeLabels({ projected = false }: { projected?: boolean }) {
             style={{ transform: `scale(var(--phase${i}, 0))` }} />
         </g>
         <line data-guide={i} x1={x} y1={y} x2={x} y2={y} strokeDasharray="4 5" opacity=".65" />
+        <path data-leader={i} fill="none" display={projected ? undefined : 'none'} />
+        {projected && <>
+          <text x={lx} y={ly} className={styles.projectedLabel} textAnchor="middle" stroke="none">{label}</text>
+        </>}
         <g data-anchor={i} style={EXPLODE_PARTS[(['glass','frontWheel','rearWheel'] as const)[i]]}>
           <g transform={`translate(${x} ${y})`}>
-            <path d={`M0 0 l${dx} ${dy} h${i === 2 ? -4 : 14}`} fill="none" /><circle r="2.8" />
-            <text textAnchor={i === 2 ? 'middle' : 'start'} x={i === 2 ? dx - 4 : dx + 18} y={dy + 4} stroke="none" style={{letterSpacing: 0, fontFamily: "var(--font-sans), sans-serif"}} fontSize="16">{label}</text>
+            <circle r="2.8" />
+            {!projected && <><path d={`M0 0 l${dx} ${dy} h${i === 2 ? -4 : 14}`} fill="none" />
+            <text textAnchor={i === 2 ? 'middle' : 'start'} x={i === 2 ? dx - 4 : dx + 18} y={dy + 4} stroke="none" style={{letterSpacing: 0, fontFamily: "var(--font-sans), sans-serif"}} fontSize="16">{label}</text></>}
           </g>
         </g>
       </g>;

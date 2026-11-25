@@ -79,7 +79,8 @@
 .carBox[data-ready="true"] .svgGuide,
 .carBox[data-ready="false"] [data-guide],
 .explode [data-guide] { display: none; }
-.carBox[data-step="2"] .l1,.carBox[data-step="3"] :is(.l1,.l2) { opacity: .48; }
+.projectedLabel { font: 16px var(--font-mono), monospace; }
+@media (max-width: 820px) { .projectedLabel { font-size: 28px; } }
 @media (max-width:820px) {
   .heroArt { display:block; padding: 18px 0; overflow: visible; }
   .rail { min-height: 17rem; overflow-anchor: none; }
@@ -99,5 +100,5 @@
 .lab text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
 @media (max-width:820px) {
   .lab text { font-size: 27px; }
-  .carBox[data-step="2"] .l1, .carBox[data-step="3"] :is(.l1,.l2) { opacity: 0; }
+  .carBox[data-ready="false"][data-step="2"] .l1, .carBox[data-ready="false"][data-step="3"] :is(.l1,.l2) { opacity: 0; }
 }

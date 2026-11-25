@@ -17,7 +17,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { anchors, explodePhases, type ProgressSource } from '@/views/components/landing/ExplodeCar';
-import { buildCar, highlight, pickPart, setColors, setLook, type CarColors, type CarLook, type CarModel, type PartId } from './model';
+import { SHELL_LAYER, buildCar, highlight, pickPart, setColors, setLook, type CarColors, type CarLook, type CarModel, type PartId } from './model';
 
 export const REST = { yaw: 0.43, pitch: 0.14 };
 
@@ -65,10 +65,9 @@ function readColors(el: HTMLElement | null): CarColors {
   const cs = el ? getComputedStyle(el) : null;
   const get = (name: string) => {
     const token = cs?.getPropertyValue(name).trim();
-    // Three ignores CSS alpha. The grid shader controls its own fade.
-    return new THREE.Color(token?.replace(/rgba\(([^)]+),[^,]+\)/, 'rgb($1)') || undefined);
+    return new THREE.Color(token || undefined);
   };
-  return { ink: get('--ink'), accent: get('--blue'), paper: get('--paper'), mid: get('--mid'), grid: get('--grid2') };
+  return { ink: get('--ink'), accent: get('--blue'), paper: get('--paper') };
 }
 
 const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.min(hi, Math.max(lo, v));
@@ -119,18 +118,18 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
 
   useEffect(() => progress?.subscribe(() => invalidate()), [progress, invalidate]);
 
-  // The same studio lights the opaque mechanicals and the painted shell.
+  // Allocate the studio reflections on the first switch to the painted finish.
   const scene = useThree((s) => s.scene);
   const env = useRef<THREE.WebGLRenderTarget | null>(null);
   useEffect(() => {
-    if (!env.current) {
+    if (look === 'solid' && !env.current) {
       const pm = new THREE.PMREMGenerator(gl);
       const room = new RoomEnvironment();
       env.current = pm.fromScene(room, 0.04);
       room.dispose();
       pm.dispose();
     }
-    scene.environment = env.current.texture;
+    scene.environment = env.current?.texture ?? null;
     setLook(model, look);
     invalidate();
   }, [look, gl, scene, model, invalidate]);
@@ -205,11 +204,13 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
   }, [resetKey, actions, invalidate]);
 
   const labels = useRef<SVGGElement[]>([]);
+  const leaders = useRef<SVGPathElement[]>([]);
   const guides = useRef<SVGLineElement[]>([]);
   const up = useMemo(() => new THREE.Vector3(0,1,0), []);
   const projected = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
     labels.current = Array.from(keyTarget?.current?.querySelectorAll<SVGGElement>('[data-anchor]') ?? []);
+    leaders.current = Array.from(keyTarget?.current?.querySelectorAll<SVGPathElement>('[data-leader]') ?? []);
     guides.current = Array.from(keyTarget?.current?.querySelectorAll<SVGLineElement>('[data-guide]') ?? []);
     return () => labels.current.forEach(label => label.style.removeProperty('--projected'));
   }, [keyTarget]);
@@ -218,15 +219,26 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
   // The car turns around its own middle, not the ground origin.
   const tmp = useMemo(() => ({ e: new THREE.Euler(), m: new THREE.Matrix4(), t: new THREE.Matrix4(), pivot: new THREE.Vector3(-0.1, 1.0, 0) }), []);
 
+  // A single shell-only normal buffer gives open panels and rounded bumpers
+  // a continuous pixel-scale contour, including on orthographic silhouettes.
+  const shellPass = useMemo(() => ({
+    target: new THREE.WebGLRenderTarget(1, 1, { samples: 4 }),
+    normals: new THREE.MeshNormalMaterial(),
+    size: new THREE.Vector2(),
+  }), []);
+  useEffect(() => () => {
+    shellPass.target.dispose();
+    shellPass.normals.dispose();
+  }, [shellPass]);
+
   useFrame(({ camera: activeCamera }) => {
     if (activeCamera !== camera) return;
     let again = false;
     const p = progress?.get() ?? 0;
     const { lift, out, down } = explodePhases(p);
     const phases = { lift, out, down };
-    for (const { group, home, offset, phase, guide, swing } of model.motions) {
+    for (const { group, home, offset, phase, guide } of model.motions) {
       group.position.copy(home).addScaledVector(offset, phases[phase]);
-      group.rotation.y = swing * phases[phase];
       if (!guide) continue;
       projected.copy(group.position).sub(home);
       const length = projected.length();
@@ -251,24 +263,24 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
       // At rest the pivot offset cancels out of the resting view only approximately, so rotate about the
       // origin at rest (keeps the axles on the drawing) and blend toward the pivot as the view turns away.
       const away = Math.min(1, Math.hypot(v.yaw - REST.yaw, v.pitch - REST.pitch) * 2);
-      e.set(v.pitch + 0.24 * lift, v.yaw + 0.31 * lift, 0);
+      e.set(v.pitch + 0.29 * lift, v.yaw + 0.18 * lift, 0);
       m.makeTranslation(pivot.x * away, pivot.y * away, 0)
         .multiply(t.makeRotationFromEuler(e))
         .multiply(t.makeTranslation(-pivot.x * away, -pivot.y * away, 0));
       const facing = Math.cos(e.y);
-      m.scale(projected.setScalar(1 - .10*lift));
+      m.scale(projected.setScalar(1 - .24 * lift));
       g.matrix.copy(m);
       g.updateMatrixWorld(true);
-      anchors.forEach(({ x, y }, i) => {
+      anchors.forEach(({ x, y, lx, ly }, i) => {
         const side = facing >= 0 ? 0 : 1;
-        const wheel = model.wheels[(i === 2 ? 2 : 0) + side];
+        const wi = (i === 2 ? 2 : 0) + side;
+        const wheel = model.wheels[wi];
         const project = (moved: boolean) => {
           if (i === 0) {
-            projected.set(-.36, 1.98, facing >= 0 ? .78 : -.78);
+            projected.copy(model.glassPins[side]);
             if (moved) projected.add(model.canopy.position);
           } else {
-            projected.copy(wheel.position);
-            if (!moved) projected.z -= Math.sign(projected.z) * 1.15 * out;
+            projected.copy(model.wheelPins[wi]).add(moved ? wheel.position : model.wheelHomes[wi]);
           }
           projected.applyMatrix4(g.matrixWorld).project(camera);
           return [(projected.x + 1) * 500, (1 - projected.y) * 270 - 60];
@@ -276,9 +288,26 @@ function Scene({ viewBox, progress, onReady, onFail, look = 'xray', resetKey, ke
         const [ox, oy] = project(false);
         const [px, py] = project(true);
         if (labels.current[i]) labels.current[i].style.setProperty('--projected', `translate(${px - x}px, ${py - y}px)`);
+        const elbow = lx + (i === 1 ? -12 : 12);
+        const leaderY = ly + (i === 0 ? 8 : -23);
+        leaders.current[i]?.setAttribute('d', `M${px} ${py} L${elbow} ${leaderY} H${lx}`);
         const guide = guides.current[i];
         if (guide) for (const [attr, value] of Object.entries({ x1: ox, y1: oy, x2: px, y2: py })) guide.setAttribute(attr, String(value));
       });
+    }
+    if (model.looks.look === 'xray') {
+      const { target, normals, size } = shellPass;
+      gl.getDrawingBufferSize(size);
+      target.setSize(size.x, size.y);
+      model.paintShell.uniforms.texel.value.set(1/size.x, 1/size.y);
+      model.paintShell.uniforms.mask.value = target.texture;
+      camera.layers.set(SHELL_LAYER);
+      scene.overrideMaterial = normals;
+      gl.setRenderTarget(target);
+      gl.render(scene, camera);
+      gl.setRenderTarget(null);
+      scene.overrideMaterial = null;
+      camera.layers.set(0);
     }
     gl.render(scene, camera);
     if (!ready.current) {
