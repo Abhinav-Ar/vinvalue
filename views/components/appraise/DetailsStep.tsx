@@ -201,7 +201,7 @@ export function DetailsStep() {
       <Stepper step={2} />
       <section className="wrap g2" style={{ paddingTop: 64, paddingBottom: 96, gridTemplateColumns: '7fr 5fr', alignItems: 'start' }}>
         <form onSubmit={submit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-          <div className="sheet" style={{ padding: '24px 28px', display: 'flex', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end', gap: 'var(--s5)' }}>
             <div>
               <h1 className="title" style={{ margin: '0 0 6px' }}>{d.year} {d.make} {d.model}</h1>
               <p className="small" style={{ margin: 0 }}>
@@ -219,7 +219,7 @@ export function DetailsStep() {
 
           {d.needsConfirmation && (
             <div className="field">
-              <label style={{ display: 'flex', gap: 12, alignItems: 'center', minHeight: 44, cursor: 'pointer', fontSize: 15 }}>
+              <label className="row" style={{ minHeight: 44, cursor: 'pointer' }}>
                 <input
                   id="confirm"
                   type="checkbox"
@@ -247,7 +247,7 @@ export function DetailsStep() {
             </Group>
           )}
           {trims.length === 1 && (
-            <label style={{ display: 'flex', gap: 12, alignItems: 'center', minHeight: 44, cursor: 'pointer', fontSize: 15 }}>
+            <label className="row" style={{ minHeight: 44, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={trimConfirmed}
@@ -255,7 +255,7 @@ export function DetailsStep() {
                 style={{ width: 20, height: 20, accentColor: 'var(--blue)', margin: 0 }}
               />
               <span>
-                My car is the {trims[0]} trim <span className="small">(optional; confirming it narrows the range)</span>
+                My car is the {trims[0]} trim <span className="small">(narrows the range)</span>
               </span>
             </label>
           )}
@@ -267,7 +267,7 @@ export function DetailsStep() {
             </Field>
           )}
 
-          <div className="g2" style={{ gap: 20 }}>
+          <div className="g2" style={{ gap: 'var(--s5)' }}>
             <Field id="mi" label="Current mileage *" errors={fields.mileage}>
               {({ id, describedBy, invalid }) => (
                 <input
@@ -284,7 +284,7 @@ export function DetailsStep() {
                 />
               )}
             </Field>
-            <Field id="zip" label="ZIP code *" hint="Where the car is now." errors={fields.zip}>
+            <Field id="zip" label="ZIP code *" hint="Where the car is." errors={fields.zip}>
               {({ id, describedBy, invalid }) => (
                 <input
                   id={id}
@@ -310,7 +310,7 @@ export function DetailsStep() {
             <p className="small" style={{ margin: '12px 0 0' }}>{COND_NOTE[condition]}</p>
           </div>
 
-          <div className="g2" style={{ gap: 20 }}>
+          <div className="g2" style={{ gap: 'var(--s5)' }}>
             <Group label="Title" errId="title-err" errors={fields.title}>
               <SegmentedControl name="title" label="Title" value={title} onChange={setTitle} options={TITLES} />
             </Group>
@@ -319,11 +319,11 @@ export function DetailsStep() {
             </Group>
           </div>
 
-          <details className="sheet" style={{ padding: '20px 24px' }} open={refineOpen} onToggle={(e) => setRefineOpen((e.target as HTMLDetailsElement).open)}>
-            <summary style={{ cursor: 'pointer', fontWeight: 500, minHeight: 44, display: 'flex', alignItems: 'center', gap: 6 }}>
-              Refine the estimate <span className="small">(optional)</span>
+          <details className="sheet" open={refineOpen} onToggle={(e) => setRefineOpen((e.target as HTMLDetailsElement).open)}>
+            <summary className="row" style={{ cursor: 'pointer', minHeight: 44, gap: 'var(--s2)' }}>
+              More details <span className="small">(optional)</span>
             </summary>
-            <div className="g2" style={{ gap: 20, marginTop: 20 }}>
+            <div className="g2" style={{ gap: 'var(--s5)', marginTop: 'var(--s5)' }}>
               <Field id="svc" label="Service history" errors={fields.serviceHistory}>
                 {({ id, describedBy, invalid }) => <Select id={id} aria-describedby={describedBy} aria-invalid={invalid || undefined} value={serviceHistory} onChange={setServiceHistory} options={SERVICE} />}
               </Field>
@@ -346,14 +346,14 @@ export function DetailsStep() {
 
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
             <button type="submit" className="btn" disabled={busy}>{busy ? 'Calculating value' : 'Calculate value'}</button>
-            <span className="small">Uses recorded sales where available, otherwise a calibrated estimate from the original MSRP.</span>
+            <span className="small">Recorded sales when we have them, otherwise a calibrated model.</span>
           </div>
         </form>
 
-        <aside className="sheet" style={{ padding: 28, position: 'sticky', top: 24 }}>
-          <h2 className="label" style={{ fontSize: 13 }}>Your inputs</h2>
+        <aside className="sheet" style={{ position: 'sticky', top: 88 }}>
+          <h2 className="kicker">Your car</h2>
           <div style={{ margin: '16px 0 12px' }}>
-            <CarDrawing variant={carVariant(d.model, d.specs.body)} />
+            <CarDrawing variant={carVariant(d.specs.make, d.model, d.specs.body)} />
           </div>
           <Row k="Trim" v={trimSummary} />
           <Row k="Condition" v={labelOf(CONDITIONS, condition)} />
@@ -371,9 +371,9 @@ export function DetailsStep() {
 
 function Row({ k, v }: { k: string; v: ReactNode }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderTop: '1px solid var(--line)' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--s4)', padding: 'var(--s3) 0', borderTop: '1px solid var(--line)', fontSize: 'var(--t-sm)' }}>
       <span className="label">{k}</span>
-      <span style={{ fontWeight: 500, textAlign: 'right' }}>{v}</span>
+      <span style={{ textAlign: 'right' }}>{v}</span>
     </div>
   );
 }
@@ -446,9 +446,9 @@ function DetailsSkeleton() {
       <section className="wrap g2" style={{ paddingTop: 64, paddingBottom: 96, gridTemplateColumns: '7fr 5fr', alignItems: 'start' }} aria-busy="true">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           <Skeleton h={112} />
-          <div className="g2" style={{ gap: 20 }}><Skeleton h={80} /><Skeleton h={80} /></div>
+          <div className="g2" style={{ gap: 'var(--s5)' }}><Skeleton h={80} /><Skeleton h={80} /></div>
           <Skeleton h={80} />
-          <div className="g2" style={{ gap: 20 }}><Skeleton h={80} /><Skeleton h={80} /></div>
+          <div className="g2" style={{ gap: 'var(--s5)' }}><Skeleton h={80} /><Skeleton h={80} /></div>
           <Skeleton h={66} />
           <Skeleton w={180} h={48} />
         </div>

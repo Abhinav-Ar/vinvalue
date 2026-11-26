@@ -2,6 +2,7 @@
  * Helpers shared by the hand-written SVG charts. No chart library, no motion.
  */
 import type { ReactNode } from 'react';
+import styles from './charts.module.css';
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -35,26 +36,8 @@ export function niceDomain(min: number, max: number) {
   return { lo, hi, ticks };
 }
 
-export const AXIS_TEXT = { fontSize: 11, fill: 'var(--mid)' } as const;
-
-/** Same-size box used when a chart has nothing to draw. */
-export function ChartEmpty({ height, children }: { height: number; children: ReactNode }) {
-  return (
-    <div
-      style={{
-        minHeight: height,
-        border: '1px dashed var(--line)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        boxSizing: 'border-box',
-        textAlign: 'center',
-      }}
-    >
-      <p style={{ margin: 0, maxWidth: 420, lineHeight: 1.55 }}>{children}</p>
-    </div>
-  );
+export function ChartEmpty({ children }: { children: ReactNode }) {
+  return <p className={`small ${styles.empty}`}>{children}</p>;
 }
 
 /** Visually hidden data table so screen readers get the numbers behind a chart. */

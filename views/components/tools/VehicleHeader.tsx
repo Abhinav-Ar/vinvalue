@@ -5,9 +5,11 @@
  */
 import Link from 'next/link';
 import { CarDrawing, type CarVariant } from '@/views/components/CarDrawing';
+import { carVariant as bodyVariant } from '@/views/components/vehicleBody';
 import { VehiclePhoto } from '@/views/components/VehiclePhoto';
 import { Skeleton } from '@/views/components/ui';
 import { VehicleTabs } from '@/views/components/garage/shared';
+import styles from '../garage/garage.module.css';
 import { num } from '@/views/components/client/format';
 
 export type VehicleDetail = {
@@ -30,15 +32,9 @@ const DRIVE: Record<string, string> = {
   '4WD': 'four-wheel drive',
 };
 
-/** Picks the line drawing: American V8 coupes get the muscle body, roadsters the roadster, the rest the GT. */
+/** The line drawing for this car (see views/components/vehicleBody.ts). */
 export function carVariant(v: Pick<VehicleDetail, 'specs'> | null): CarVariant {
-  if (!v) return 'gt';
-  const make = v.specs.make.toLowerCase();
-  const body = (v.specs.body ?? '').toLowerCase();
-  const model = v.specs.model.toLowerCase();
-  if (/convertible|roadster|cabrio/.test(body) || /mx-5|miata|boxster|z4|s2000/.test(model)) return 'roadster';
-  if (['ford', 'chevrolet', 'dodge'].includes(make)) return 'muscle';
-  return 'gt';
+  return v ? bodyVariant(v.specs.make, v.specs.model, v.specs.body) : 'gt';
 }
 
 export function specsLine(v: VehicleDetail) {
@@ -50,27 +46,38 @@ export function specsLine(v: VehicleDetail) {
 export function VehicleHeader({ vehicle, vehicleId, section }: { vehicle: VehicleDetail | null; vehicleId: string; section: 'value' | 'sell' }) {
   return (
     <>
-      <div className="g2" style={{ gridTemplateColumns: 'minmax(0,7fr) minmax(0,5fr)', gap: 40, alignItems: 'end' }}>
-        <div>
-          <Link href="/garage" className="small" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>
-            &#8592; Garage
-          </Link>
+      <header className={`g2 ${styles.columns} ${styles.hero}`}>
+        <div className={styles.group}>
+          <Link href="/garage" className={`small ${styles.back}`}>← Garage</Link>
           {vehicle ? (
             <>
-              <h1 className="title" style={{ marginTop: 8 }}>{vehicle.label}</h1>
-              <p className="small" style={{ margin: '12px 0 0' }}>
+              <h1 className="title">{vehicle.label}</h1>
+              <p className="small">
                 {specsLine(vehicle)} VIN <span className="vin">{vehicle.vin}</span>
               </p>
             </>
           ) : (
             <>
-              <Skeleton w="70%" h={40} style={{ marginTop: 8 }} />
-              <Skeleton w="90%" h={16} style={{ marginTop: 14 }} />
+              <Skeleton w="70%" h={40} />
+              <Skeleton w="90%" h={16} />
             </>
           )}
         </div>
-        <div>{vehicle ? <VehiclePhoto car={{ year: vehicle.specs.year, make: vehicle.specs.make, model: vehicle.specs.model, trim: vehicle.trim }} /> : <CarDrawing variant={carVariant(vehicle)} animate={false} />}</div>
-      </div>
+        <div className={styles.art}>
+          {vehicle ? (
+            <VehiclePhoto
+              car={{ year: vehicle.specs.year, make: vehicle.specs.make, model: vehicle.specs.model, trim: vehicle.trim }}
+              fallback={
+                <CarDrawing
+                  variant={carVariant(vehicle)}
+                  label={`${vehicle.label}, line drawing (no photo found)`}
+                  ink={false}
+                />
+              }
+            />
+          ) : <CarDrawing variant={carVariant(vehicle)} animate={false} />}
+        </div>
+      </header>
       <VehicleTabs id={vehicleId} on={section} />
     </>
   );

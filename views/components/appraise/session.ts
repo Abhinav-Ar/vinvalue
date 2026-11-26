@@ -4,7 +4,6 @@
  * (never in the URL, so the VIN stays out of logs and history).
  */
 import type { DecodedSpecs } from '@/models/db/schema';
-import type { CarVariant } from '@/views/components/CarDrawing';
 
 /** Response of POST /api/vin/decode (src/app/api/vin/decode/route.ts). */
 export type DecodeResult = {
@@ -64,23 +63,8 @@ export function specLine(s: { body: string | null; drive: string | null; engine:
   return parts.length ? `${parts.join(', ')}.` : '';
 }
 
-/** Pick the closest line drawing for a car. */
-export function carVariant(model: string, body?: string | null): CarVariant {
-  const style = body ?? '';
-  if (/pickup/i.test(style)) return 'truck';
-  if (/utility|multi-purpose|\b(suv|cuv|mpv|minivan|van|wagon)\b/i.test(style)) return 'suv';
-  if (/hatchback|liftback|notchback/i.test(style)) return 'hatch';
-  if (/sedan|saloon/i.test(style)) return 'sedan';
-  if (/convertible|cabriolet/i.test(style)) return 'roadster';
-  if (/mx-?5|miata|roadster|boxster|\bz4\b|s2000|spider|spyder|124/i.test(model)) return 'roadster';
-  if (/challenger|charger|camaro|chevelle|nova/i.test(model)) return 'muscle';
-  if (/coupe/i.test(style)) return 'gt';
-  if (/\b(f[- ]?[123]50|silverado|ram|tacoma|tundra|ranger|sierra|frontier|colorado|ridgeline)\b/i.test(model)) return 'truck';
-  if (/\b(rav[- ]?4|cr[- ]?v|explorer|wrangler|4runner|tahoe|model [xy]|highlander|outback|forester|pilot|escape|equinox|rogue|cx-?5|sienna|odyssey|pacifica|carnival|minivan)\b/i.test(model)) return 'suv';
-  if (/\b(hatchback|golf|gti|fit|prius|leaf)\b/i.test(model)) return 'hatch';
-  if (/\b(coupe|corvette|mustang|brz|gr86|86|911|supra|cayman|370z|350z|nsx|gt-?r|rc ?f|m[248])\b/i.test(model)) return 'gt';
-  return 'sedan';
-}
+/** The line drawing for a car: see views/components/vehicleBody.ts. */
+export { carVariant } from '@/views/components/vehicleBody';
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 export const countWord = (n: number) => WORDS[n] ?? String(n);

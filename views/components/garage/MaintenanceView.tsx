@@ -5,10 +5,11 @@
  * /api/vehicles/:id/overview (recall status).
  */
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { EmptyState, ErrorNote, Field, Skeleton } from '@/views/components/ui';
 import { api, useApi, type ApiError } from '@/views/components/client/api';
 import { longDate, num, shortDate, usd } from '@/views/components/client/format';
+import styles from './garage.module.css';
 import { Calendar, type CalendarItem } from './Calendar';
 import {
   GarageTabs, asApiError, badgeClass, localToday, statusText, ymd,
@@ -37,7 +38,6 @@ const SERVICES: { type: string; title: string }[] = [
 ];
 
 const usdCents = (c: number) => (c % 100 === 0 ? usd(c / 100) : '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-const label = { margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--mid)' } as const;
 
 function parseCostCents(s: string): number | null | 'bad' {
   const t = s.replace(/[$,\s]/g, '');
@@ -118,10 +118,10 @@ export function MaintenanceView() {
 
   if (!loadingFirst && garage.data && vehicles.length === 0) {
     return (
-      <section className="wrap" style={{ paddingTop: 64, paddingBottom: 40 }}>
+      <section className={`wrap page ${styles.page}`}>
         <h1 className="title">Maintenance</h1>
         <GarageTabs on="maintenance" />
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 'var(--s6)' }}>
           <EmptyState text="Add a car to your garage to track its maintenance." action={<Link className="btn" href="/appraise">Appraise a car</Link>} />
         </div>
       </section>
@@ -144,26 +144,24 @@ export function MaintenanceView() {
   const csvHref = `/api/maintenance/log?format=csv&year=${year}${filter !== 'all' ? `&vehicleId=${filter}` : ''}`;
 
   return (
-    <section className="wrap" style={{ paddingTop: 64, paddingBottom: 40 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
-        <div>
-          <h1 className="title">Maintenance</h1>
-          <p className="lede" style={{ marginTop: 14, maxWidth: 640 }}>Upcoming service for all your cars. Services you log count as service history on your next appraisal.</p>
-        </div>
-        <div className="segs" role="group" aria-label="Filter by vehicle" style={{ flexWrap: 'wrap' }}>
-          {[{ id: 'all', label: 'All' }, ...vehicles.map((v) => ({ id: v.id, label: badges.get(v.id)?.label ?? v.label }))].map((f) => (
-            <button key={f.id} type="button" className={f.id === filter ? 'seg on' : 'seg'} aria-pressed={f.id === filter} onClick={() => { setFilter(f.id); setSelected(null); }}>
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <section className={`wrap page ${styles.page}`}>
+      <header className={styles.group}>
+        <h1 className="title">Maintenance</h1>
+        <p className="lede">Logged service counts toward your next appraisal.</p>
+      </header>
       <GarageTabs on="maintenance" />
+      <div className={`segs ${styles.filter}`} role="group" aria-label="Filter by vehicle">
+        {[{ id: 'all', label: 'All' }, ...vehicles.map((v) => ({ id: v.id, label: badges.get(v.id)?.label ?? v.label }))].map((f) => (
+          <button key={f.id} type="button" className={f.id === filter ? 'seg on' : 'seg'} aria-pressed={f.id === filter} onClick={() => { setFilter(f.id); setSelected(null); }}>
+            {f.label}
+          </button>
+        ))}
+      </div>
 
-      {pageError && <div style={{ marginTop: 32 }}><ErrorNote error={pageError} onRetry={reloadAll} /></div>}
+      {pageError && <div style={{ marginTop: 'var(--s6)' }}><ErrorNote error={pageError} onRetry={reloadAll} /></div>}
 
-      <div className="g2" style={{ gridTemplateColumns: 'minmax(0,8fr) minmax(0,4fr)', gap: 24, marginTop: 32, alignItems: 'start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+      <div className={`g2 ${styles.columns} ${styles.section}`}>
+        <div className={styles.groups}>
           {month && today ? (
             <Calendar
               year={month.y}
@@ -183,78 +181,82 @@ export function MaintenanceView() {
           )}
           {cal.error && <ErrorNote error={cal.error} onRetry={cal.reload} />}
           {!cal.loading && cal.data && calItems.length === 0 && month && (
-            <p className="small" style={{ margin: 0 }}>No maintenance scheduled this month. Use the form to schedule a service.</p>
+            <p className="small" style={{ margin: 0 }}>No events this month.</p>
           )}
           {selected && today && (
             <EventPanel key={selected.id} item={selected} today={today} onClose={() => setSelected(null)} onChanged={() => { setSelected(null); reloadAll(); }} />
           )}
 
-          <div className="sheet" style={{ padding: '8px 8px 0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 12px 4px', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <h2 style={label}>Service log, {year}</h2>
-              <a href={csvHref} className="small" download style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>Export CSV</a>
+          <div className={`sheet ${styles.group} ${styles.serviceLog}`}>
+            <div className={styles.spread}>
+              <h2 className="h3">Service log, {year}</h2>
+              <a href={csvHref} className="btn-o" download>Export CSV</a>
             </div>
             <div className="scroll-x" tabIndex={0} role="region" aria-label="Service log table">
               <table className="tbl">
                 <thead>
-                  <tr><th>Date</th><th>Vehicle</th><th>Service</th><th className="num">Miles</th><th className="num">Cost</th><th>Where</th><th><span className="sr">Receipt</span></th></tr>
+                  <tr><th>Date</th><th>Vehicle</th><th>Service</th><th className="num">Miles</th><th className="num">Cost</th><th className={styles.logExtra}>Where</th><th className={styles.logExtra}><span className="sr">Receipt</span></th></tr>
                 </thead>
                 <tbody>
                   {log.loading && !log.data && [0, 1, 2].map((i) => <tr key={i}><td colSpan={7}><Skeleton h={18} /></td></tr>)}
                   {log.data && logRows.length === 0 && <tr><td colSpan={7} className="small">No services logged in {year} yet.</td></tr>}
                   {logRows.map((r) => (
                     <tr key={r.id}>
-                      <td className="mono" style={{ whiteSpace: 'nowrap' }}>{longDate(r.date)}</td>
+                      <td className={styles.dateCell}>{longDate(r.date)}</td>
                       <td>{r.vehicle}</td>
-                      <td>{r.service}</td>
+                      <td>
+                        {r.service}
+                        {r.shop && <span className={`small ${styles.logDetail}`}>{r.shop}</span>}
+                        {r.receipt && <a className={`small ${styles.logDetail}`} href={r.receipt.url}>Receipt</a>}
+                      </td>
                       <td className="num">{num(r.miles)}</td>
                       <td className="num">{r.costCents == null ? '–' : usdCents(r.costCents)}</td>
-                      <td>{r.shop ?? '–'}</td>
-                      <td>{r.receipt ? <a href={r.receipt.url}>Receipt</a> : null}</td>
+                      <td className={styles.logExtra}>{r.shop ?? '–'}</td>
+                      <td className={styles.logExtra}>{r.receipt ? <a href={r.receipt.url}>Receipt</a> : null}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {log.error && <div style={{ padding: 12 }}><ErrorNote error={log.error} onRetry={log.reload} /></div>}
+            {log.error && <ErrorNote error={log.error} onRetry={log.reload} />}
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
-          <div className="sheet" style={{ padding: 22 }}>
-            <h2 style={label}>Due next</h2>
-            {upcoming.loading && !upcoming.data && [0, 1, 2].map((i) => <Skeleton key={i} h={44} style={{ marginTop: 12 }} />)}
+        <div className={styles.groups}>
+          <div className={`sheet ${styles.group}`}>
+            <h2 className="h3">Due next</h2>
+            {upcoming.loading && !upcoming.data && [0, 1, 2].map((i) => <Skeleton key={i} h={44} />)}
             {upcoming.data && dueNext.length === 0 && (
-              <div style={{ paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+              <div className={styles.group}>
                 <p style={{ margin: 0 }}>No maintenance scheduled.</p>
                 <a className="btn-o" href="#log-form">Schedule a service</a>
               </div>
             )}
             {dueNext.map((d, i) => (
-              <div key={`${d.vehicleId}-${d.type}-${d.date}-${i}`} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
+              <div key={`${d.vehicleId}-${d.type}-${d.date}-${i}`} className={styles.dueRow}>
                 {d.vehicle && <span className={badgeClass(d.vehicle.index)} aria-hidden="true">{d.vehicle.letter}</span>}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 500 }}>{d.title}</div>
+                <div>
+                  <div>{d.title}</div>
                   <div className="small">{d.vehicle?.label}, {shortDate(d.date)}{d.source === 'interval' ? ', by interval' : ''}</div>
                 </div>
-                <span className={d.overdue ? 'stat late' : 'stat'}>{d.statusText}</span>
+                <span className={d.overdue ? `small ${styles.overdue}` : 'small'}>{d.statusText}</span>
               </div>
             ))}
           </div>
 
-          <div className="sheet" style={{ padding: 22 }}>
-            <h2 style={label}>By mileage</h2>
-            {upcoming.loading && !upcoming.data && [0, 1, 2].map((i) => <Skeleton key={i} h={48} style={{ marginTop: 12 }} />)}
-            {upcoming.data && byMileage.length === 0 && <p className="small" style={{ margin: '12px 0 0' }}>No mileage-based service is tracked for this car.</p>}
+          <div className={`sheet ${styles.group}`}>
+            <h2 className="h3">By mileage</h2>
+            {upcoming.loading && !upcoming.data && [0, 1, 2].map((i) => <Skeleton key={i} h={48} />)}
+            {upcoming.data && byMileage.length === 0 && <p className="small">No mileage-based service is tracked for this car.</p>}
             {byMileage.map((it, idx) => {
               const every = intervals[it.vehicleId]?.find((i) => i.type === it.type)?.everyMiles ?? null;
               const pct = every ? Math.min(100, Math.max(0, ((it.currentMiles - (it.dueAtMiles - every)) / every) * 100)) : null;
               return (
-                <div key={`${it.vehicleId}-${it.type}-${idx}`} style={{ padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10 }}>
+                <div key={`${it.vehicleId}-${it.type}-${idx}`} className={styles.mileage}>
+                  <div className="row">
                     {it.vehicle && <span className={badgeClass(it.vehicle.index)} aria-hidden="true">{it.vehicle.letter}</span>}
                     <span style={{ flex: 1 }}>{it.title}<span className="sr">, {it.vehicle?.label}</span></span>
-                    <span className={it.overdue ? 'stat late' : 'mono small'}>{it.statusText}</span>
+                    <span className={it.overdue ? `small ${styles.overdue}` : 'small'}>{it.statusText}</span>
                   </div>
                   <div className="dim" role="img" aria-label={`${it.title}: odometer ${num(it.currentMiles)} mi, due at ${num(it.dueAtMiles)} mi`}>
                     <span>{num(it.currentMiles)}</span>
@@ -276,22 +278,17 @@ export function MaintenanceView() {
             }}
           />
 
-          <div className="sheet" style={{ padding: 22 }}>
-            <h2 style={label}>Spend this year</h2>
-            {spend.loading && !spend.data && <Skeleton h={120} style={{ marginTop: 12 }} />}
-            {spend.data?.vehicles.map((v) => (
-              <div key={v.vehicleId} style={{ display: 'flex', gap: 12, alignItems: 'baseline', padding: '10px 0' }}>
-                <span>{v.label}</span>
-                <span style={{ flex: 1, borderBottom: '1px dotted var(--mid)' }} />
-                <span className="mono">{usdCents(v.totalCents)}</span>
-              </div>
-            ))}
+          <div className={`sheet ${styles.group}`}>
+            <h2 className="h3">Spend this year</h2>
+            {spend.loading && !spend.data && <Skeleton h={120} />}
             {spend.data && (
-              <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', padding: '10px 0' }}>
-                <span>All vehicles, {spend.data.year}</span>
-                <span style={{ flex: 1, borderBottom: '1px dotted var(--mid)' }} />
-                <span className="mono">{usdCents(spend.data.totalCents)}</span>
-              </div>
+              <dl className="kv">
+                {spend.data.vehicles.map((v) => (
+                  <Fragment key={v.vehicleId}><dt>{v.label}</dt><dd>{usdCents(v.totalCents)}</dd></Fragment>
+                ))}
+                <dt>All vehicles, {spend.data.year}</dt>
+                <dd>{usdCents(spend.data.totalCents)}</dd>
+              </dl>
             )}
             {spend.error && <ErrorNote error={spend.error} onRetry={spend.reload} />}
           </div>
@@ -310,32 +307,26 @@ function RecallNote({ vehicles, recalls }: { vehicles: { id: string; label: stri
   const lines = vehicles.map((v) => ({ ...v, r: recalls[v.id] }));
   const unchecked = lines.filter((l) => l.r === null);
   return (
-    <div className="sheet" style={{ padding: '18px 22px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" style={{ flex: '0 0 auto', marginTop: 2 }}>
-        <path d="M11 2 L20 18 L2 18 Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M11 8 L11 13 M11 15 L11 16" stroke="currentColor" strokeWidth="1.6" />
-      </svg>
-      <div style={{ minWidth: 0 }}>
-        <h2 style={{ margin: 0, fontWeight: 500, fontSize: 15 }}>Recall check</h2>
-        {!loaded ? (
-          <Skeleton h={36} style={{ marginTop: 6 }} />
-        ) : (
-          <>
-            {lines.filter((l) => l.r).map((l) => (
-              <p key={l.id} className="small" style={{ margin: '4px 0 0' }}>
-                {l.label}: {l.r!.count === 0 ? 'no open recalls found for the model year' : `${l.r!.count} recall${l.r!.count === 1 ? '' : 's'} may apply to your model year`}, checked {shortDate(l.r!.checkedAt)}.
-              </p>
-            ))}
-            {unchecked.length > 0 && (
-              <p className="small" style={{ margin: '4px 0 0' }}>{unchecked.map((l) => l.label).join(', ')}: not checked yet.</p>
-            )}
-            <p className="small" style={{ margin: '4px 0 0' }}>
-              We check NHTSA recalls for each model year weekly. Confirm by VIN at <a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noreferrer">nhtsa.gov/recalls</a>.
+    <section className={`sheet ${styles.group}`}>
+      <h2 className="h3">Recall check</h2>
+      {!loaded ? (
+        <Skeleton h={36} />
+      ) : (
+        <>
+          {lines.filter((l) => l.r).map((l) => (
+            <p key={l.id} className="small">
+              {l.label}: {l.r!.count === 0 ? 'no open recalls found for the model year' : `${l.r!.count} recall${l.r!.count === 1 ? '' : 's'} may apply to your model year`}, checked {shortDate(l.r!.checkedAt)}.
             </p>
-          </>
-        )}
-      </div>
-    </div>
+          ))}
+          {unchecked.length > 0 && (
+            <p className="small">{unchecked.map((l) => l.label).join(', ')}: not checked yet.</p>
+          )}
+          <p className="small">
+            We check model-year recalls weekly. Confirm by VIN at <a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noreferrer">nhtsa.gov/recalls</a>.
+          </p>
+        </>
+      )}
+    </section>
   );
 }
 
@@ -406,8 +397,8 @@ function LogForm({ vehicles, preselect, today, onAdded }: {
   }
 
   return (
-    <form id="log-form" className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={(e) => { e.preventDefault(); void add(); }} noValidate>
-      <h2 style={label}>Log or schedule a service</h2>
+    <form id="log-form" className={`sheet ${styles.group}`} onSubmit={(e) => { e.preventDefault(); void add(); }} noValidate>
+      <h2 className="h3">Log or schedule service</h2>
       <Field label="Vehicle" errors={fields.vehicle}>
         {({ id, describedBy, invalid }) => (
           <select ref={carRef} id={id} className="inp" value={car} onChange={(e) => setCar(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined}>
@@ -422,24 +413,24 @@ function LogForm({ vehicles, preselect, today, onAdded }: {
           </select>
         )}
       </Field>
-      <div className="g2" style={{ gap: 12 }}>
+      <div className={styles.fields}>
         <Field label="Date" errors={fields.date}>
           {({ id, describedBy, invalid }) => (
-            <input id={id} type="date" className="inp mono" value={date} onChange={(e) => setDate(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
+            <input id={id} type="date" className="inp" value={date} onChange={(e) => setDate(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
           )}
         </Field>
         <Field label="Odometer" errors={fields.odometer}>
           {({ id, describedBy, invalid }) => (
-            <input id={id} className="inp mono" inputMode="numeric" placeholder="miles" value={odo} onChange={(e) => setOdo(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
+            <input id={id} className="inp" inputMode="numeric" placeholder="miles" value={odo} onChange={(e) => setOdo(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
           )}
         </Field>
       </div>
       <Field label="Cost (optional)" errors={fields.cost}>
         {({ id, describedBy, invalid }) => (
-          <input id={id} className="inp mono" inputMode="decimal" placeholder="$0.00" value={cost} onChange={(e) => setCost(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
+          <input id={id} className="inp" inputMode="decimal" placeholder="$0.00" value={cost} onChange={(e) => setCost(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />
         )}
       </Field>
-      <p className="small" style={{ margin: 0 }}>A past date logs the service as done. A future date schedules it.</p>
+      <p className="small" style={{ margin: 0 }}>Past dates log completed service; future dates schedule it.</p>
       <button type="submit" className="btn" disabled={busy || !vehicles.length}>{busy ? 'Adding' : 'Add to calendar'}</button>
       {err && <p className="err" role="alert">{err.message}</p>}
       {added && <p className="small" style={{ margin: 0, color: 'var(--ink)' }} role="status">{added}</p>}
@@ -497,13 +488,13 @@ function EventPanel({ item, today, onClose, onChanged }: { item: CalendarItem; t
   const when = item.status === 'done' ? `done ${longDate(item.date)}` : item.status === 'skipped' ? `skipped, ${longDate(item.date)}` : `${longDate(item.date)}, ${statusText(item.date, today)}`;
 
   return (
-    <div className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }} aria-label="Selected service">
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+    <div className={`sheet ${styles.group}`} aria-label="Selected service">
+      <div className={styles.spread}>
+        <div className="row">
           <span className={badgeClass(item.vehicle.index)} aria-hidden="true">{item.vehicle.letter}</span>
           <div>
-            <h3 ref={headRef} tabIndex={-1} style={{ margin: 0, fontSize: 17, fontWeight: 600, outline: 'none' }}>{item.title}</h3>
-            <p className="small" style={{ margin: '4px 0 0' }}>{item.vehicle.label}, {when}</p>
+            <h3 ref={headRef} tabIndex={-1} className="h3">{item.title}</h3>
+            <p className="small">{item.vehicle.label}, {when}</p>
           </div>
         </div>
         <button type="button" className="ghost" onClick={onClose}>Close</button>
@@ -511,20 +502,20 @@ function EventPanel({ item, today, onClose, onChanged }: { item: CalendarItem; t
 
       {scheduled && (
         <>
-          <div className="g2" style={{ gap: 12 }}>
+          <div className={styles.fields}>
             <Field label="Odometer (optional)" errors={fields.odometer}>
-              {({ id, describedBy, invalid }) => <input id={id} className="inp mono" inputMode="numeric" placeholder="miles" value={odo} onChange={(e) => setOdo(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
+              {({ id, describedBy, invalid }) => <input id={id} className="inp" inputMode="numeric" placeholder="miles" value={odo} onChange={(e) => setOdo(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
             </Field>
             <Field label="Cost (optional)" errors={fields.cost}>
-              {({ id, describedBy, invalid }) => <input id={id} className="inp mono" inputMode="decimal" placeholder="$0.00" value={cost} onChange={(e) => setCost(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
+              {({ id, describedBy, invalid }) => <input id={id} className="inp" inputMode="decimal" placeholder="$0.00" value={cost} onChange={(e) => setCost(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
             </Field>
           </div>
-          <button type="button" className="btn" onClick={markDone} disabled={!!busy}>
+          <button type="button" className="btn-o" onClick={markDone} disabled={!!busy}>
             {busy === 'done' ? 'Saving' : item.date > today ? 'Mark done today' : 'Mark done'}
           </button>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-            <Field label="New date" errors={fields.date} style={{ flex: '1 1 180px' }}>
-              {({ id, describedBy, invalid }) => <input id={id} type="date" className="inp mono" value={newDate} onChange={(e) => setNewDate(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
+          <div className={styles.reschedule}>
+            <Field label="New date" errors={fields.date}>
+              {({ id, describedBy, invalid }) => <input id={id} type="date" className="inp" value={newDate} onChange={(e) => setNewDate(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
             </Field>
             <button type="button" className="btn-o" disabled={!!busy || !newDate || newDate === item.date} onClick={() => void run('move', () => api(`/api/service-events/${item.id}`, { method: 'PATCH', body: { date: newDate } }))}>
               {busy === 'move' ? 'Moving' : 'Move to this date'}
@@ -534,7 +525,7 @@ function EventPanel({ item, today, onClose, onChanged }: { item: CalendarItem; t
       )}
 
       {confirmDelete ? (
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }} role="group" aria-label="Confirm delete">
+        <div className="row" role="group" aria-label="Confirm delete">
           <span>Delete this service from the calendar?</span>
           <button type="button" className="btn-o" disabled={!!busy} onClick={() => void run('delete', () => api(`/api/service-events/${item.id}`, { method: 'DELETE' }))}>
             {busy === 'delete' ? 'Deleting' : 'Yes, delete'}
@@ -542,7 +533,7 @@ function EventPanel({ item, today, onClose, onChanged }: { item: CalendarItem; t
           <button type="button" className="ghost" onClick={() => setConfirmDelete(false)}>Keep it</button>
         </div>
       ) : (
-        <button type="button" className="btn-o" style={{ alignSelf: 'flex-start' }} onClick={() => setConfirmDelete(true)} disabled={!!busy}>Delete service</button>
+        <button type="button" className="textbtn" onClick={() => setConfirmDelete(true)} disabled={!!busy}>Delete service</button>
       )}
       {err && <p className="err" role="alert">{err.message}</p>}
     </div>

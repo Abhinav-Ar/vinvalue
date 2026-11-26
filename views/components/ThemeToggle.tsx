@@ -30,13 +30,12 @@ export function ThemeToggle() {
           /* private mode: the choice lasts for this page only */
         }
       }}
-      aria-label={next === 'night' ? 'Switch to the dark blueprint theme' : 'Switch to the light theme'}
+      aria-label={next === 'night' ? 'Switch to the dark theme' : 'Switch to the light theme'}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
         <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.3" />
         <path d="M8 1.5 A6.5 6.5 0 0 0 8 14.5 Z" fill="currentColor" />
       </svg>
-      <span className="theme-label" suppressHydrationWarning>{next === 'night' ? 'Dark' : 'Light'}</span>
     </button>
   );
 }

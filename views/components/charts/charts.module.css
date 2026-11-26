@@ -1,0 +1,50 @@
+.plot {
+  margin: 0;
+  container-type: inline-size;
+}
+
+.plot svg {
+  display: block;
+}
+
+.axis {
+  fill: var(--mid);
+  font-size: 12px;
+}
+
+.numeric {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.annotation {
+  fill: var(--mid);
+  font-size: 13px;
+}
+
+.active {
+  fill: var(--blue);
+}
+
+.empty {
+  margin: var(--s4) 0 0;
+}
+
+@container (max-width: 540px) {
+  .forecast .axis,
+  .forecast .annotation {
+    font-size: 20px;
+  }
+
+  .forecast .extraTick {
+    display: none;
+  }
+
+  .market .axis,
+  .buckets .annotation {
+    font-size: 18px;
+  }
+
+  .buckets .axis {
+    font-size: 14px;
+  }
+}

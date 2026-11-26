@@ -1,8 +1,0 @@
-/* Landing sections below the hero (the hero and steps live in landing.module.css). */
-.evidence { list-style: none; padding: 0; margin: 28px 0 32px; }
-.evidence li { display: grid; grid-template-columns: 40px 1fr; gap: 8px; padding: 16px 0; border-top: 1px solid var(--line); }
-.evidence li > span { font-size: 12px; color: var(--blue); padding-top: 4px; }
-.evidence h3 { margin: 0; font-size: 17px; font-weight: 600; }
-.evidence p { margin: 4px 0 0; color: var(--mid); line-height: 1.55; font-size: 15px; }
-.garageSheet { border: 1px solid var(--line); background: var(--paper); padding: 22px; }
-.garageChip { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); padding: 12px 14px; font-size: 15px; }

@@ -1,0 +1,16 @@
+/* /garage: cars parked on one shared horizon. */
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s5) var(--s8); flex-wrap: wrap; margin-bottom: var(--s6); }
+.lot { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--s8) var(--s6); margin-top: var(--s5); }
+.car { display: flex; flex-direction: column; gap: var(--s4); min-width: 0; }
+.art { display: block; border-bottom: 1px solid var(--line-strong); padding-bottom: var(--s2); transition: transform .5s var(--ease); }
+.art:hover { transform: translateY(-4px); }
+.art :global(.photo-fallback) { aspect-ratio: auto; }
+.name { display: flex; flex-direction: column; gap: var(--s1); }
+.name a { text-decoration: none; }
+.value { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); flex-wrap: wrap; }
+.value :global(.stat-v) { margin: 0; }
+.service { display: flex; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; font-size: var(--t-sm); text-decoration: none !important; color: var(--ink) !important; padding-left: var(--s4); position: relative; }
+.service::before { content: ''; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
+.service span:last-child { color: var(--mid); }
+.service[data-late]::before { background: var(--warn); }
+.service[data-late] span:last-child { color: var(--warn); }

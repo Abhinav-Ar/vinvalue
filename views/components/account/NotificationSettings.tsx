@@ -83,11 +83,11 @@ export function NotificationSettings({ prefs, onInAppChanged }: { prefs: PrefsSt
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div className="sheet" style={{ padding: 22 }}>
-        <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>Notification settings</h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s8)' }}>
+      <div className="sheet">
+        <h2 className="h3">Notifications</h2>
         <div className="scroll-x" tabIndex={0} role="region" aria-label="Notification channels table">
-          <table className="tbl" style={{ marginTop: 8 }}>
+          <table className="tbl" style={{ marginTop: 'var(--s4)' }}>
             <thead>
               <tr>
                 <th scope="col">Alert</th>
@@ -101,7 +101,7 @@ export function NotificationSettings({ prefs, onInAppChanged }: { prefs: PrefsSt
             <tbody>
               {ROWS.map((r) => (
                 <tr key={r.type}>
-                  <th scope="row" style={{ fontWeight: 400, fontSize: 14, color: 'var(--ink)', borderBottom: '1px solid var(--line)', padding: 12 }}>
+                  <th scope="row" style={{ font: 'inherit', textTransform: 'none', letterSpacing: 0, color: 'var(--ink)' }}>
                     {r.label}
                   </th>
                   {COLS.map((c) => {
@@ -132,27 +132,27 @@ export function NotificationSettings({ prefs, onInAppChanged }: { prefs: PrefsSt
           </table>
         </div>
         {matrixError && (
-          <p className="err" role="alert" style={{ marginTop: 12 }}>
+          <p className="err" role="alert" style={{ marginTop: 'var(--s3)' }}>
             {matrixError}
           </p>
         )}
-        <p id="note-sms" className="small" style={{ margin: '12px 0 0', lineHeight: 1.5 }}>
+        <p id="note-sms" className="small" style={{ margin: 'var(--s3) 0 0' }}>
           {verified
             ? `SMS goes to ${data.phone!.masked}.`
-            : 'SMS needs a verified mobile number. Verify one under Delivery to change these boxes; ticked SMS alerts start sending once the number is verified.'}
+            : 'Verify a mobile number under Delivery to turn on SMS.'}
         </p>
         {!pushOk && (
-          <p id="note-push" className="small" style={{ margin: '6px 0 0', lineHeight: 1.5 }}>
-            Push is not available here. Delivery below explains why.
+          <p id="note-push" className="small" style={{ margin: 'var(--s1) 0 0' }}>
+            Push isn’t available here.
           </p>
         )}
-        <p id="note-recall" className="small" style={{ margin: '6px 0 0', lineHeight: 1.5 }}>
+        <p id="note-recall" className="small" style={{ margin: 'var(--s1) 0 0' }}>
           In-app recall alerts are always on.
         </p>
       </div>
 
-      <div className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>Delivery</h2>
+      <div className="sheet" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s4)' }}>
+        <h2 className="h3">Delivery</h2>
         <DigestField prefs={data} onSaved={setData} />
         <PhoneSection prefs={data} onChanged={reload} />
         <QuietHours prefs={data} onSaved={setData} />
@@ -261,7 +261,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
   if (prefs.phone?.verified) {
     return (
       <div className="field">
-        <span style={{ fontSize: 15 }}>Mobile number for SMS</span>
+        <span className="small">Mobile number for SMS</span>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <span className="mono">{prefs.phone.masked}</span>
           <span className="small">Verified</span>
@@ -285,7 +285,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
           errors={fieldErr.code ?? (msg ? [msg] : undefined)}
         >
           {({ id, describedBy, invalid }) => (
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', gap: 'var(--s2)' }}>
               <input
                 id={id}
                 className="inp mono"
@@ -296,7 +296,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                 aria-describedby={describedBy}
                 aria-invalid={invalid}
-                style={{ borderRight: 0 }}
+                style={{ flex: 1 }}
               />
               <button type="button" className="btn" onClick={verify} disabled={busy || code.length !== 6}>
                 Verify
@@ -321,7 +321,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <Field label="Mobile number for SMS" hint="US numbers only." errors={fieldErr.phone}>
         {({ id, describedBy, invalid }) => (
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', gap: 'var(--s2)' }}>
             <input
               id={id}
               className="inp mono"
@@ -332,7 +332,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
               onChange={(e) => setPhone(e.target.value)}
               aria-describedby={describedBy}
               aria-invalid={invalid}
-              style={{ borderRight: 0 }}
+              style={{ flex: 1 }}
             />
             <button type="button" className="btn" onClick={sendCode} disabled={busy || phone.trim().length < 7}>
               Send code
@@ -348,7 +348,7 @@ function PhoneSection({ prefs, onChanged }: { prefs: PrefsView; onChanged: () =>
           aria-invalid={!!fieldErr.consent}
           style={{ width: 20, height: 20, accentColor: 'var(--blue)', margin: '2px 0 0', flex: '0 0 auto' }}
         />
-        <span className="small" style={{ lineHeight: 1.5 }}>{SMS_CONSENT_TEXT}</span>
+        <span className="small">{SMS_CONSENT_TEXT}</span>
       </label>
       {fieldErr.consent && <p className="err" role="alert">{fieldErr.consent[0]}</p>}
       {otherMsg && <p className="err" role="alert">{otherMsg}</p>}
@@ -542,16 +542,16 @@ function PushSection({ onAvailable }: { onAvailable: (ok: boolean) => void }) {
       body = <Skeleton w="80%" h={16} />;
       break;
     case 'unsupported':
-      body = <p className="small" style={{ margin: 0 }}>This browser does not support push notifications. Use email or SMS, or open AutoIQ in a browser that supports push.</p>;
+      body = <p className="small" style={{ margin: 0 }}>This browser doesn’t support push. Use email or SMS.</p>;
       break;
     case 'not_configured':
-      body = <p className="small" style={{ margin: 0 }}>Push notifications are not available yet because they are not set up on our server. Use email or SMS for now.</p>;
+      body = <p className="small" style={{ margin: 0 }}>Push isn’t available yet. Use email or SMS.</p>;
       break;
     case 'unavailable':
       body = <p className="small" style={{ margin: 0 }}>{st.message} Use email or SMS for now.</p>;
       break;
     case 'denied':
-      body = <p className="small" style={{ margin: 0 }}>Notifications are blocked for this site. Allow them in your browser&apos;s site settings, then reload this page.</p>;
+      body = <p className="small" style={{ margin: 0 }}>Notifications are blocked. Allow them in site settings, then reload.</p>;
       break;
     case 'off':
       body = (

@@ -1,0 +1,62 @@
+.controls {
+  align-items: start;
+}
+
+.range {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--blue);
+  margin: 0;
+}
+
+.alerts > li {
+  padding-block: var(--s2);
+}
+
+.alerts > li:first-child {
+  padding-top: 0;
+}
+
+.routes {
+  margin-top: var(--s5);
+}
+
+.routeNote {
+  max-width: 45rem;
+  margin: var(--s5) 0 0;
+}
+
+.checklist > li {
+  display: flex;
+  gap: var(--s3);
+  padding-block: var(--s3);
+}
+
+.checklist > li:first-child {
+  padding-top: 0;
+}
+
+.checklist input {
+  flex: 0 0 auto;
+  width: var(--s5);
+  height: var(--s5);
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.checklist label span {
+  display: block;
+  margin-top: var(--s1);
+}
+
+.shots > li {
+  padding-block: var(--s2);
+}
+
+.description {
+  resize: vertical;
+}
+
+.disclaimer {
+  margin: var(--s6) 0 0;
+}

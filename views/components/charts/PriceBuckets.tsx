@@ -2,7 +2,8 @@
  * Listings by asking price (design/Market). The bucket holding your car is cobalt.
  */
 import { usd } from '@/views/components/client/format';
-import { AXIS_TEXT, ChartEmpty, SrTable } from './shared';
+import { ChartEmpty, SrTable } from './shared';
+import styles from './charts.module.css';
 
 export type Bucket = { from: number; to: number; count: number };
 
@@ -22,12 +23,12 @@ export function PriceBuckets({ buckets, yourIndex, yourValue }: { buckets: Bucke
   const total = buckets.reduce((s, b) => s + b.count, 0);
   const rows = buckets.map((b, i) => [`${usd(b.from)} to ${usd(b.to)}`, b.count, i === yourIndex ? 'Your car' : '']);
   if (!buckets.length || total === 0) {
-    return <ChartEmpty height={H * 0.75}>No listings in this area right now, so there is nothing to chart. Try a wider radius.</ChartEmpty>;
+    return <ChartEmpty>No local listings. Try a wider radius.</ChartEmpty>;
   }
 
   const n = buckets.length;
   const slot = (W - 20) / n;
-  const bw = Math.min(80, slot - 15);
+  const bw = Math.min(80, slot * 0.75);
   const max = Math.max(...buckets.map((b) => b.count));
   const hasYou = yourIndex != null && yourIndex >= 0 && yourIndex < n;
   const xOf = (i: number) => 10 + i * slot + (slot - bw) / 2;
@@ -37,21 +38,21 @@ export function PriceBuckets({ buckets, yourIndex, yourValue }: { buckets: Bucke
     (hasYou ? ` Your car${yourValue != null ? `, at ${usd(yourValue)},` : ''} falls in ${usd(buckets[yourIndex!]!.from)} to ${usd(buckets[yourIndex!]!.to)}, with ${buckets[yourIndex!]!.count} listings.` : '');
 
   return (
-    <figure style={{ margin: 0 }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={summary} style={{ display: 'block', marginTop: 12 }}>
+    <figure className={`${styles.plot} ${styles.buckets}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={summary}>
         {buckets.map((b, i) => {
           const h = max ? (b.count / max) * (BASE - TOP) : 0;
           const you = hasYou && i === yourIndex;
           return (
             <g key={i}>
-              <rect x={xOf(i)} y={BASE - h} width={bw} height={h} fill={you ? 'var(--blue)' : 'var(--fill)'} stroke="var(--ink)" strokeWidth={1} />
-              <text x={xOf(i) + bw / 2} y={222} textAnchor="middle" {...AXIS_TEXT}>{rangeLabel(b)}</text>
+              <rect x={xOf(i)} y={BASE - h} width={bw} height={h} fill={you ? 'var(--blue)' : 'var(--mid)'} />
+              <text x={xOf(i) + bw / 2} y={222} textAnchor="middle" className={`${styles.axis} ${styles.numeric}`}>{rangeLabel(b)}</text>
             </g>
           );
         })}
-        <path d={`M10 ${BASE} L${W - 10} ${BASE}`} stroke="var(--ink)" />
+        <path d={`M10 ${BASE} L${W - 10} ${BASE}`} stroke="var(--line-strong)" />
         {hasYou && (
-          <text x={xOf(yourIndex!) + bw / 2} y={244} textAnchor="middle" fontSize={12} fill="var(--blue)">
+          <text x={Math.min(W - 85, Math.max(85, xOf(yourIndex!) + bw / 2))} y={244} textAnchor="middle" className={`${styles.annotation} ${styles.active}`}>
             Your car{yourValue != null ? ` ${usd(yourValue)}` : ''}
           </text>
         )}

@@ -54,7 +54,7 @@ export function Nav() {
   }, [path]);
 
   return (
-    <header className={`nav wrap${open ? ' menu-open' : ''}`} style={{ maxWidth: 'none', padding: '0 40px' }}>
+    <header className={`nav${open ? ' menu-open' : ''}`}>
       <Logo />
       <button ref={menuRef} type="button" className="nav-menu" aria-expanded={open} aria-controls="main-nav" onClick={() => setOpen((v) => !v)}>{open ? 'Close' : 'Menu'}</button>
       <nav id="main-nav" className="links" aria-label="Main">
@@ -86,7 +86,7 @@ export function Nav() {
               />
             </svg>
             {!!unread && (
-              <span className="mono" style={{ fontSize: 11 }}>
+              <span className="kicker" style={{ color: 'var(--blue)' }}>
                 {unread}
               </span>
             )}
@@ -94,7 +94,7 @@ export function Nav() {
         )}
         <ThemeToggle />
         {me?.signedIn ? (
-          <Link className="btn-o signin" href="/history">
+          <Link className="ghost signin" href="/history">
             History
           </Link>
         ) : (

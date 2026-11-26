@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { api, useApi } from '@/views/components/client/api';
+import { Field } from '@/views/components/ui';
+import styles from './garage.module.css';
 import { asApiError } from './shared';
 
 type Prompt = { id: string; vehicleKey: string; reason: string; dismissed: boolean; completed: boolean; snapshot: { year: number; make: string; model: string } };
@@ -34,15 +36,31 @@ function SaleOutcomeCard({ prompt, onDone }: { prompt: Prompt; onDone: () => voi
     } catch (e) { setError(asApiError(e).message); }
     finally { setBusy(false); }
   }
-  return <form className="sheet" style={{ padding: 18, marginTop: 18, display: 'grid', gap: 12 }} onSubmit={e => { e.preventDefault(); void submit(); }}>
-    <h2 style={{ fontSize: 18, margin: 0 }}>What did you sell it for?</h2>
-    <p className="small" style={{ margin: 0 }}>{prompt.snapshot.year} {prompt.snapshot.make} {prompt.snapshot.model}. If it has sold, your final price helps improve future estimates.</p>
-    <label>Final sale price ($)<input className="inp" type="number" min="500" max="5000000" step="1" required value={price} onChange={e => setPrice(e.target.value)} /></label>
-    <label>Sale date<input className="inp" type="date" required max={new Date().toISOString().slice(0, 10)} value={date} onChange={e => setDate(e.target.value)} /></label>
-    <label>How it sold<select className="inp" value={route} onChange={e => setRoute(e.target.value)}>
-      <option value="private">Private party</option><option value="trade">Dealer trade-in</option><option value="instant">Instant offer</option><option value="auction">Auction</option>
-    </select></label>
-    <div style={{ display: 'flex', gap: 12 }}><button className="btn-o" disabled={busy}>Save sale price</button><button type="button" className="ghost" disabled={busy} onClick={() => void submit(true)}>Dismiss</button></div>
+  return <form className={`sheet ${styles.group} ${styles.outcome}`} onSubmit={e => { e.preventDefault(); void submit(); }}>
+    <h2 className="h3">Report sale price</h2>
+    <p className="small">{prompt.snapshot.year} {prompt.snapshot.make} {prompt.snapshot.model}</p>
+    <div className={styles.fields}>
+      <Field label="Final sale price ($)">
+        {({ id }) => <input id={id} className="inp" type="number" min="500" max="5000000" step="1" required value={price} onChange={e => setPrice(e.target.value)} />}
+      </Field>
+      <Field label="Sale date">
+        {({ id }) => <input id={id} className="inp" type="date" required max={new Date().toISOString().slice(0, 10)} value={date} onChange={e => setDate(e.target.value)} />}
+      </Field>
+    </div>
+    <Field label="How it sold">
+      {({ id }) => (
+        <select id={id} className="inp" value={route} onChange={e => setRoute(e.target.value)}>
+          <option value="private">Private party</option>
+          <option value="trade">Dealer trade-in</option>
+          <option value="instant">Instant offer</option>
+          <option value="auction">Auction</option>
+        </select>
+      )}
+    </Field>
+    <div className="row">
+      <button className="btn-o" disabled={busy}>Save sale price</button>
+      <button type="button" className="textbtn" disabled={busy} onClick={() => void submit(true)}>Dismiss</button>
+    </div>
     {error && <p className="err" role="alert">{error}</p>}
   </form>;
 }
@@ -63,22 +81,22 @@ export function VehicleSaleActions({ vehicleId, onChanged }: { vehicleId: string
     } catch (e) { setError(asApiError(e).message); }
     finally { setBusy(false); }
   }
-  return <div className="card-actions">
+  return <div className={styles.group}>
     {confirming ? (
-      <div className="confirm" role="group" aria-label="Confirm removal">
+      <div className={styles.group} role="group" aria-label="Confirm removal">
         <p className="small" style={{ margin: 0 }}>Remove this car? Its documents are deleted too.</p>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="row">
           <button type="button" className="btn-o danger" disabled={busy} onClick={() => void act(true)}>{busy ? 'Removing' : 'Remove'}</button>
           <button type="button" className="textbtn" disabled={busy} onClick={() => setConfirming(false)}>Cancel</button>
         </div>
       </div>
     ) : (
-      <div style={{ display: 'flex', gap: 18 }}>
+      <div className="row">
         <button type="button" className="textbtn" disabled={busy || changed} onClick={() => void act(false)}>Mark sold</button>
         <button type="button" className="textbtn" disabled={busy || changed} onClick={() => setConfirming(true)}>Remove</button>
       </div>
     )}
-    {changed && <p role="status" className="small">Updated. You can optionally report the final sale price above.</p>}
+    {changed && <p role="status" className="small">Updated. Reporting the final sale price is optional.</p>}
     {error && <p className="err" role="alert">{error}</p>}
   </div>;
 }

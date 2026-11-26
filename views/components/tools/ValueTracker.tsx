@@ -9,6 +9,8 @@ import { api, ApiError, useApi } from '@/views/components/client/api';
 import { longDate, usd, num } from '@/views/components/client/format';
 import { EmptyState, ErrorNote, Field, Skeleton } from '@/views/components/ui';
 import { ValueChart, monthLabel } from '@/views/components/charts';
+import layout from '../garage/garage.module.css';
+import styles from './vehicle-tools.module.css';
 import { VehicleHeader, type VehicleDetail } from './VehicleHeader';
 import { parseDollars, useDebounced } from './hooks';
 
@@ -68,8 +70,8 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
       await watches.reload();
       const already = v && v.today.value < targetN;
       setStatus(
-        `Alert set. We will tell you if it drops below ${usd(targetN)}.` +
-          (already ? ` It is already below that today at ${usd(v.today.value)}, so the alert fires after the value rises above ${usd(targetN)} and drops again.` : ''),
+        `Alert set for drops below ${usd(targetN)}.` +
+          (already ? ` Today’s value is ${usd(v.today.value)}. It must rise above your target before a drop triggers the alert.` : ''),
       );
     } catch (e) {
       const err = e as ApiError;
@@ -103,11 +105,11 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
   const notFound = vehicle.error?.status === 404 || valueError?.status === 404;
 
   if (vehicle.error?.status === 401 || valueError?.status === 401) {
-    return <section className="wrap page"><ErrorNote error={vehicle.error ?? valueError} /></section>;
+    return <section className={`wrap page ${layout.page}`}><ErrorNote error={vehicle.error ?? valueError} /></section>;
   }
   if (notFound) {
     return (
-      <section className="wrap page">
+      <section className={`wrap page ${layout.page}`}>
         <EmptyState text="We could not find this car in your garage." action={<Link className="btn" href="/garage">Go to your garage</Link>} />
       </section>
     );
@@ -117,55 +119,50 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
   const inSource = mpy == null && v ? v.milesPerYearSource : 'query';
 
   return (
-    <section className="wrap page">
+    <section className={`wrap page ${layout.page}`}>
       <VehicleHeader vehicle={vehicle.data} vehicleId={vehicleId} section="value" />
-      {vehicle.error && <div style={{ marginTop: 24 }}><ErrorNote error={vehicle.error} onRetry={vehicle.reload} /></div>}
+      {vehicle.error && <div style={{ marginTop: 'var(--s5)' }}><ErrorNote error={vehicle.error} onRetry={vehicle.reload} /></div>}
 
       {noAppraisal ? (
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 'var(--s6)' }}>
           <EmptyState text={valueError!.message} action={<Link className="btn" href="/appraise">Appraise this car</Link>} />
         </div>
       ) : valueError && !v ? (
-        <div style={{ marginTop: 32 }}><ErrorNote error={valueError} onRetry={value.reload} /></div>
+        <div style={{ marginTop: 'var(--s6)' }}><ErrorNote error={valueError} onRetry={value.reload} /></div>
       ) : (
         <>
-          <div className="sheet g4" style={{ marginTop: 32, gap: 0 }}>
-            <div className="cell">
-              <p className="label">Today</p>
-              {v ? <p className="mono" style={{ margin: '6px 0 0', fontSize: 26, color: 'var(--blue)' }}>{usd(v.today.value)}</p> : <Skeleton w={120} h={32} style={{ marginTop: 6 }} />}
-              <p className="small" style={{ margin: '4px 0 0' }}>private sale</p>
+          <div className={`stats ${layout.section}`}>
+            <div>
+              <p className="kicker">Today</p>
+              {v ? <p className="stat-v accent">{usd(v.today.value)}</p> : <Skeleton w={120} h={32} />}
+              <p className="small">Private sale</p>
             </div>
-            <div className="cell">
-              <p className="label">In 12 months</p>
-              {v ? <p className="mono" style={{ margin: '6px 0 0', fontSize: 26 }}>{usd(v.in12)}</p> : <Skeleton w={120} h={32} style={{ marginTop: 6 }} />}
-              <p className="small" style={{ margin: '4px 0 0' }}>forecast midpoint</p>
+            <div>
+              <p className="kicker">In 12 months</p>
+              {v ? <p className="stat-v">{usd(v.in12)}</p> : <Skeleton w={120} h={32} />}
+              <p className="small">Forecast midpoint</p>
             </div>
-            <div className="cell">
-              <p className="label">Expected drop</p>
+            <div>
+              <p className="kicker">Expected drop</p>
               {v ? (
-                <p className="mono" style={{ margin: '6px 0 0', fontSize: 26 }}>{drop > 0 ? '−' + usd(drop) : 'None'}</p>
-              ) : (
-                <Skeleton w={120} h={32} style={{ marginTop: 6 }} />
-              )}
-              <p className="small" style={{ margin: '4px 0 0' }}>{v && drop <= 0 ? `forecast holds or gains ${usd(-drop)}` : 'over the next year'}</p>
+                <p className="stat-v">{drop > 0 ? '−' + usd(drop) : 'None'}</p>
+              ) : <Skeleton w={120} h={32} />}
+              <p className="small">{v && drop < 0 ? `Forecast gain of ${usd(-drop)}` : 'Over the next year'}</p>
             </div>
-            <div className="cell">
-              <p className="label">Best time to sell</p>
+            <div>
+              <p className="kicker">Best time to sell</p>
               {v ? (
-                <p style={{ margin: '6px 0 0', fontSize: 18, color: 'var(--blue)' }}>
-                  {monthLabel(v.bestMonthToSell.month)}, about {usd(v.bestMonthToSell.value)}
-                </p>
-              ) : (
-                <Skeleton w={160} h={24} style={{ marginTop: 6 }} />
-              )}
+                <>
+                  <p className="stat-v">{monthLabel(v.bestMonthToSell.month)}</p>
+                  <p className="small">About {usd(v.bestMonthToSell.value)}</p>
+                </>
+              ) : <Skeleton w={144} h={32} />}
             </div>
           </div>
 
-          <div className="sheet" style={{ marginTop: 24, padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
-              <h2 className="label" style={{ fontSize: 13 }}>Value history and forecast</h2>
-              <p className="small" style={{ margin: 0 }}>Solid line: your appraisals. Dashed: forecast. Shaded: likely range.</p>
-            </div>
+          <section className={`sheet ${layout.group} ${layout.section}`}>
+            <h2 className="h3">Value history and forecast</h2>
+            <p className="small">Solid for appraisals, dashed for the forecast, shaded for the likely range.</p>
             {v ? (
               <div aria-busy={value.loading}>
                 <ValueChart history={v.history} forecast={v.forecast} today={v.today} best={v.bestMonthToSell} alert={targetN} />
@@ -173,13 +170,13 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
             ) : (
               <Skeleton h={300} />
             )}
-          </div>
+          </section>
 
-          <div className="g2" style={{ marginTop: 24, alignItems: 'start' }}>
-            <div className="sheet" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <h2 className="label" style={{ fontSize: 13 }}>Mileage scenario</h2>
-              <label htmlFor="mpy" style={{ fontSize: 18 }}>
-                Miles per year: <span className="mono" style={{ color: 'var(--blue)' }}>{num(sliderVal)} mi / year</span>
+          <div className={`g2 ${layout.section} ${styles.controls}`}>
+            <section className={`sheet ${layout.group}`}>
+              <h2 className="h3">Mileage scenario</h2>
+              <label htmlFor="mpy">
+                Miles per year: {num(sliderVal)}
               </label>
               <input
                 id="mpy"
@@ -190,22 +187,19 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
                 value={sliderVal}
                 disabled={!v}
                 onChange={(e) => setMpy(Number(e.target.value))}
-                style={{ width: '100%', accentColor: 'var(--blue)', minHeight: 44 }}
+                className={styles.range}
               />
-              <p className="small" style={{ margin: 0 }}>
-                Moves the forecast and the best time to sell.
-                {inSource === 'observed' && ' Starts at your pace from your odometer readings.'}
-                {inSource === 'default' && ' Starts at a typical pace; add odometer readings to use yours.'}
-              </p>
-            </div>
+              {inSource === 'observed' && <p className="small">Starting mileage comes from your odometer readings.</p>}
+              {inSource === 'default' && <p className="small">Add odometer readings to start from your own pace.</p>}
+            </section>
 
-            <div className="sheet" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <h2 className="label" style={{ fontSize: 13 }}>Price alert</h2>
+            <section className={`sheet ${layout.group}`}>
+              <h2 className="h3">Price alert</h2>
               <Field label="Tell me if the value drops below" errors={saveErr}>
                 {({ id, describedBy, invalid }) => (
                   <input
                     id={id}
-                    className="inp mono"
+                    className="inp"
                     inputMode="numeric"
                     value={target}
                     aria-describedby={describedBy}
@@ -229,28 +223,28 @@ export function ValueTracker({ vehicleId }: { vehicleId: string }) {
               ) : watches.error ? (
                 <ErrorNote error={watches.error} onRetry={watches.reload} />
               ) : mine.length ? (
-                <div>
-                  <h3 style={{ fontSize: 15, fontWeight: 600, margin: '4px 0 0' }}>Your alerts for this car</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: '6px 0 0' }}>
+                <div className={layout.group}>
+                  <h3 className="h3">Your alerts</h3>
+                  <ul className={`${layout.list} ${styles.alerts}`}>
                     {mine.map((w) => (
-                      <li key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
+                      <li key={w.id} className={layout.spread}>
                         <span>
-                          {w.direction === 'below' ? 'Below' : 'Above'} <span className="mono">{usd(w.threshold)}</span>
+                          {w.direction === 'below' ? 'Below' : 'Above'} {usd(w.threshold)}
                           {w.lastTriggeredAt && <span className="small" style={{ display: 'block' }}>Last sent {longDate(w.lastTriggeredAt)}</span>}
                         </span>
-                        <button type="button" className="btn-o" onClick={() => removeWatch(w.id)} disabled={removing === w.id} aria-label={`Remove the alert ${w.direction} ${usd(w.threshold)}`}>
+                        <button type="button" className="textbtn" onClick={() => removeWatch(w.id)} disabled={removing === w.id} aria-label={`Remove the alert ${w.direction} ${usd(w.threshold)}`}>
                           {removing === w.id ? 'Removing' : 'Remove'}
                         </button>
                       </li>
                     ))}
                   </ul>
-                  {listErr && <div style={{ marginTop: 10 }}><ErrorNote error={listErr} /></div>}
+                  {listErr && <ErrorNote error={listErr} />}
                 </div>
               ) : null}
-            </div>
+            </section>
           </div>
 
-          {v && <p className="small mono" style={{ marginTop: 20 }}>{v.disclaimer}</p>}
+          {v && <p className={`small ${styles.disclaimer}`}>{v.disclaimer}</p>}
         </>
       )}
     </section>

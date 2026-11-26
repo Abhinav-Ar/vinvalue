@@ -14,22 +14,14 @@ function safeNext(v: string | string[] | undefined): string {
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const callbackUrl = safeNext((await searchParams).next);
   return (
-    <div className="grid"><section className="wrap" style={{ paddingTop: 96, paddingBottom: 96, display: 'flex', justifyContent: 'center' }}>
-      <div className="sheet frame" style={{ width: '100%', maxWidth: 520, padding: 44, display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <p className="kicker" style={{ marginBottom: -8 }}>Account</p>
-        <h1 className="title">Sign in to save your cars</h1>
-        <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>
-          Sign in to save cars to your garage and reopen any report later. Appraisals still work without an account.
-        </p>
+    <section className="wrap page" style={{ display: 'flex', justifyContent: 'center' }}>
+      <div className="stack" style={{ width: '100%', maxWidth: 440, gap: 'var(--s5)', paddingTop: 'var(--s8)' }}>
+        <h1 className="title">Sign in</h1>
+        <p className="lede">Keep your cars and reports. Values stay free without an account.</p>
         <GoogleSignInButton callbackUrl={callbackUrl} />
-        <Link className="btn-o" href="/appraise" style={{ width: '100%' }}>
-          Continue without an account
-        </Link>
-        <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16 }}>
-          <p className="small" style={{ margin: 0 }}>We store your saved cars and report history.</p>
-          {/* TODO: add the privacy policy link here once the policy page exists (design placeholder "[YOUR PRIVACY POLICY LINK]"). */}
-        </div>
+        <Link className="textbtn" href="/appraise" style={{ alignSelf: 'center' }}>Continue without an account</Link>
+        {/* TODO: add the privacy policy link here once the policy page exists (design placeholder "[YOUR PRIVACY POLICY LINK]"). */}
       </div>
-    </section></div>
+    </section>
   );
 }

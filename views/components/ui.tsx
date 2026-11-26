@@ -7,11 +7,11 @@ import { usePathname } from 'next/navigation';
 import { useId, type CSSProperties, type ReactNode } from 'react';
 import type { ApiError } from '@/views/components/client/api';
 
-/** `.sheet` box; `frame` adds the cobalt corner marks (landing, report and car art only). */
-export function Card({ frame, children, style, as: Tag = 'div', className = '' }: {
+/** An open group: a hairline above and space, never a box. `frame` is accepted for old call sites and ignored. */
+export function Card({ children, style, as: Tag = 'div', className = '' }: {
   frame?: boolean; children: ReactNode; style?: CSSProperties; as?: 'div' | 'section' | 'aside' | 'article'; className?: string;
 }) {
-  return <Tag className={`sheet${frame ? ' frame' : ''} ${className}`.trim()} style={style}>{children}</Tag>;
+  return <Tag className={`sheet ${className}`.trim()} style={style}>{children}</Tag>;
 }
 
 /** Label + control + hint + field errors (errors from the API's `fields`). */
@@ -87,10 +87,10 @@ export function Stepper({ step }: { step: 1 | 2 | 3 }) {
     { n: 3, label: 'Value', href: null },
   ] as const;
   return (
-    <nav className="stepper wrap" aria-label="Appraisal steps" style={{ gap: 24 }}>
+    <nav className="stepper wrap" aria-label="Appraisal steps">
       {steps.map((s) => {
         const cls = s.n === step ? 'on' : s.n < step ? 'done' : '';
-        const text = `${s.n}  ${s.label}`;
+        const text = s.label;
         return s.href && s.n < step ? (
           <Link key={s.n} href={s.href} className={cls}>{text}</Link>
         ) : (
@@ -109,8 +109,7 @@ export function Skeleton({ w = '100%', h = 16, style }: { w?: number | string; h
 export function EmptyState({ text, action }: { text: ReactNode; action?: ReactNode }) {
   return (
     <div className="empty">
-      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" fill="none" stroke="var(--line)" strokeDasharray="3 3" /><path d="M20 12 V28 M12 20 H28" stroke="var(--blue)" strokeWidth="1.5" /></svg>
-      <p style={{ margin: 0, fontSize: 17 }}>{text}</p>
+      <p className="lede" style={{ color: 'var(--ink)' }}>{text}</p>
       {action}
     </div>
   );
@@ -122,28 +121,27 @@ export function ErrorNote({ error, onRetry }: { error: ApiError | null; onRetry?
   if (!error) return null;
   if (error.status === 401) {
     return (
-      <div className="sheet frame" role="alert" style={{ padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start', maxWidth: 640 }}>
-        <p className="kicker">Signed out</p>
-        <p style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>Sign in to see this page.</p>
-        <p className="small" style={{ margin: 0, lineHeight: 1.5 }}>Your garage, reports and alerts are kept with your Google account. Appraisals stay free without one.</p>
-        <Link className="btn" href={`/sign-in?next=${encodeURIComponent(path)}`} style={{ marginTop: 6 }}>Sign in with Google</Link>
+      <div className="stack" role="alert" style={{ alignItems: 'flex-start', maxWidth: 560, padding: 'var(--s7) 0' }}>
+        <p className="h3">Sign in to see this page.</p>
+        <p className="small" style={{ margin: 0 }}>Appraisals stay free without an account.</p>
+        <Link className="btn" href={`/sign-in?next=${encodeURIComponent(path)}`}>Sign in with Google</Link>
       </div>
     );
   }
   return (
     <div className="notice" role="alert">
       <p style={{ margin: 0 }}>{error.message}</p>
-      {onRetry && <button type="button" className="btn-o" style={{ marginTop: 14 }} onClick={onRetry}>Try again</button>}
+      {onRetry && <button type="button" className="btn-o" style={{ marginTop: 'var(--s4)' }} onClick={onRetry}>Try again</button>}
     </div>
   );
 }
 
 export function PageTitle({ children, sub, kicker }: { children: ReactNode; sub?: ReactNode; kicker?: ReactNode }) {
   return (
-    <div>
-      {kicker && <p className="kicker" style={{ marginBottom: 10 }}>{kicker}</p>}
+    <div className="head">
+      {kicker && <p className="kicker">{kicker}</p>}
       <h1 className="title">{children}</h1>
-      {sub && <p className="lede" style={{ marginTop: 14, maxWidth: 640 }}>{sub}</p>}
+      {sub && <p className="lede">{sub}</p>}
     </div>
   );
 }

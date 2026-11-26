@@ -2,6 +2,7 @@
 /** Garage helpers shared by /garage, /garage/maintenance and /garage/[vehicleId]. */
 import Link from 'next/link';
 import type { CarVariant } from '@/views/components/CarDrawing';
+import { carVariant as bodyVariant } from '@/views/components/vehicleBody';
 import { ApiError, type FieldErrors } from '@/views/components/client/api';
 
 /* ------------------------------------------------------------------ types */
@@ -40,15 +41,9 @@ export const badgeClass = (index: number) => `bdg b${(index % 3) + 1}`;
 
 /* ---------------------------------------------------------------- drawing */
 
-const MUSCLE = /\b(mustang|camaro|challenger|charger|corvette|firebird|trans am|gto|chevelle)\b/i;
-const ROADSTER = /\b(mx-5|miata|roadster|spider|spyder|boxster|z4|s2000|convertible|cabriolet)\b/i;
-
-/** Pick the CarDrawing variant from the model name and body style. */
+/** The line drawing for a garage label like "2019 Ford Mustang GT" (see views/components/vehicleBody.ts). */
 export function carVariant(label: string, body?: string | null): CarVariant {
-  const s = `${label} ${body ?? ''}`;
-  if (ROADSTER.test(s)) return 'roadster';
-  if (MUSCLE.test(s)) return 'muscle';
-  return 'gt';
+  return bodyVariant(null, label.replace(/^\d{4}\s+/, ''), body);
 }
 
 /* ------------------------------------------------------------------ dates */
@@ -110,9 +105,9 @@ export const asApiError = (e: unknown) => (e instanceof ApiError ? e : new ApiEr
 
 export function GarageTabs({ on }: { on: 'vehicles' | 'maintenance' }) {
   return (
-    <nav className="stepper" aria-label="Garage sections" style={{ gap: 32, marginTop: 28 }}>
-      <Link href="/garage" className={on === 'vehicles' ? 'on' : ''} style={{ flex: '0 0 auto' }} aria-current={on === 'vehicles' ? 'page' : undefined}>Vehicles</Link>
-      <Link href="/garage/maintenance" className={on === 'maintenance' ? 'on' : ''} style={{ flex: '0 0 auto' }} aria-current={on === 'maintenance' ? 'page' : undefined}>Maintenance + calendar</Link>
+    <nav className="stepper" aria-label="Garage sections">
+      <Link href="/garage" className={on === 'vehicles' ? 'on' : ''} aria-current={on === 'vehicles' ? 'page' : undefined}>Cars</Link>
+      <Link href="/garage/maintenance" className={on === 'maintenance' ? 'on' : ''} aria-current={on === 'maintenance' ? 'page' : undefined}>Maintenance</Link>
     </nav>
   );
 }
@@ -121,14 +116,14 @@ export function GarageTabs({ on }: { on: 'vehicles' | 'maintenance' }) {
 export function VehicleTabs({ id, on }: { id: string; on: 'overview' | 'value' | 'sell' }) {
   const tabs = [
     { key: 'overview', label: 'Overview', href: `/garage/${id}` },
-    { key: 'value', label: 'Value tracker', href: `/garage/${id}/value` },
-    { key: 'sell', label: 'Sell or trade', href: `/garage/${id}/sell` },
+    { key: 'value', label: 'Value', href: `/garage/${id}/value` },
+    { key: 'sell', label: 'Sell', href: `/garage/${id}/sell` },
     { key: 'maintenance', label: 'Maintenance', href: `/garage/maintenance?vehicle=${id}` },
   ];
   return (
-    <nav className="stepper" aria-label="Vehicle sections" style={{ gap: 32, marginTop: 24 }}>
+    <nav className="stepper" aria-label="Vehicle sections">
       {tabs.map((t) => (
-        <Link key={t.key} href={t.href} className={t.key === on ? 'on' : ''} style={{ flex: '0 0 auto' }} aria-current={t.key === on ? 'page' : undefined}>{t.label}</Link>
+        <Link key={t.key} href={t.href} className={t.key === on ? 'on' : ''} aria-current={t.key === on ? 'page' : undefined}>{t.label}</Link>
       ))}
     </nav>
   );

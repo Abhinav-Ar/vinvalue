@@ -163,10 +163,10 @@ export function PriceCheck() {
 
   return (
     <section className="wrap page">
-      <h1 className="title">Price check</h1>
-      <p className="lede" style={{ marginTop: 14, maxWidth: 640 }}>
-        Enter the VIN, asking price and mileage of a car you are considering. We compare it with similar cars for sale near you.
-      </p>
+      <div className="head">
+        <h1 className="title">Is it a fair price?</h1>
+        <p className="lede">Check any car you’re considering against similar cars for sale nearby.</p>
+      </div>
 
       <form
         noValidate
@@ -175,7 +175,7 @@ export function PriceCheck() {
           void check();
         }}
       >
-        <div className="sheet g4" style={{ marginTop: 32, padding: 24, gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 16, alignItems: 'start' }}>
+        <div className="sheet g4" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 'var(--s4)', alignItems: 'start' }}>
           <Field id="pc-vin" label="VIN" errors={fields.vin}>
             {({ id, describedBy, invalid }) => (
               <input
@@ -215,7 +215,7 @@ export function PriceCheck() {
         </div>
 
         {trimCandidates.length > 0 && (
-          <div className="sheet" style={{ marginTop: 16, padding: 24, maxWidth: 520 }}>
+          <div className="sheet" style={{ marginTop: 'var(--s4)', maxWidth: 520 }}>
             <Field id="pc-trim" label="This VIN matches more than one trim. Which one is it?" errors={fields.trim}>
               {({ id, describedBy }) => (
                 <Select id={id} aria-describedby={describedBy} value={trim} onChange={setTrim} options={trimCandidates.map((t) => ({ value: t, label: t }))} />
@@ -259,7 +259,7 @@ export function PriceCheck() {
       )}
 
       <div className="g2" style={{ marginTop: 40, alignItems: 'start', gridTemplateColumns: 'minmax(0,7fr) minmax(0,5fr)' }} aria-busy={checking}>
-        <div className="sheet" style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div className="sheet" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s4)' }}>
           {checking && !r ? (
             <>
               <Skeleton w="60%" h={52} />
@@ -269,7 +269,7 @@ export function PriceCheck() {
             </>
           ) : r && bar ? (
             <>
-              <h2 style={{ margin: 0, fontSize: 48, fontWeight: 600, letterSpacing: '-.02em' }}>{r.verdictLabel}</h2>
+              <h2 className="figure">{r.verdictLabel}</h2>
               <p className="lede" style={{ margin: 0 }}>{r.verdictNote}</p>
               <svg viewBox="0 0 100 26" width="100%" height="60" preserveAspectRatio="none" role="img" aria-label={`Fair range ${usd(r.fairRange.low)} to ${usd(r.fairRange.high)}; asking ${usd(r.askingPrice)}.`}>
                 <path d="M0 14 L100 14" stroke="var(--ink)" strokeWidth=".3" vectorEffect="non-scaling-stroke" />
@@ -290,7 +290,7 @@ export function PriceCheck() {
               )}
               <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
                 <span className="label">Suggested first offer</span>
-                <span className="mono" style={{ fontSize: 32 }}>{usd(r.suggestedFirstOffer)}</span>
+                <span className="stat-v">{usd(r.suggestedFirstOffer)}</span>
               </div>
               <button type="button" className="btn" onClick={save} disabled={saving || saveState?.ok}>
                 {saving ? 'Saving this car' : saveState?.ok ? 'Saved' : 'Save this car'}
@@ -305,21 +305,21 @@ export function PriceCheck() {
               </div>
             </>
           ) : (
-            <p style={{ margin: 0, fontSize: 17 }}>Your verdict appears here once you check a price.</p>
+            <p className="small" style={{ margin: 0 }}>Your verdict shows here.</p>
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s6)' }}>
           {r && (
-            <div className="sheet" style={{ padding: 22 }}>
-              <h2 className="label">Before you buy</h2>
+            <div className="sheet">
+              <h2 className="kicker">Before you buy</h2>
               <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 0' }}>
                 {r.checklist.map((c) => (
-                  <li key={c.key} style={{ display: 'flex', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--line)' }}>
+                  <li key={c.key} style={{ display: 'flex', gap: 'var(--s3)', padding: 'var(--s3) 0', borderBottom: '1px solid var(--line)' }}>
                     <input type="checkbox" id={`pb-${c.key}`} style={{ width: 20, height: 20, accentColor: 'var(--blue)', flex: '0 0 auto' }} />
                     <label htmlFor={`pb-${c.key}`}>
-                      <span style={{ fontWeight: 500 }}>{c.title}</span>
-                      <span className="small" style={{ display: 'block', marginTop: 3 }}>{c.detail}</span>
+                      <span>{c.title}</span>
+                      <span className="small" style={{ display: 'block' }}>{c.detail}</span>
                     </label>
                   </li>
                 ))}
@@ -327,11 +327,11 @@ export function PriceCheck() {
             </div>
           )}
           {r && (
-            <div className="sheet" style={{ padding: 22 }}>
-              <h2 className="label">Ask the seller</h2>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '10px 0 0' }}>
+            <div className="sheet">
+              <h2 className="kicker">Ask the seller</h2>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'var(--s2) 0 0' }}>
                 {r.questions.map((q) => (
-                  <li key={q} style={{ padding: '8px 0', borderBottom: '1px solid var(--line)' }}>{q}</li>
+                  <li key={q} style={{ padding: 'var(--s3) 0', borderBottom: '1px solid var(--line)', fontSize: 'var(--t-sm)' }}>{q}</li>
                 ))}
               </ul>
             </div>
@@ -339,16 +339,16 @@ export function PriceCheck() {
         </div>
       </div>
 
-      <div className="sheet" style={{ marginTop: 40, padding: '8px 8px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '14px 12px 4px', flexWrap: 'wrap' }}>
-          <h2 className="label">Compare saved cars, up to 3</h2>
+      <div className="sheet" style={{ marginTop: 'var(--s9)' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <h2 className="h3">Compare up to 3</h2>
           {saved.data && items.length > 0 && (
-            <button type="button" className="ghost small" style={{ minHeight: 44, textDecoration: 'underline' }} onClick={() => vinRef.current?.focus()}>
+            <button type="button" className="textbtn" onClick={() => vinRef.current?.focus()}>
               Add a car
             </button>
           )}
         </div>
-        <div style={{ padding: '8px 12px 16px' }}>
+        <div style={{ paddingTop: 'var(--s4)' }}>
           {saved.loading && !saved.data ? (
             <Skeleton h={160} />
           ) : saved.error?.status === 401 ? (
@@ -384,7 +384,7 @@ export function PriceCheck() {
                         <label htmlFor={`cmp-${i.id}`} style={{ flex: 1, minWidth: 200, minHeight: 44, display: 'flex', alignItems: 'center' }}>
                           {i.label}, {miles(i.mileage)}, asking {usd(i.askingPrice)}
                         </label>
-                        <button type="button" className="btn-o" onClick={() => remove(i.id)} disabled={removing === i.id} aria-label={`Remove ${i.label} asking ${usd(i.askingPrice)}`}>
+                        <button type="button" className="textbtn" onClick={() => remove(i.id)} disabled={removing === i.id} aria-label={`Remove ${i.label} asking ${usd(i.askingPrice)}`}>
                           {removing === i.id ? 'Removing' : 'Remove'}
                         </button>
                       </li>

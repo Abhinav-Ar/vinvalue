@@ -9,6 +9,8 @@ import type { SellPlanView } from '@/models/sell/service';
 import { api, ApiError, useApi } from '@/views/components/client/api';
 import { usd } from '@/views/components/client/format';
 import { EmptyState, ErrorNote, Field, Select, Skeleton } from '@/views/components/ui';
+import layout from '../garage/garage.module.css';
+import styles from './vehicle-tools.module.css';
 import { VehicleHeader, type VehicleDetail } from './VehicleHeader';
 import { useDebounced, usdNeg } from './hooks';
 import { STATE_OPTIONS, US_STATES } from './states';
@@ -74,7 +76,7 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
   async function copyDraft() {
     try {
       await navigator.clipboard.writeText(draft);
-      setCopyStatus('Copied. Paste it into your listing.');
+      setCopyStatus('Listing copied.');
     } catch {
       setCopyStatus('Your browser blocked copying. Select the text above and copy it yourself.');
     }
@@ -83,11 +85,11 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
 
   if (vehicle.error?.status === 401 || error?.status === 401) {
-    return <section className="wrap page"><ErrorNote error={vehicle.error ?? error} /></section>;
+    return <section className={`wrap page ${layout.page}`}><ErrorNote error={vehicle.error ?? error} /></section>;
   }
   if (vehicle.error?.status === 404 || error?.status === 404) {
     return (
-      <section className="wrap page">
+      <section className={`wrap page ${layout.page}`}>
         <EmptyState text="We could not find this car in your garage." action={<Link className="btn" href="/garage">Go to your garage</Link>} />
       </section>
     );
@@ -105,23 +107,22 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
   const stateName = plan?.state ? US_STATES[plan.state] ?? plan.state : null;
 
   return (
-    <section className="wrap page">
+    <section className={`wrap page ${layout.page}`}>
       <VehicleHeader vehicle={vehicle.data} vehicleId={vehicleId} section="sell" />
-      {plan && vehicle.data && <SaleOutcomePrompts vehicleId={vehicleId} planned />}
-      {vehicle.error && <div style={{ marginTop: 24 }}><ErrorNote error={vehicle.error} onRetry={vehicle.reload} /></div>}
+      {vehicle.error && <div style={{ marginTop: 'var(--s5)' }}><ErrorNote error={vehicle.error} onRetry={vehicle.reload} /></div>}
 
       {error?.status === 409 ? (
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 'var(--s6)' }}>
           <EmptyState text={error.message} action={<Link className="btn" href="/appraise">Appraise this car</Link>} />
         </div>
       ) : error && !plan ? (
-        <div style={{ marginTop: 32 }}><ErrorNote error={error} onRetry={() => void load(inputs)} /></div>
+        <div style={{ marginTop: 'var(--s6)' }}><ErrorNote error={error} onRetry={() => void load(inputs)} /></div>
       ) : (
         <>
-          <div className="g3" style={{ marginTop: 32, gap: 24 }}>
-            <div className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <label htmlFor="po" style={{ fontSize: 16 }}>
-                Loan payoff left: <span className="mono" style={{ color: 'var(--blue)' }}>{usd(inputs.loanPayoff)}</span>
+          <div className={`g3 ${layout.section} ${styles.controls}`}>
+            <div className={layout.group}>
+              <label htmlFor="po">
+                Loan payoff left: {usd(inputs.loanPayoff)}
               </label>
               <input
                 id="po"
@@ -131,12 +132,12 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
                 step={500}
                 value={inputs.loanPayoff}
                 onChange={(e) => setInputs((s) => ({ ...s, loanPayoff: Number(e.target.value) }))}
-                style={{ width: '100%', accentColor: 'var(--blue)', minHeight: 44 }}
+                className={styles.range}
               />
             </div>
-            <div className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <label htmlFor="ak" style={{ fontSize: 16 }}>
-                Private asking price: <span className="mono" style={{ color: 'var(--blue)' }}>{base ? usd(ask) : '–'}</span>
+            <div className={layout.group}>
+              <label htmlFor="ak">
+                Private asking price: {base ? usd(ask) : '–'}
               </label>
               <input
                 id="ak"
@@ -147,10 +148,10 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
                 value={ask}
                 disabled={!base}
                 onChange={(e) => setInputs((s) => ({ ...s, askingPrice: Number(e.target.value) }))}
-                style={{ width: '100%', accentColor: 'var(--blue)', minHeight: 44 }}
+                className={styles.range}
               />
             </div>
-            <div className="sheet" style={{ padding: 22 }}>
+            <div>
               <Field label="State where you sell" hint={!inputs.state && plan?.state ? 'From your car’s ZIP code.' : undefined}>
                 {({ id, describedBy }) => (
                   <Select
@@ -166,128 +167,124 @@ export function SellPlanner({ vehicleId }: { vehicleId: string }) {
           </div>
 
           <h2 className="sr">Ways to sell</h2>
-          <div className="g3" style={{ marginTop: 24 }} aria-busy={loading}>
+          <div className={`g3 ${styles.routes}`} aria-busy={loading}>
             {plan
               ? routes.map((r) => {
                   const best = r.key === plan.best;
                   return (
-                    <article
-                      key={r.key}
-                      className={`sheet route${best ? ' best' : ''}`}
-                      style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12, ...(best ? { borderColor: 'var(--ink)', borderWidth: 2 } : {}) }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                        <h3 style={{ margin: 0, fontSize: 20 }}>{r.name}</h3>
-                        {best && <span className="small" style={{ color: 'var(--blue)', fontWeight: 600 }}>{allNegative ? 'Costs you least' : 'Most money'}</span>}
+                    <article key={r.key} className={`sheet ${layout.group}`}>
+                      <h3 className="h3">{r.name}</h3>
+                      <div>
+                        <div className={layout.spread}>
+                          <p className={best ? 'stat-v accent' : 'stat-v'}>{usdNeg(r.net)}</p>
+                          {best && <p className="small">{allNegative ? 'Lowest cost' : 'Highest proceeds'}</p>}
+                        </div>
+                        <p className="small">
+                          {r.net < 0 ? `Still owed, ${r.time.toLowerCase()}` : `Net proceeds, ${r.time.toLowerCase()}`}
+                        </p>
                       </div>
-                      <p className="mono" style={{ margin: 0, fontSize: 34 }}>{usdNeg(r.net)}</p>
-                      <p className="small" style={{ margin: '-6px 0 0' }}>
-                        {r.net < 0 ? `you still owe your lender, ${r.time.toLowerCase()}` : `in your pocket, ${r.time.toLowerCase()}`}
-                      </p>
-                      <svg viewBox="0 0 100 14" width="100%" height="14" preserveAspectRatio="none" aria-hidden="true">
-                        <rect x="0" y="2" width={((r.price / maxPrice) * 100).toFixed(1)} height="10" fill="none" stroke="var(--ink)" strokeWidth=".4" />
-                        <rect x="0" y="2" width={((Math.max(0, r.net) / maxPrice) * 100).toFixed(1)} height="10" fill="var(--blue)" />
+                      <svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none" aria-hidden="true">
+                        <rect width={(r.price / maxPrice) * 100} height="8" fill="var(--tone)" />
+                        <rect width={(Math.max(0, r.net) / maxPrice) * 100} height="8" fill={best ? 'var(--blue)' : 'var(--mid)'} />
                       </svg>
-                      <dl className="mono" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '6px 12px', fontSize: 13, margin: 0 }}>
+                      <dl className="kv">
                         <dt>Sale price</dt>
-                        <dd style={{ margin: 0 }}>{usd(r.price)}</dd>
+                        <dd>{usd(r.price)}</dd>
                         <dt>Costs</dt>
-                        <dd style={{ margin: 0 }}>{r.costs ? '−' + usd(r.costs) : '$0'}</dd>
+                        <dd>{r.costs ? '−' + usd(r.costs) : '$0'}</dd>
                         <dt>Loan payoff</dt>
-                        <dd style={{ margin: 0 }}>{r.payoff ? '−' + usd(r.payoff) : '$0'}</dd>
+                        <dd>{r.payoff ? '−' + usd(r.payoff) : '$0'}</dd>
                       </dl>
                       {r.costItems.length > 0 && (
-                        <p className="small" style={{ margin: 0 }}>
+                        <p className="small">
                           Costs: {r.costItems.map((c) => `${c.label.toLowerCase()} ${usd(c.amount)}`).join(', ')}.
                         </p>
                       )}
-                      <p className="small" style={{ margin: 0, borderTop: '1px solid var(--line)', paddingTop: 10 }}>{r.note}</p>
+                      <p className="small">{r.note}</p>
                     </article>
                   );
                 })
               : [0, 1, 2].map((i) => <Skeleton key={i} h={330} />)}
           </div>
 
-          {error && plan && <div style={{ marginTop: 16 }}><ErrorNote error={error} onRetry={() => void load(inputs)} /></div>}
+          {error && plan && <div style={{ marginTop: 'var(--s4)' }}><ErrorNote error={error} onRetry={() => void load(inputs)} /></div>}
 
           {plan && allNegative && bestRoute && (
-            <div className="notice" style={{ marginTop: 18 }}>
-              <p style={{ margin: 0 }}>
-                Your loan payoff of {usd(plan.loanPayoff)} is more than any route brings in. Even the {bestRoute.name.toLowerCase()} leaves you owing{' '}
-                {usd(-bestRoute.net)}, which you pay the lender to clear the title.
-              </p>
-            </div>
+            <p className={styles.routeNote}>
+              Your {usd(plan.loanPayoff)} payoff exceeds every route. Even {bestRoute.name.toLowerCase()} leaves {usd(-bestRoute.net)} owed to clear the title.
+            </p>
           )}
-          {plan && <p style={{ marginTop: 18, fontSize: 16, maxWidth: 820 }}>{gapSentence(plan)}</p>}
+          {plan && <p className={styles.routeNote}>{gapSentence(plan)}</p>}
 
-          <div className="g2" style={{ marginTop: 48, alignItems: 'start' }}>
-            <div>
-              <h2 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>
+          <div className={`g2 ${layout.section} ${styles.controls}`}>
+            <section className={`sheet ${layout.group}`}>
+              <h2 className="h3">
                 {plan?.stateRulesAvailable && stateName ? `${stateName} seller checklist` : 'Seller checklist'}
               </h2>
               {plan && !plan.stateRulesAvailable && (
-                <p className="small" style={{ margin: '10px 0 0', color: 'var(--ink)' }}>
-                  We only have detailed rules for California so far, so this is a general checklist{stateName ? ` for ${stateName}` : ''}. Check your state DMV for the exact steps.
+                <p className="small">
+                  General checklist{stateName ? ` for ${stateName}` : ''}. Confirm local rules with your DMV.
                 </p>
               )}
               {plan ? (
-                <ul style={{ listStyle: 'none', padding: 0, margin: '18px 0 0' }}>
+                <ul className={`${layout.list} ${styles.checklist}`}>
                   {plan.checklist.map((c) => (
-                    <li key={c.key} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--line)' }}>
+                    <li key={c.key}>
                       <input
                         type="checkbox"
                         id={`ck-${c.key}`}
                         checked={!!checked[c.key]}
                         onChange={(e) => setChecked((s) => ({ ...s, [c.key]: e.target.checked }))}
-                        style={{ width: 20, height: 20, accentColor: 'var(--blue)', marginTop: 2, flex: '0 0 auto' }}
                       />
                       <label htmlFor={`ck-${c.key}`}>
-                        <span style={{ fontWeight: 500 }}>{c.title}</span>
+                        {c.title}
                         {!c.required && <span className="small"> (not required in every state)</span>}
-                        <span className="small" style={{ display: 'block', marginTop: 4 }}>{c.detail}</span>
+                        <span className="small">{c.detail}</span>
                       </label>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <Skeleton h={300} style={{ marginTop: 18 }} />
+                <Skeleton h={300} />
               )}
-            </div>
+            </section>
 
-            <div className="sheet" style={{ padding: 24 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>Listing kit</h2>
-              <h3 style={{ margin: '18px 0 0', fontSize: 17 }}>Shot list</h3>
+            <section className={`sheet ${layout.group}`}>
+              <h2 className="h3">Listing kit</h2>
+              <h3 className="kicker">Shot list</h3>
               {plan ? (
-                <ul style={{ listStyle: 'none', padding: 0, margin: '10px 0 18px' }}>
+                <ul className={`${layout.list} ${styles.shots}`}>
                   {plan.listingKit.shotList.map((s) => (
-                    <li key={s} style={{ padding: '6px 0', borderBottom: '1px solid var(--line)' }}>{s}</li>
+                    <li key={s}>{s}</li>
                   ))}
                 </ul>
               ) : (
-                <Skeleton h={260} style={{ margin: '10px 0 18px' }} />
+                <Skeleton h={260} />
               )}
-              <h3 style={{ margin: '0 0 8px', fontSize: 17 }}>
+              <h3 className="kicker">
                 <label htmlFor="listing-desc">Description draft</label>
               </h3>
               <textarea
                 id="listing-desc"
-                className="inp"
+                className={`inp ${styles.description}`}
                 rows={5}
                 value={draft}
                 onChange={(e) => {
                   edited.current = true;
                   setDraft(e.target.value);
                 }}
-                style={{ padding: '12px 16px', lineHeight: 1.5, resize: 'vertical' }}
               />
-              <button type="button" className="btn-o" style={{ marginTop: 14, width: '100%' }} onClick={copyDraft} disabled={!draft}>
+              <button type="button" className="btn" onClick={copyDraft} disabled={!draft}>
                 {plan?.listingKit.reportLink ? 'Copy listing + report link' : 'Copy listing'}
               </button>
-              <p className="small" role="status" style={{ margin: '10px 0 0', color: 'var(--ink)' }}>{copyStatus}</p>
-            </div>
+              <p className="small" role="status">{copyStatus}</p>
+            </section>
           </div>
 
-          {plan && <p className="small mono" style={{ marginTop: 20 }}>{plan.disclaimer}</p>}
+          {plan && <p className={`small ${styles.disclaimer}`}>{plan.disclaimer}</p>}
+          {plan && vehicle.data && (
+            <div className={layout.section}><SaleOutcomePrompts vehicleId={vehicleId} planned /></div>
+          )}
         </>
       )}
     </section>

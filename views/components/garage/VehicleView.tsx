@@ -7,13 +7,15 @@
 import Link from 'next/link';
 import { SaleOutcomePrompts, VehicleSaleActions } from './SaleOutcomeCard';
 import { notFound } from 'next/navigation';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CarDrawing } from '@/views/components/CarDrawing';
 import { VehiclePhoto } from '@/views/components/VehiclePhoto';
 import { ErrorNote, Field, Skeleton } from '@/views/components/ui';
 import { api, useApi, type ApiError } from '@/views/components/client/api';
 import { longDate, miles, num, shortDate, usd, usdSigned } from '@/views/components/client/format';
 import { VehicleTabs, asApiError, carVariant, flagText, localToday, postForm, type NextService } from './shared';
+
+import styles from './garage.module.css';
 
 type DocSummaryEntry = { status: 'missing' | 'on_file' | 'expiring' | 'expired'; text: string; documentId: string | null; expiresOn: string | null };
 type Overview = {
@@ -65,10 +67,6 @@ function reportedValue(key: string, v: unknown): string {
   return REPORTED_VALUES[key]?.[s] ?? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ');
 }
 
-const sheetLabel = { margin: 0, fontSize: 13, fontWeight: 500, color: 'var(--mid)' } as const;
-const statBig: CSSProperties = { margin: '6px 0 0', fontSize: 26 };
-const statSub: CSSProperties = { margin: '4px 0 0' };
-
 export function VehicleView({ id }: { id: string }) {
   const ov = useApi<Overview>(`/api/vehicles/${id}/overview`);
   const apps = useApi<{ items: { id: string; shareSlug: string }[] }>(`/api/appraisals?vehicleId=${id}`);
@@ -101,9 +99,9 @@ export function VehicleView({ id }: { id: string }) {
   const d = ov.data;
   if (ov.error && !d) {
     return (
-      <section className="wrap" style={{ paddingTop: 40, paddingBottom: 40 }}>
-        <Link href="/garage" className="small" style={{ textDecoration: 'none' }}>&#8592; Garage</Link>
-        <div style={{ marginTop: 24 }}><ErrorNote error={ov.error} onRetry={ov.reload} /></div>
+      <section className={`wrap page ${styles.page}`}>
+        <Link href="/garage" className={`small ${styles.back}`}>← Garage</Link>
+        <div style={{ marginTop: 'var(--s5)' }}><ErrorNote error={ov.error} onRetry={ov.reload} /></div>
       </section>
     );
   }
@@ -118,36 +116,49 @@ export function VehicleView({ id }: { id: string }) {
     : '';
 
   return (
-    <section className="wrap" style={{ paddingTop: 40, paddingBottom: 40 }}>
-      <div className="g2" style={{ gridTemplateColumns: 'minmax(0,7fr) minmax(0,5fr)', gap: 40, alignItems: 'end' }}>
-        <div>
-          <Link href="/garage" className="small" style={{ textDecoration: 'none', display: 'inline-flex', minHeight: 44, alignItems: 'center' }}>&#8592; Garage</Link>
+    <section className={`wrap page ${styles.page}`}>
+      <header className={`g2 ${styles.columns} ${styles.hero}`}>
+        <div className={styles.group}>
+          <Link href="/garage" className={`small ${styles.back}`}>← Garage</Link>
           {d ? (
             <>
-              <h1 className="title" style={{ marginTop: 8 }}>{d.vehicle.label}</h1>
-              <p className="small" style={{ margin: '12px 0 0' }}>
+              <h1 className="title">{d.vehicle.label}</h1>
+              <p className="small">
                 {d.vehicle.nickname ? `${d.vehicle.nickname}. ` : ''}{headLine}VIN <span className="vin">{d.vehicle.vin}</span>
               </p>
-              {d.vehicle.flags.map((f) => <p key={f} className="small" style={{ margin: '6px 0 0' }}>{flagText(f)}</p>)}
+              {d.vehicle.flags.map((f) => <p key={f} className="small">{flagText(f)}</p>)}
             </>
           ) : (
             <>
-              <Skeleton w="70%" h={40} style={{ marginTop: 8 }} />
-              <Skeleton w="90%" h={18} style={{ marginTop: 12 }} />
+              <Skeleton w="70%" h={40} />
+              <Skeleton w="90%" h={18} />
             </>
           )}
         </div>
-        <div>{d ? <VehiclePhoto car={{ year: Number(d.vehicle.label.slice(0, 4)) || undefined, make: d.vehicle.label.split(' ')[1], model: d.vehicle.label.split(' ').slice(2).join(' ') }} /> : <Skeleton h={180} />}</div>
-      </div>
+        <div className={styles.art}>
+          {d ? (
+            <VehiclePhoto
+              car={{ year: Number(d.vehicle.label.slice(0, 4)) || undefined, make: d.vehicle.label.split(' ')[1], model: d.vehicle.label.split(' ').slice(2).join(' ') }}
+              fallback={
+                <CarDrawing
+                  variant={carVariant(d.vehicle.label, s?.body)}
+                  label={`${d.vehicle.label}, line drawing (no photo found)`}
+                  ink={false}
+                />
+              }
+            />
+          ) : <Skeleton h={180} />}
+        </div>
+      </header>
       <VehicleTabs id={id} on="overview" />
 
-      <div className="sheet g4" style={{ marginTop: 32, display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))' }}>
-        <div className="cell">
-          <p className="label">Private value</p>
+      <div className={`stats ${styles.section}`}>
+        <div>
+          <p className="kicker">Private value</p>
           {d ? (
             <>
-              <p className="mono" style={{ ...statBig, color: 'var(--blue)' }}>{d.privateValue != null ? usd(d.privateValue) : '–'}</p>
-              <p className="small" style={statSub}>
+              <p className="stat-v accent">{d.privateValue != null ? usd(d.privateValue) : '–'}</p>
+              <p className="small">
                 {d.changeSinceLast
                   ? d.changeSinceLast.amount === 0
                     ? `No change since ${shortDate(d.changeSinceLast.sinceDate)}`
@@ -157,45 +168,45 @@ export function VehicleView({ id }: { id: string }) {
             </>
           ) : <StatSkel />}
         </div>
-        <div className="cell">
-          <p className="label">Since purchase</p>
+        <div>
+          <p className="kicker">Since purchase</p>
           {d ? (
             d.sincePurchase ? (
               <>
-                <p className="mono" style={statBig}>{usdSigned(d.sincePurchase.amount)}</p>
-                <p className="small" style={statSub}>bought for {usd(d.sincePurchase.purchasePrice)}</p>
+                <p className="stat-v">{usdSigned(d.sincePurchase.amount)}</p>
+                <p className="small">bought for {usd(d.sincePurchase.purchasePrice)}</p>
               </>
             ) : (
               <>
-                <p className="mono" style={statBig}>–</p>
-                <p className="small" style={statSub}>{d.privateValue == null ? 'needs a current value' : 'purchase price not on file'}</p>
+                <p className="stat-v">–</p>
+                <p className="small">{d.privateValue == null ? 'needs a current value' : 'purchase price not on file'}</p>
               </>
             )
           ) : <StatSkel />}
         </div>
-        <div className="cell">
-          <p className="label">Next service</p>
+        <div>
+          <p className="kicker">Next service</p>
           {d ? (
             d.nextService ? (
               <>
-                <p className="mono" style={{ ...statBig, ...(d.nextService.overdue ? { fontWeight: 600 } : {}) }}>{shortDate(d.nextService.date)}</p>
-                <p className="small" style={statSub}>{d.nextService.title}, {d.nextService.statusText}</p>
+                <p className={d.nextService.overdue ? `stat-v ${styles.overdue}` : 'stat-v'}>{shortDate(d.nextService.date)}</p>
+                <p className="small">{d.nextService.title}, {d.nextService.statusText}</p>
               </>
             ) : (
               <>
-                <p className="mono" style={statBig}>–</p>
-                <p className="small" style={statSub}>nothing scheduled</p>
+                <p className="stat-v">–</p>
+                <p className="small">nothing scheduled</p>
               </>
             )
           ) : <StatSkel />}
         </div>
-        <div className="cell">
-          <p className="label">Open recalls</p>
+        <div>
+          <p className="kicker">Open recalls</p>
           {d ? (
             d.openRecalls ? (
               <>
-                <p className="mono" style={statBig}>{d.openRecalls.count}</p>
-                <p className="small" style={statSub}>
+                <p className="stat-v">{d.openRecalls.count}</p>
+                <p className="small">
                   {d.openRecalls.count === 0 ? 'none found for your model year' : `may apply to your model year; confirm by VIN at `}
                   {d.openRecalls.count > 0 && <a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noreferrer">nhtsa.gov/recalls</a>}
                   {`. Checked ${shortDate(d.openRecalls.checkedAt)}.`}
@@ -203,63 +214,61 @@ export function VehicleView({ id }: { id: string }) {
               </>
             ) : (
               <>
-                <p className="mono" style={statBig}>–</p>
-                <p className="small" style={statSub}>not checked yet; we check NHTSA weekly</p>
+                <p className="stat-v">–</p>
+                <p className="small">not checked yet; we check NHTSA weekly</p>
               </>
             )
           ) : <StatSkel />}
         </div>
       </div>
 
-      <div className="g2" style={{ marginTop: 48, alignItems: 'start', gridTemplateColumns: 'minmax(0,7fr) minmax(0,5fr)' }}>
-        <div style={{ minWidth: 0 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 20px' }}>History</h2>
+      <div className={`g2 ${styles.columns} ${styles.section}`}>
+        <section className={`sheet ${styles.group}`}>
+          <h2 className="h3">History</h2>
           {!d && <Skeleton h={300} />}
-          {d && d.timeline.length === 0 && <p className="small" style={{ margin: 0 }}>No history yet. Appraisals and services you log show up here.</p>}
+          {d && d.timeline.length === 0 && <p className="small" style={{ margin: 0 }}>No history yet.</p>}
           {d && d.timeline.length > 0 && (
-            <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <ol className={`${styles.list} ${styles.timeline}`}>
               {d.timeline.map((t, i) => {
                 const slug = t.kind === 'appraisal' && t.id ? slugs.get(t.id) : undefined;
                 return (
-                  <li key={`${t.kind}-${t.id ?? i}`} style={{ display: 'grid', gridTemplateColumns: '120px 18px 1fr', gap: 14, alignItems: 'start' }}>
-                    <span className="mono small" style={{ paddingTop: 2 }}>{longDate(t.date)}</span>
-                    <span aria-hidden="true" style={{ width: 11, height: 11, border: '2px solid var(--blue)', borderRadius: '50%', marginTop: 4, background: 'var(--fill)' }} />
-                    <div style={{ paddingBottom: 22, borderBottom: '1px solid var(--line)', minWidth: 0 }}>
-                      {slug
-                        ? <Link href={`/report/${slug}`} style={{ color: 'var(--ink)', fontWeight: 500 }}>{t.title}</Link>
-                        : <span style={{ fontWeight: 500 }}>{t.title}</span>}
-                      {t.detail && <p className="small" style={{ margin: '4px 0 0' }}>{t.detail}</p>}
+                  <li key={`${t.kind}-${t.id ?? i}`}>
+                    <time className="small" dateTime={t.date.slice(0, 10)}>{longDate(t.date)}</time>
+                    <span className={styles.marker} aria-hidden="true" />
+                    <div>
+                      {slug ? <Link href={`/report/${slug}`}>{t.title}</Link> : t.title}
+                      {t.detail && <p className="small">{t.detail}</p>}
                     </div>
                   </li>
                 );
               })}
             </ol>
           )}
-        </div>
+        </section>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
-          <div className="sheet" style={{ padding: 22 }}>
-            <h2 style={sheetLabel}>Quick actions</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
+        <div className={styles.groups}>
+          <section className={`sheet ${styles.group}`}>
+            <h2 className="h3">Actions</h2>
+            <div className="row">
               <button type="button" className="btn" onClick={refresh} disabled={refreshing} aria-busy={refreshing}>{refreshing ? 'Refreshing value' : 'Refresh value'}</button>
-              <Link className="btn-o" href={`/garage/maintenance?vehicle=${id}`}>Log a service</Link>
-              <Link className="btn-o" href={`/garage/${id}/sell`}>Plan a sale or trade</Link>
+              <Link className="btn-o" href={`/garage/maintenance?vehicle=${id}`} aria-label="Log a service">Log service</Link>
+              <Link className="btn-o" href={`/garage/${id}/sell`} aria-label="Plan a sale or trade">Plan sale</Link>
             </div>
-            {refreshErr && <p className="err" role="alert" style={{ marginTop: 12 }}>{refreshErr.message}</p>}
-            {refreshed && <p className="small" role="status" style={{ margin: '12px 0 0', color: 'var(--ink)' }}>{refreshed}</p>}
-          </div>
+            {refreshErr && <p className="err" role="alert">{refreshErr.message}</p>}
+            {refreshed && <p className="small" role="status">{refreshed}</p>}
+            <VehicleSaleActions vehicleId={id} />
+          </section>
 
           <SaleOutcomePrompts vehicleId={id} />
-          <VehicleSaleActions vehicleId={id} />
           <OdometerForm id={id} current={d?.vehicle.odometer ?? null} today={today} onSaved={() => void ov.reload()} />
 
           <Documents id={id} summary={d?.documents ?? null} docs={docs.data?.documents ?? null} docsError={docs.error} today={today}
             onChanged={() => { void docs.reload(); void ov.reload(); }} reloadDocs={docs.reload} />
 
-          <div className="sheet" style={{ padding: 22 }}>
-            <h2 style={sheetLabel}>Specs from the VIN</h2>
-            {!s ? <Skeleton h={120} style={{ marginTop: 14 }} /> : (
-              <dl className="mono" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px', fontSize: 13, margin: '14px 0 0' }}>
+          <section className={`sheet ${styles.group}`}>
+            <h2 className="h3">Specs from the VIN</h2>
+            {!s ? <Skeleton h={120} /> : (
+              <dl className="kv">
                 {([
                   ['Engine', s.engine], ['Drive', s.drive], ['Body', s.doors ? `${s.doors}-door ${(s.body ?? '').toLowerCase()}`.trim() : s.body],
                   ['Fuel', s.fuel], ['Trim', s.trim.text],
@@ -270,16 +279,16 @@ export function VehicleView({ id }: { id: string }) {
                 ))}
               </dl>
             )}
-          </div>
+          </section>
 
           {d && d.reported.length > 0 && (
-            <div className="sheet" style={{ padding: 22 }}>
-              <h2 style={sheetLabel}>You reported</h2>
-              <p className="small" style={{ margin: '6px 0 0' }}>From your latest appraisal. We cannot verify these.</p>
-              <dl className="mono" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px', fontSize: 13, margin: '14px 0 0' }}>
+            <section className={`sheet ${styles.group}`}>
+              <h2 className="h3">You reported</h2>
+              <p className="small">Unverified answers from your latest appraisal.</p>
+              <dl className="kv">
                 {d.reported.map((r) => <Row key={r.key} k={REPORTED_KEYS[r.key] ?? r.key} v={reportedValue(r.key, r.value)} />)}
               </dl>
-            </div>
+            </section>
           )}
         </div>
       </div>
@@ -290,8 +299,8 @@ export function VehicleView({ id }: { id: string }) {
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <>
-      <dt style={{ color: 'var(--mid)' }}>{k}</dt>
-      <dd style={{ margin: 0 }}>{v}</dd>
+      <dt>{k}</dt>
+      <dd>{v}</dd>
     </>
   );
 }
@@ -299,8 +308,8 @@ function Row({ k, v }: { k: string; v: string }) {
 function StatSkel() {
   return (
     <>
-      <Skeleton w={110} h={31} style={{ marginTop: 6 }} />
-      <Skeleton w={140} h={16} style={{ marginTop: 4 }} />
+      <Skeleton w={110} h={31} style={{ marginTop: 'var(--s2)' }} />
+      <Skeleton w={140} h={16} style={{ marginTop: 'var(--s1)' }} />
     </>
   );
 }
@@ -341,14 +350,14 @@ function OdometerForm({ id, current, today, onSaved }: { id: string; current: nu
   }
 
   return (
-    <form className="sheet" style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={(e) => { e.preventDefault(); void save(); }} noValidate>
-      <h2 style={sheetLabel}>Update odometer</h2>
-      <div className="g2" style={{ gap: 12 }}>
+    <form className={`sheet ${styles.group}`} onSubmit={(e) => { e.preventDefault(); void save(); }} noValidate>
+      <h2 className="h3">Update odometer</h2>
+      <div className={styles.fields}>
         <Field label="Miles" hint={current != null ? `Last reading ${miles(current)}` : undefined} errors={fields.miles?.length ? fields.miles : undefined}>
-          {({ id: fid, describedBy, invalid }) => <input id={fid} className="inp mono" inputMode="numeric" value={milesIn} onChange={(e) => setMilesIn(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
+          {({ id: fid, describedBy, invalid }) => <input id={fid} className="inp" inputMode="numeric" value={milesIn} onChange={(e) => setMilesIn(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
         </Field>
         <Field label="Date" errors={fields.on?.length ? fields.on : undefined}>
-          {({ id: fid, describedBy, invalid }) => <input id={fid} type="date" className="inp mono" value={on} max={today ?? undefined} onChange={(e) => setOn(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
+          {({ id: fid, describedBy, invalid }) => <input id={fid} type="date" className="inp" value={on} max={today ?? undefined} onChange={(e) => setOn(e.target.value)} aria-describedby={describedBy} aria-invalid={invalid || undefined} />}
         </Field>
       </div>
       <button type="submit" className="btn-o" disabled={busy}>{busy ? 'Saving' : 'Save reading'}</button>
@@ -374,34 +383,38 @@ function Documents({ id, summary, docs, docsError, today, onChanged, reloadDocs 
         { name: 'Service receipts', text: summary.receipts.text, docId: null },
       ]
     : [];
-  const rowStyle: CSSProperties = { display: 'flex', justifyContent: 'space-between', gap: 12, padding: '14px 0', borderBottom: '1px solid var(--line)', textDecoration: 'none', color: 'var(--ink)' };
-
   return (
-    <div className="sheet" style={{ padding: 22 }}>
-      <h2 style={sheetLabel}>Documents</h2>
-      {!summary && <Skeleton h={200} style={{ marginTop: 14 }} />}
-      {rows.map((r) => {
-        const url = r.docId ? byId.get(r.docId)?.downloadUrl : null;
-        const inner = <><span>{r.name}</span><span className="small" style={{ textAlign: 'right' }}>{r.text}</span></>;
-        return url
-          ? <a key={r.name} href={url} style={rowStyle}>{inner}</a>
-          : <div key={r.name} style={rowStyle}>{inner}</div>;
-      })}
+    <section className={`sheet ${styles.group}`}>
+      <h2 className="h3">Documents</h2>
+      {!summary && <Skeleton h={200} />}
+      {rows.length > 0 && (
+        <ul className={styles.list}>
+          {rows.map((r) => {
+            const url = r.docId ? byId.get(r.docId)?.downloadUrl : null;
+            return (
+              <li key={r.name} className={styles.document}>
+                {url ? <a href={url} aria-label={`${r.name} ${r.text}`}>{r.name}</a> : <span>{r.name}</span>}
+                <span className="small">{r.text}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       {docs && docs.length > 0 && (
-        <details style={{ marginTop: 14 }}>
-          <summary style={{ cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center' }}>All documents ({docs.length})</summary>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <details className={styles.details}>
+          <summary>All documents ({docs.length})</summary>
+          <ul className={styles.list}>
             {docs.map((x) => <DocRow key={x.id} doc={x} onRemoved={onChanged} />)}
           </ul>
         </details>
       )}
-      {docsError && <div style={{ marginTop: 12 }}><ErrorNote error={docsError} onRetry={reloadDocs} /></div>}
+      {docsError && <ErrorNote error={docsError} onRetry={reloadDocs} />}
 
       {open
         ? <UploadForm id={id} onDone={() => { setOpen(false); onChanged(); }} onCancel={() => setOpen(false)} />
-        : <button type="button" className="btn-o" style={{ marginTop: 16, width: '100%' }} onClick={() => setOpen(true)}>Upload a document</button>}
-    </div>
+        : <button type="button" className="btn-o" onClick={() => setOpen(true)}>Upload a document</button>}
+    </section>
   );
 }
 
@@ -422,16 +435,16 @@ function DocRow({ doc, onRemoved }: { doc: Doc; onRemoved: () => void }) {
     }
   }
   return (
-    <li style={{ padding: '12px 0', borderBottom: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+    <li className={styles.group}>
+      <div className={styles.document}>
         <span>
           {doc.downloadUrl ? <a href={doc.downloadUrl}>{name}</a> : name}
           <span className="small">{doc.label ? `, ${kindLabel(doc.kind)}` : ''}{doc.expiresOn ? `, expires ${longDate(doc.expiresOn)}` : ''}{doc.hasFile ? '' : ', no file'}</span>
         </span>
-        {!confirm && <button type="button" className="ghost" onClick={() => setConfirm(true)} aria-label={`Remove ${name}`}>Remove</button>}
+        {!confirm && <button type="button" className="textbtn" onClick={() => setConfirm(true)} aria-label={`Remove ${name}`}>Remove</button>}
       </div>
       {confirm && (
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="row">
           <span className="small">Remove {name}{doc.hasFile ? ' and its file' : ''}? This cannot be undone.</span>
           <button type="button" className="btn-o" onClick={remove} disabled={busy}>{busy ? 'Removing' : 'Yes, remove'}</button>
           <button type="button" className="ghost" onClick={() => setConfirm(false)}>Keep it</button>
@@ -480,7 +493,7 @@ function UploadForm({ id, onDone, onCancel }: { id: string; onDone: () => void; 
   }
 
   return (
-    <form style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={(e) => { e.preventDefault(); void submit(); }} noValidate>
+    <form className={styles.group} onSubmit={(e) => { e.preventDefault(); void submit(); }} noValidate>
       <Field label="Type" errors={fields.kind}>
         {({ id: fid }) => (
           <select id={fid} className="inp" value={kind} onChange={(e) => setKind(e.target.value)}>
@@ -492,13 +505,13 @@ function UploadForm({ id, onDone, onCancel }: { id: string; onDone: () => void; 
         {({ id: fid }) => <input id={fid} className="inp" value={label} onChange={(e) => setLabel(e.target.value)} maxLength={120} />}
       </Field>
       <Field label="Expires or renews (optional)" hint="We remind you 30 days before." errors={fields.expiresOn}>
-        {({ id: fid, describedBy }) => <input id={fid} type="date" className="inp mono" value={expires} onChange={(e) => setExpires(e.target.value)} aria-describedby={describedBy} />}
+        {({ id: fid, describedBy }) => <input id={fid} type="date" className="inp" value={expires} onChange={(e) => setExpires(e.target.value)} aria-describedby={describedBy} />}
       </Field>
-      <Field label="File (optional)" hint="PDF, JPEG, PNG, HEIC or WebP, up to 10 MB. Without a file we save the record only." errors={fields.file}>
-        {({ id: fid, describedBy }) => <input id={fid} ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,image/webp" aria-describedby={describedBy} style={{ minHeight: 44 }} />}
+      <Field label="File (optional)" hint="PDF, JPEG, PNG, HEIC or WebP, up to 10 MB." errors={fields.file}>
+        {({ id: fid, describedBy }) => <input id={fid} ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,image/webp" aria-describedby={describedBy} className={styles.file} />}
       </Field>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <button type="submit" className="btn" disabled={busy}>{busy ? 'Saving' : 'Save document'}</button>
+      <div className="row">
+        <button type="submit" className="btn-o" disabled={busy}>{busy ? 'Saving' : 'Save document'}</button>
         <button type="button" className="ghost" onClick={onCancel}>Cancel</button>
       </div>
       {err && <p className="err" role="alert">{err}</p>}

@@ -1,11 +1,10 @@
 'use client';
 /**
  * Month grid for service events and document renewals (design/Garage-Maintenance.dc.html).
- * Chips: `.chip`, overdue `.chip.late`; car badges `.bdg .b1/.b2/.b3` differ by fill style.
- * Wrapped in `.scroll-x` so it scrolls sideways in its own box on phones.
  */
 import Link from 'next/link';
 import { Skeleton } from '@/views/components/ui';
+import styles from './garage.module.css';
 import { badgeClass, type Badge } from './shared';
 
 export type CalendarItem = {
@@ -59,41 +58,40 @@ export function Calendar({ year, month, today, items, legend, loading, onPrev, o
   const label = monthLabel(year, month);
 
   return (
-    <div className="sheet scroll-x" tabIndex={0} role="region" aria-label="Maintenance calendar">
-      <div style={{ minWidth: 760 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '16px 20px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button type="button" className="ghost" onClick={onPrev} aria-label="Previous month">&#8592;</button>
-            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, minWidth: 220, textAlign: 'center' }} aria-live="polite">{label}</h2>
-            <button type="button" className="ghost" onClick={onNext} aria-label="Next month">&#8594;</button>
-            <button type="button" className="ghost" onClick={onToday} disabled={isThisMonth} aria-label="Go to the current month">Today</button>
-          </div>
-          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
-            {legend.map((b) => (
-              <span key={b.letter} style={{ display: 'inline-flex', gap: 8, alignItems: 'center', fontSize: 13 }}>
-                <span className={badgeClass(b.index)} aria-hidden="true">{b.letter}</span>{b.label}
-              </span>
-            ))}
-          </div>
+    <section className={`sheet ${styles.group}`} tabIndex={0} role="region" aria-label="Maintenance calendar">
+      <div className={styles.calendarHead}>
+        <h2 className="h3" aria-live="polite">{label}</h2>
+        <div className="row">
+          <button type="button" className="ghost" onClick={onPrev} aria-label="Previous month">←</button>
+          <button type="button" className="ghost" onClick={onNext} aria-label="Next month">→</button>
+          <button type="button" className="ghost" onClick={onToday} disabled={isThisMonth} aria-label="Go to the current month">Today</button>
         </div>
-        <div className="cal-row" aria-hidden="true">
-          {DOW.map((d) => <div key={d} className="label" style={{ padding: '10px 8px', borderBottom: '1px solid var(--ink)' }}>{d}</div>)}
+      </div>
+      <div className="row">
+        {legend.map((b) => (
+          <span key={b.index} className={`small ${styles.legendItem}`}>
+            <span className={badgeClass(b.index)} aria-hidden="true">{b.letter}</span>{b.label}
+          </span>
+        ))}
+      </div>
+      <div>
+        <div className={styles.calendarGrid} aria-hidden="true">
+          {DOW.map((d) => <div key={d} className={`small ${styles.weekday}`}>{d}</div>)}
         </div>
         <div role="list" aria-label={`Service calendar, ${label}`} aria-busy={loading || undefined}>
           {weeks.map((w, wi) => (
-            <div className="cal-row" key={wi}>
+            <div className={styles.calendarGrid} key={wi} role="presentation">
               {w.map((c, ci) => {
-                if (!c) return <div key={ci} className="day off" aria-hidden="true" />;
+                if (!c) return <div key={ci} className={styles.day} aria-hidden="true" />;
                 const date = `${prefix}${String(c.d).padStart(2, '0')}`;
-                const isT = date === today;
+                const isToday = date === today;
                 const evs = byDay.get(c.d) ?? [];
                 return (
-                  <div key={ci} className={isT ? 'day today' : 'day'} role="listitem" aria-label={evs.length ? undefined : `${MONTHS[month]} ${c.d}, nothing scheduled`}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span className="mono small"><span className="sr">{MONTHS[month]} </span>{c.d}</span>
-                      {isT && <span className="small" style={{ fontWeight: 600, color: 'var(--ink)' }}>Today</span>}
-                    </div>
-                    {loading && !evs.length && c.d % 9 === 3 ? <Skeleton h={22} /> : null}
+                  <div key={ci} className={isToday ? `${styles.day} ${styles.today}` : styles.day} role="listitem" aria-label={evs.length ? undefined : `${MONTHS[month]} ${c.d}, nothing scheduled`}>
+                    <time className="small" dateTime={date} aria-current={isToday ? 'date' : undefined}>
+                      <span className="sr">{MONTHS[month]} </span>{c.d}
+                    </time>
+                    {loading && !evs.length && c.d % 9 === 3 && <Skeleton h={22} />}
                     {evs.map((e) => <Chip key={`${e.kind}-${e.id}`} e={e} selected={selectedId === e.id} onSelect={onSelect} />)}
                   </div>
                 );
@@ -102,30 +100,32 @@ export function Calendar({ year, month, today, items, legend, loading, onPrev, o
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
 function Chip({ e, selected, onSelect }: { e: CalendarItem; selected: boolean; onSelect: (e: CalendarItem) => void }) {
-  const cls = e.overdue ? 'chip late' : 'chip';
   const state = e.status === 'done' ? ', done' : e.status === 'skipped' ? ', skipped' : e.overdue ? ', overdue' : '';
-  const muted = e.status === 'done' || e.status === 'skipped';
+  const cls = [
+    'small', styles.event, e.overdue && styles.overdue,
+    (e.status === 'done' || e.status === 'skipped') && styles.muted,
+    e.status === 'skipped' && styles.skipped,
+  ].filter(Boolean).join(' ');
   const inner = (
     <>
       <span className={badgeClass(e.vehicle.index)} aria-hidden="true">{e.vehicle.letter}</span>
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: muted ? 'var(--mid)' : undefined, textDecoration: e.status === 'skipped' ? 'line-through' : undefined }}>
-        {e.status === 'done' && <span aria-hidden="true">&#10003; </span>}
+      <span className={styles.eventLabel}>
+        {e.status === 'done' && <span aria-hidden="true">✓ </span>}
         {e.title}
       </span>
       <span className="sr">, {e.vehicle.label}{state}</span>
     </>
   );
-  const style = { width: '100%', textAlign: 'left' as const, cursor: 'pointer', font: 'inherit', fontSize: 12, color: 'var(--ink)', textDecoration: 'none', outline: selected ? '2px solid var(--blue)' : undefined, outlineOffset: selected ? 1 : undefined };
   if (e.kind === 'renewal') {
-    return <Link href={`/garage/${e.vehicleId}`} className={cls} style={style}>{inner}</Link>;
+    return <Link href={`/garage/${e.vehicleId}`} className={cls} title={e.title}>{inner}</Link>;
   }
   return (
-    <button type="button" className={cls} style={style} onClick={() => onSelect(e)} aria-pressed={selected}>
+    <button type="button" className={cls} title={e.title} onClick={() => onSelect(e)} aria-pressed={selected}>
       {inner}
     </button>
   );

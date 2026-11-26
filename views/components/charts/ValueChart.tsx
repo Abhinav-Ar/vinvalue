@@ -3,15 +3,16 @@
  * Date-based x scale: history is daily, the forecast is monthly (plotted mid-month).
  */
 import { usd } from '@/views/components/client/format';
-import { AXIS_TEXT, ChartEmpty, SrTable, kUsd, monthLabel, monthShort, niceDomain } from './shared';
+import { ChartEmpty, SrTable, kUsd, monthLabel, monthShort, niceDomain } from './shared';
+import styles from './charts.module.css';
 
 export type ValuePoint = { date: string; value: number };
 export type ForecastPoint = { month: string; mid: number; low: number; high: number };
 
-const W = 960;
+const W = 760;
 const H = 345;
-const L = 50;
-const R = 930;
+const L = 88;
+const R = 730;
 const T = 20;
 const B = 300;
 const DAY = 86_400_000;
@@ -37,7 +38,7 @@ export function ValueChart({ history: rawHistory, forecast, today, best, alert }
 }) {
   const history = dedupeByDate(rawHistory);
   if (!history.length && !forecast.length) {
-    return <ChartEmpty height={H * 0.6}>No appraisals or forecast yet. Appraise this car to start its value history.</ChartEmpty>;
+    return <ChartEmpty>No value history yet. Appraise this car to start.</ChartEmpty>;
   }
 
   const todayT = t(today.date);
@@ -87,28 +88,22 @@ export function ValueChart({ history: rawHistory, forecast, today, best, alert }
     (alert ? ` Your alert is set at ${usd(alert)}.` : '');
 
   return (
-    <figure style={{ margin: 0 }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={summary} style={{ display: 'block' }}>
+    <figure className={`${styles.plot} ${styles.forecast}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={summary}>
         {dom.ticks.map((v) => (
           <g key={v}>
             <path d={`M${L} ${Y(v).toFixed(1)} L${R} ${Y(v).toFixed(1)}`} stroke="var(--line)" />
-            <text x={42} y={Y(v) + 4} textAnchor="end" {...AXIS_TEXT}>{kUsd(v)}</text>
+            <text x={L - 8} y={Y(v) + 4} textAnchor="end" className={`${styles.axis} ${styles.numeric}`}>{kUsd(v)}</text>
           </g>
         ))}
         {ticks.map((ms, i) =>
           i % every === 0 ? (
-            <text key={ms} x={X(ms)} y={330} textAnchor="middle" {...AXIS_TEXT}>{monthShort(ymOf(ms))}</text>
+            <text key={ms} x={X(ms)} y={330} textAnchor="middle" className={i % (every * 2) === 0 ? styles.axis : `${styles.axis} ${styles.extraTick}`}>{monthShort(ymOf(ms))}</text>
           ) : null,
         )}
         <path d={`M${todayX.toFixed(1)} ${T} L${todayX.toFixed(1)} ${B}`} stroke="var(--ink)" strokeDasharray="4 4" />
-        <text x={todayX + 8} y={34} fontSize={12} fill="var(--mid)">Today</text>
-        {bestX != null && (
-          <>
-            <rect x={bestX - 20} y={T} width={40} height={B - T} fill="var(--soft)" />
-            <text x={bestX} y={294} textAnchor="middle" fontSize={12} fill="var(--blue)">Best time to sell</text>
-          </>
-        )}
-        {band && <path d={band} fill="var(--soft)" stroke="none" />}
+        <text x={todayX + 8} y={34} className={styles.annotation}>Today</text>
+        {band && <path d={band} fill="var(--blue)" fillOpacity={0.13} />}
         {history.length > 1 && <path d={hpath} fill="none" stroke="var(--ink)" strokeWidth={2.2} />}
         {history.map((p) => (
           <circle key={p.date} cx={X(t(p.date))} cy={Y(p.value)} r={history.length > 1 ? 2.5 : 4} fill="var(--ink)" />
@@ -117,7 +112,7 @@ export function ValueChart({ history: rawHistory, forecast, today, best, alert }
         {alert != null && alert > 0 && (
           <>
             <path d={`M${L} ${Y(alert).toFixed(1)} L${R} ${Y(alert).toFixed(1)}`} stroke="var(--blue)" strokeWidth={1} opacity={0.6} />
-            <text x={926} y={Y(alert)} dy={-6} textAnchor="end" fontSize={12} fill="var(--blue)">Your alert</text>
+            <text x={R - 4} y={Y(alert)} dy={Y(alert) <= T + 20 ? 20 : -6} textAnchor="end" className={`${styles.annotation} ${styles.active}`}>Your alert</text>
           </>
         )}
         {best && bestX != null && <circle cx={bestX} cy={Y(best.value)} r={6} fill="var(--blue)" />}

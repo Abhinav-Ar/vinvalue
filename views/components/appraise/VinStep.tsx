@@ -57,68 +57,57 @@ export function VinStep() {
   return (
     <>
       <Stepper step={1} />
-      <section className="wrap g2" style={{ paddingTop: 72, paddingBottom: 96, gridTemplateColumns: '7fr 5fr' }}>
-        <form onSubmit={identify} noValidate>
-          <h1 className="title">Enter your VIN</h1>
-          <p className="lede" style={{ marginTop: 18, maxWidth: 560 }}>
-            We identify the exact car first, then ask only for the details that change its value.
-          </p>
+      <section className="wrap g2 page" style={{ gridTemplateColumns: '7fr 5fr', alignItems: 'start' }}>
+        <form onSubmit={identify} noValidate className="stack" style={{ gap: 'var(--s6)' }}>
+          <div className="head" style={{ marginBottom: 0 }}>
+            <h1 className="title">Enter your VIN</h1>
+            <p className="lede">We find the exact car, then ask only what changes its value.</p>
+          </div>
           <VinInput
             value={vin}
             onChange={(v) => { setVin(v); if (vinErrors) setVinErrors(undefined); }}
             errors={vinErrors}
-            style={{ marginTop: 40 }}
           />
           {showImported && (
-            <label style={{ display: 'flex', gap: 12, alignItems: 'center', minHeight: 44, marginTop: 12, fontSize: 15, cursor: 'pointer' }}>
+            <label className="row" style={{ minHeight: 44, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={imported}
                 onChange={(e) => setImported(e.target.checked)}
                 style={{ width: 20, height: 20, accentColor: 'var(--blue)', margin: 0 }}
               />
-              This car was imported, so its VIN may not follow the US check digit rule
+              Imported car (its VIN may skip the US check digit)
             </label>
           )}
 
           <VinError error={error} onRetry={() => void identify()} />
 
-          <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
+          <div className="row">
             <button type="submit" className="btn" disabled={busy}>
-              {busy ? 'Identifying vehicle' : 'Identify vehicle'}
+              {busy ? 'Finding your car…' : 'Find my car'} <span className="arr" aria-hidden="true">→</span>
             </button>
             <button
               type="button"
-              className="btn-o"
+              className="textbtn"
               onClick={() => { setVin(SAMPLE_VIN); setVinErrors(undefined); setError(null); }}
             >
-              Try a sample VIN
+              Use a sample VIN
             </button>
           </div>
-          <p className="small" style={{ marginTop: 28 }}>No account needed.</p>
         </form>
 
-        <aside className="sheet" style={{ padding: 28, alignSelf: 'start' }}>
-          <h2 className="label" style={{ fontSize: 13 }}>Where to find it</h2>
-          <div style={{ margin: '16px 0 8px' }}>
-            <CarDrawing
-              variant="gt"
-              viewBox="10 10 970 340"
-              label="Line drawing of a coupe. Marker 1 is at the base of the windshield on the driver side, marker 2 is on the driver door jamb."
-              markers={[{ x: 404, y: 160, n: 1 }, { x: 656, y: 232, n: 2 }]}
-            />
-          </div>
-          <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              'Dashboard, driver side. Look through the base of the windshield.',
-              'Driver door jamb, on the label by the latch.',
-              'Your registration, title or insurance card.',
-            ].map((t, i) => (
-              <li key={t} style={{ display: 'flex', gap: 14, padding: '14px 0', borderTop: '1px solid var(--line)' }}>
-                <span className="mono" style={{ color: 'var(--blue)' }}>{i + 1}</span>
-                <span>{t}</span>
-              </li>
-            ))}
+        <aside className="stack" style={{ gap: 'var(--s4)' }}>
+          <h2 className="kicker">Where to find it</h2>
+          <CarDrawing
+            variant="sedan"
+            viewBox="10 10 970 340"
+            label="Line drawing of a car. Marker 1 is at the base of the windshield on the driver side, marker 2 is on the driver door jamb."
+            markers={[{ x: 352, y: 168, n: 1 }, { x: 512, y: 232, n: 2 }]}
+          />
+          <ol className="small" style={{ margin: 0, paddingLeft: 'var(--s5)', display: 'flex', flexDirection: 'column', gap: 'var(--s2)' }}>
+            <li>Base of the windshield, driver side.</li>
+            <li>Driver door jamb sticker.</li>
+            <li>Registration, title or insurance card.</li>
           </ol>
         </aside>
       </section>
@@ -130,33 +119,32 @@ function VinError({ error, onRetry }: { error: ApiError | null; onRetry: () => v
   if (!error) return null;
   if (error.code === 'vin_not_decoded') {
     return (
-      <div className="notice" role="alert" style={{ marginTop: 24, maxWidth: 690 }}>
-        <p style={{ margin: 0, fontWeight: 500 }}>We could not match this VIN to a vehicle.</p>
-        <p style={{ margin: '8px 0 0' }}>
-          Compare it character by character with the plate at the base of the windshield or the label in the
-          driver door jamb. Easy ones to mix up are 8 and B, 5 and S, 2 and Z, 0 and D.
+      <div className="notice" role="alert" style={{ maxWidth: 640 }}>
+        <p style={{ margin: 0 }}>We couldn’t match this VIN to a car.</p>
+        <p className="small" style={{ margin: 'var(--s2) 0 0' }}>
+          Check it against the windshield plate. Common mix-ups: 8/B, 5/S, 2/Z, 0/D.
         </p>
       </div>
     );
   }
   if (error.status === 502) {
     return (
-      <div className="notice" role="alert" style={{ marginTop: 24, maxWidth: 690 }}>
-        <p style={{ margin: 0 }}>The VIN lookup service didn&apos;t respond. Your VIN was not the problem.</p>
-        <button type="button" className="btn-o" style={{ marginTop: 14 }} onClick={onRetry}>Try again</button>
+      <div className="notice" role="alert" style={{ maxWidth: 640 }}>
+        <p style={{ margin: 0 }}>The VIN lookup didn&apos;t respond. Your VIN is fine.</p>
+        <button type="button" className="btn-o" style={{ marginTop: 'var(--s3)' }} onClick={onRetry}>Try again</button>
       </div>
     );
   }
   if (error.status === 429) {
     const n = minutes(error.details.retryAfterSec);
     return (
-      <div className="notice" role="alert" style={{ marginTop: 24, maxWidth: 690 }}>
-        <p style={{ margin: 0 }}>Too many VIN lookups in a short time. Try again in {n} minute{n === 1 ? '' : 's'}.</p>
+      <div className="notice" role="alert" style={{ maxWidth: 640 }}>
+        <p style={{ margin: 0 }}>Too many lookups. Try again in {n} minute{n === 1 ? '' : 's'}.</p>
       </div>
     );
   }
   return (
-    <div style={{ marginTop: 24, maxWidth: 690 }}>
+    <div style={{ maxWidth: 640 }}>
       <ErrorNote error={error} onRetry={onRetry} />
     </div>
   );

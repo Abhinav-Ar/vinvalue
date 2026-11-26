@@ -2,8 +2,8 @@
 import dynamic from 'next/dynamic';
 import { useSyncExternalStore } from 'react';
 
-/** The WebGL car, client only. Renders nothing while its chunk loads; the SVG covers that time. */
-export const Car3D = dynamic(() => import('./CarCanvas'), { ssr: false, loading: () => null });
+/** The WebGL drive-in, client only. Renders nothing while its chunk loads; the drawing covers that time. */
+export const Drive3D = dynamic(() => import('./DriveCanvas'), { ssr: false, loading: () => null });
 
 let webgl: boolean | null = null;
 function hasWebGL() {

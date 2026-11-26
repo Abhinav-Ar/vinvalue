@@ -12,6 +12,7 @@ import { CompsScatter } from './CompsScatter';
 import { RouteDiagram } from '@/views/components/RouteDiagram';
 import { Waterfall } from '@/views/components/Waterfall';
 import { carVariant } from './session';
+import rs from './report.module.css';
 
 const ROWS_SHOWN = 6;
 
@@ -35,9 +36,9 @@ export function ReportView({ slug }: { slug: string }) {
     return (
       <section className="wrap page">
         <h1 className="title">Report not found</h1>
-        <div style={{ marginTop: 28 }}>
+        <div>
           <EmptyState
-            text="This link is wrong or the report has expired. Reports that are not saved to an account are removed after a while."
+            text="This link is wrong, or the report expired."
             action={<Link className="btn" href="/appraise">Start a new appraisal</Link>}
           />
         </div>
@@ -48,7 +49,7 @@ export function ReportView({ slug }: { slug: string }) {
     return (
       <section className="wrap page">
         <h1 className="title">Appraisal report</h1>
-        <div style={{ marginTop: 28 }}><ErrorNote error={error} onRetry={reload} /></div>
+        <ErrorNote error={error} onRetry={reload} />
       </section>
     );
   }
@@ -57,51 +58,42 @@ export function ReportView({ slug }: { slug: string }) {
 
   const model = !!r.confidence?.flags.includes('model_estimate');
   const recorded = r.compStats.source === 'recorded_sales';
-  const drawing = <CarDrawing variant={carVariant(r.vehicle.model, r.vehicle.body)} label={`Line drawing of a ${r.vehicle.label}`} />;
+  const drawing = <CarDrawing variant={carVariant(r.vehicle.make, r.vehicle.model, r.vehicle.body)} label={`Line drawing of a ${r.vehicle.label}`} />;
 
   return (
-    <div className="grid">
+    <>
       <Stepper step={3} />
-      <section className="wrap" style={{ paddingTop: 44, paddingBottom: 96 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
-          <div>
-            <p className="kicker">Appraisal report · Method {r.methodVersion}</p>
-            <h1 className="title" style={{ marginTop: 10 }}>{r.vehicle.label}</h1>
-          </div>
-          <div className="no-print"><Actions report={r} signedIn={signedIn} onClaimed={(c) => setData(c)} /></div>
-        </div>
-        <SaveNote report={r} signedIn={signedIn} meLoading={me.loading} />
-
-        <div className="sheet frame" style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))' }}>
-          <Cell k="Vehicle" v={r.vehicle.label} />
-          <Cell k="VIN" v={<span className="vin">{r.vin}</span>} />
-          <Cell k="Mileage" v={<span className="mono">{num(r.mileage)} mi</span>} />
-          <Cell k="ZIP" v={<span className="mono">{r.zip}</span>} />
-          <Cell k="Date" v={longDate(r.date)} />
+      <section className={`wrap ${rs.page}`}>
+        <div className="head">
+          <p className="kicker">Report · {longDate(r.date)}</p>
+          <h1 className="title">{r.vehicle.label}</h1>
+          <p className="small" style={{ margin: 0 }}><span className="vin">{r.vin}</span> · {num(r.mileage)} mi · ZIP {r.zip}</p>
+          <SaveNote report={r} signedIn={signedIn} meLoading={me.loading} />
         </div>
 
-        <div className="g2" style={{ marginTop: 56, alignItems: 'center', gridTemplateColumns: '6fr 6fr' }}>
-          <div>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              <h2 className="kicker" style={{ color: 'var(--blue)' }}>Private sale estimate</h2>
+        <div className={rs.hero}>
+          <div className="stack">
+            <div className="row">
+              <h2 className="kicker accent">Private sale estimate</h2>
               <span className={`tag${model ? '' : ' on'}`}><i />{model ? 'Model estimate' : recorded ? `${r.compStats.used} recorded sales` : `${r.compStats.used} listings`}</span>
             </div>
-            <p className="figure mono" style={{ marginTop: 14 }}>{usd(r.private.value)}</p>
-            <div style={{ fontSize: 14, marginTop: 26, maxWidth: 520 }}>
+            <p className="figure">{usd(r.private.value)}</p>
+            <div style={{ maxWidth: 520, marginTop: 'var(--s3)' }}>
               <RangeBar low={r.private.low} high={r.private.high} value={r.private.value} label={`Likely range ${usd(r.private.low)} to ${usd(r.private.high)}, estimate ${usd(r.private.value)}`} />
             </div>
-            <p className="small" style={{ marginTop: 12, maxWidth: 520, lineHeight: 1.5 }}>
+            <p className="small" style={{ margin: 0, maxWidth: 480 }}>
               {model
-                ? 'No local sales of this model, so the value comes from its original MSRP, age, mileage and collector demand, calibrated against real asking prices. The range is wider to reflect that.'
+                ? 'No local sales of this model. Estimated from MSRP, age, mileage and demand, so the range is wider.'
                 : recorded
-                  ? 'Likely range, from recorded sales of the same model in Washington State title records.'
-                  : 'Likely range, from comparable listings near you.'}
+                  ? 'Range from recorded sales of this model.'
+                  : 'Range from comparable listings near you.'}
             </p>
+            <div className="no-print"><Actions report={r} signedIn={signedIn} onClaimed={(c) => setData(c)} /></div>
           </div>
-          <div><VehiclePhoto car={r.vehicle} fallback={drawing} /></div>
+          <div className={rs.art}><VehiclePhoto car={r.vehicle} fallback={drawing} /></div>
         </div>
 
-        <Section idx="01" title="Your price depends on how you sell">
+        <Section idx="01" title="How you sell sets the price">
           <RouteDiagram instant={r.instant.value} private={r.private.value} retail={r.retail.value} low={r.private.low} high={r.private.high} />
         </Section>
 
@@ -109,20 +101,16 @@ export function ReportView({ slug }: { slug: string }) {
         <Ladder report={r} />
         <ConfidenceBlock report={r} />
       </section>
-    </div>
+    </>
   );
 }
 
 function Section({ idx, title, id, children }: { idx: string; title: string; id?: string; children: ReactNode }) {
   const hid = id ?? `sec-${idx}`;
   return (
-    <section style={{ marginTop: 96 }} aria-labelledby={hid}>
-      <div className="sec-head">
-        <span className="idx">{idx}</span>
-        <span className="rule" />
-        <h2 id={hid} className="h2" style={{ fontSize: 30, margin: '4px 0 0' }}>{title}</h2>
-      </div>
-      <div style={{ marginTop: 28 }}>{children}</div>
+    <section className={rs.sec} aria-labelledby={hid}>
+      <h2 id={hid} className="h3">{title}</h2>
+      <div className={rs.body}>{children}</div>
     </section>
   );
 }
@@ -154,15 +142,15 @@ function Actions({ report: r, signedIn, onClaimed }: { report: PublicReport; sig
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+    <div className="stack" style={{ gap: 'var(--s2)', marginTop: 'var(--s4)' }}>
+      <div className="row">
         {signedIn && !r.saved && (
-          <button type="button" className="btn" onClick={claim} disabled={claiming}>{claiming ? 'Saving to my garage' : 'Save to my garage'}</button>
+          <button type="button" className="btn" onClick={claim} disabled={claiming}>{claiming ? 'Saving…' : 'Save to garage'}</button>
         )}
-        <button type="button" className="btn-o" onClick={share}>Copy share link</button>
-        <button type="button" className="btn-o" onClick={() => window.print()}>Print or save as PDF</button>
+        <button type="button" className="btn-o" onClick={share}>Copy link</button>
+        <button type="button" className="textbtn" onClick={() => window.print()}>Print or PDF</button>
       </div>
-      <p className="small" role="status" style={{ margin: 0, minHeight: 18, overflowWrap: 'anywhere' }}>{copied}</p>
+      <p className="small" role="status" style={{ margin: 0, minHeight: 21, overflowWrap: 'anywhere' }}>{copied}</p>
       {claimErr && <div style={{ alignSelf: 'stretch' }}><ErrorNote error={claimErr} onRetry={claimErr.status === 409 ? undefined : claim} /></div>}
     </div>
   );
@@ -170,24 +158,15 @@ function Actions({ report: r, signedIn, onClaimed }: { report: PublicReport; sig
 
 function SaveNote({ report: r, signedIn, meLoading }: { report: PublicReport; signedIn: boolean; meLoading: boolean }) {
   if (r.saved) {
-    return r.code ? <p className="small" style={{ margin: '8px 0 0' }}>Saved as report {r.code}.</p> : null;
+    return r.code ? <p className="small" style={{ margin: 0 }}>Saved as report {r.code}.</p> : null;
   }
   if (meLoading) return null;
-  const expires = r.expiresOn ? ` It will be removed on ${longDate(r.expiresOn)}.` : '';
+  const expires = r.expiresOn ? ` Expires ${longDate(r.expiresOn)}.` : '';
   return (
-    <p className="small" style={{ margin: '8px 0 0' }}>
-      This report is not saved to an account.{expires}
+    <p className="small" style={{ margin: 0 }}>
+      Not saved.{expires}
       {!signedIn && <> <Link href={`/sign-in?next=${encodeURIComponent(`/report/${r.slug}`)}`}>Sign in to save it</Link>.</>}
     </p>
-  );
-}
-
-function Cell({ k, v }: { k: string; v: ReactNode }) {
-  return (
-    <div className="cell">
-      <p className="label">{k}</p>
-      <p style={{ margin: '6px 0 0', fontSize: 15, overflowWrap: 'anywhere' }}>{v}</p>
-    </div>
   );
 }
 
@@ -208,17 +187,17 @@ function Comps({ report: r }: { report: PublicReport }) {
   if (!r.comps.length) {
     return (
       <Section idx="02" title="Market evidence">
-        <p className="lede" style={{ maxWidth: 720 }}>There are no recorded sales or listings of this model to compare with, so the estimate rests on the price model described below.</p>
+        <p className="lede">No sales or listings of this model to compare, so the price model sets the value.</p>
       </Section>
     );
   }
   return (
     <Section idx="02" title={heading}>
-      <div className="g2" style={{ alignItems: 'start', gap: 24 }}>
-        <div className="sheet" style={{ padding: 20 }}>
+      <div className="g2" style={{ alignItems: 'start' }}>
+        <div>
           <CompsScatter comps={r.comps} subject={{ miles: r.mileage, value: r.private.value }} />
         </div>
-        <div className="sheet" style={{ padding: '8px 8px 4px' }}>
+        <div>
           <div className="scroll-x" tabIndex={0} role="region" aria-label={`Comparable ${noun} table`}>
             <table className="tbl">
               <caption className="sr">{recorded ? 'Recorded sale prices' : 'Comparable listings, asking prices as listed'}</caption>
@@ -242,11 +221,11 @@ function Comps({ report: r }: { report: PublicReport }) {
               </tbody>
             </table>
           </div>
-          <p className="small" style={{ padding: 12, margin: 0, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            Showing {rows.length} of {r.comps.length}.
+          <p className="small row" style={{ margin: 'var(--s2) 0 0' }}>
+            {rows.length} of {r.comps.length}
             {r.comps.length > ROWS_SHOWN && (
-              <button type="button" className="btn-o no-print" style={{ minHeight: 44 }} onClick={() => setAll(!all)} aria-expanded={all}>
-                {all ? `Show fewer ${noun}` : `Show all ${r.comps.length} ${noun}`}
+              <button type="button" className="textbtn no-print" onClick={() => setAll(!all)} aria-expanded={all}>
+                {all ? 'Show fewer' : `Show all ${r.comps.length} ${noun}`}
               </button>
             )}
           </p>
@@ -263,20 +242,20 @@ function Ladder({ report: r }: { report: PublicReport }) {
   const plain = r.methodNotes.filter((n) => !TECHNICAL_NOTE.test(n));
   const technical = r.methodNotes.filter((n) => TECHNICAL_NOTE.test(n));
   return (
-    <Section idx="03" title="From the starting value to your car">
+    <Section idx="03" title="The math">
       <div className="g2" style={{ alignItems: 'start', gridTemplateColumns: '7fr 5fr' }}>
         <div>
           <Waterfall base={r.base} steps={r.adjustments} total={{ label: 'Private sale estimate', amount: r.private.value }} />
           <ul className="legend" aria-hidden="true">
-            <li><span className="sw" style={{ background: 'var(--ink)' }} />Starting value</li>
+            <li><span className="sw" />Starting value</li>
             <li><span className="sw up" />Adds value</li>
             <li><span className="sw down" />Takes value away</li>
           </ul>
         </div>
-        <aside className="sheet" style={{ padding: 28 }}>
+        <aside>
           <h3 className="kicker">Method notes</h3>
-          <ol style={{ fontSize: 15, lineHeight: 1.6, paddingLeft: 20, color: 'var(--ink)', margin: '14px 0 0' }}>
-            {plain.map((n) => <li key={n} style={{ marginBottom: 6 }}>{n}</li>)}
+          <ol className={rs.notes}>
+            {plain.map((n) => <li key={n}>{n}</li>)}
           </ol>
           {technical.length > 0 && (
             <details className="tech">
@@ -284,7 +263,7 @@ function Ladder({ report: r }: { report: PublicReport }) {
               <ul>{technical.map((n) => <li key={n}>{n}</li>)}</ul>
             </details>
           )}
-          <p className="small" style={{ margin: '16px 0 0' }}>Valuation method version {r.methodVersion}</p>
+          <p className="small" style={{ margin: 'var(--s4) 0 0' }}>Method {r.methodVersion}</p>
         </aside>
       </div>
     </Section>
@@ -317,17 +296,17 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
   const flags = c.flags.map((f) => FLAG_TEXT[f]).filter(Boolean) as string[];
 
   return (
-    <Section idx="04" id="trust-h" title="How much to trust this number">
+    <Section idx="04" id="trust-h" title="How sure we are">
       {flags.length > 0 && (
-        <div className="notice" style={{ marginBottom: 28 }}>
+        <div className="notice" style={{ marginBottom: 'var(--s6)' }}>
           {flags.map((f) => <p key={f} style={{ margin: 0 }}>{f}</p>)}
         </div>
       )}
       <div className="g3" style={{ alignItems: 'start' }}>
-        <TrustList title="Checked against data" items={checked} />
-        <TrustList title="You reported, not verified" items={reported} />
+        <TrustList title="Checked" items={checked} />
+        <TrustList title="You told us" items={reported} />
         {c.rangeReasons.length > 0 && (
-          <TrustList title={`Why the range is ${usd(r.private.low)} to ${usd(r.private.high)}`} items={c.rangeReasons} />
+          <TrustList title={`Why ${usd(r.private.low)} to ${usd(r.private.high)}`} items={c.rangeReasons} />
         )}
       </div>
     </Section>
@@ -337,11 +316,9 @@ function ConfidenceBlock({ report: r }: { report: PublicReport }) {
 function TrustList({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>{title}</h3>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {items.map((t) => (
-          <li key={t} style={{ padding: '10px 0', borderTop: '1px solid var(--line)', fontSize: 15 }}>{t}</li>
-        ))}
+      <h3 className="kicker">{title}</h3>
+      <ul className={rs.list}>
+        {items.map((t) => <li key={t}>{t}</li>)}
       </ul>
     </div>
   );
@@ -349,17 +326,15 @@ function TrustList({ title, items }: { title: string; items: string[] }) {
 
 function ReportSkeleton() {
   return (
-    <div className="grid">
+    <>
       <Stepper step={3} />
-      <section className="wrap" style={{ paddingTop: 48, paddingBottom: 96 }} aria-busy="true">
-        <Skeleton w="50%" h={40} />
-        <Skeleton h={80} style={{ marginTop: 28 }} />
-        <div className="g2" style={{ marginTop: 56, gridTemplateColumns: '5fr 7fr' }}>
-          <div><Skeleton w={120} h={16} /><Skeleton w="80%" h={84} style={{ marginTop: 10 }} /><Skeleton h={14} style={{ marginTop: 24 }} /></div>
-          <Skeleton h={220} />
+      <section className={`wrap ${rs.page}`} aria-busy="true">
+        <Skeleton w="50%" h={48} />
+        <div className={rs.hero} style={{ marginTop: 'var(--s7)' }}>
+          <div className="stack"><Skeleton w={160} h={14} /><Skeleton w="70%" h={84} /><Skeleton h={10} /></div>
+          <Skeleton h={240} />
         </div>
-        <div className="g3" style={{ marginTop: 56 }}><Skeleton h={120} /><Skeleton h={120} /><Skeleton h={120} /></div>
       </section>
-    </div>
+    </>
   );
 }

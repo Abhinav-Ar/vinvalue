@@ -127,7 +127,7 @@ export function AlertsPage() {
     return (
       <section className="wrap page">
         <h1 className="title">Alerts</h1>
-        <div style={{ marginTop: 24 }}>
+        <div style={{ marginTop: 'var(--s5)' }}>
           <ErrorNote error={error} />
         </div>
       </section>
@@ -139,7 +139,7 @@ export function AlertsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
         <div>
           <h1 className="title">Alerts</h1>
-          <p className="small" style={{ margin: '8px 0 0', minHeight: 20 }} aria-live="polite">
+          <p className="small" style={{ margin: 'var(--s2) 0 0', minHeight: 21 }} aria-live="polite">
             {data ? `${data.unreadCount} unread` : loading ? <Skeleton w={72} h={16} /> : null}
           </p>
         </div>
@@ -148,7 +148,7 @@ export function AlertsPage() {
         </button>
       </div>
 
-      <div className="segs" role="group" aria-label="Filter alerts" style={{ marginTop: 28, display: 'inline-flex', flexWrap: 'wrap' }}>
+      <div className="segs" role="group" aria-label="Filter alerts" style={{ marginTop: 'var(--s5)' }}>
         {FILTERS.map((f) => (
           <button
             key={f.value}
@@ -163,7 +163,7 @@ export function AlertsPage() {
         ))}
       </div>
 
-      <div className="g2" style={{ marginTop: 24, alignItems: 'start', gridTemplateColumns: 'minmax(0,7fr) minmax(0,5fr)' }}>
+      <div style={{ marginTop: 'var(--s6)', display: 'grid', gap: 'var(--s9)', maxWidth: 820 }}>
         <div>
           {actionError && (
             <p className="err" role="alert" style={{ marginBottom: 12 }}>
@@ -175,7 +175,7 @@ export function AlertsPage() {
           ) : !data ? (
             <div className="sheet" aria-busy="true">
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '28px 1fr auto', gap: 14, padding: '18px 20px', borderBottom: '1px solid var(--line)' }}>
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '28px 1fr auto', gap: 'var(--s3)', padding: 'var(--s5) 0', borderBottom: '1px solid var(--line)' }}>
                   <Skeleton w={20} h={20} />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <Skeleton w={80} h={12} />
@@ -214,7 +214,7 @@ export function AlertsPage() {
               {data.items.map((it) => (
                 <article
                   key={it.id}
-                  style={{ display: 'grid', gridTemplateColumns: '28px 1fr auto', gap: 14, alignItems: 'start', padding: '18px 20px', borderBottom: '1px solid var(--line)' }}
+                  style={{ display: 'grid', gridTemplateColumns: '28px 1fr auto', gap: 'var(--s3)', alignItems: 'start', padding: 'var(--s5) 0', borderBottom: '1px solid var(--line)' }}
                 >
                   {it.vehicle ? (
                     <span className={badgeClass.get(it.vehicle.id) ?? 'bdg b3'} title={it.vehicle.label} aria-hidden="true">
@@ -227,12 +227,12 @@ export function AlertsPage() {
                   )}
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <span className="label" style={{ fontSize: 11 }}>
+                      <span className="kicker">
                         {TYPE_LABEL[it.type]}
                         {it.vehicle && <span className="sr">, {it.vehicle.label}</span>}
                       </span>
                       {!it.read && (
-                        <span className="small" style={{ color: 'var(--ink)', fontWeight: 600 }}>
+                        <span className="kicker accent">
                           New
                         </span>
                       )}
@@ -243,18 +243,18 @@ export function AlertsPage() {
                         onClick={() => {
                           if (!it.read) void api(`/api/alerts/${it.id}/read`, { method: 'PATCH' }).then(alertsChanged, () => {});
                         }}
-                        style={{ display: 'block', marginTop: 6, fontSize: 18, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none' }}
+                        style={{ display: 'block', marginTop: 'var(--s1)', fontSize: 'var(--t-lg)', textDecoration: 'none' }}
                       >
                         {it.title}
                       </Link>
                     ) : (
-                      <p style={{ margin: '6px 0 0', fontSize: 18, fontWeight: 500 }}>{it.title}</p>
+                      <p style={{ margin: 'var(--s1) 0 0', fontSize: 'var(--t-lg)' }}>{it.title}</p>
                     )}
-                    <p className="small" style={{ margin: '6px 0 0', lineHeight: 1.5 }}>
+                    <p className="small" style={{ margin: 'var(--s1) 0 0' }}>
                       {it.body}
                     </p>
                     {it.type === 'recall' && !it.body.includes('may apply to your model year') && (
-                      <p className="small" style={{ margin: '6px 0 0', lineHeight: 1.5 }}>
+                      <p className="small" style={{ margin: 'var(--s1) 0 0' }}>
                         Recalls may apply to your model year without affecting your car. Check your VIN at nhtsa.gov/recalls.
                       </p>
                     )}
@@ -264,7 +264,7 @@ export function AlertsPage() {
                       {when(it.createdAt)}
                     </time>
                     {!it.read && (
-                      <button type="button" className="ghost" onClick={() => markRead(it.id)} style={{ fontSize: 13 }} aria-label={`Mark read: ${it.title}`}>
+                      <button type="button" className="textbtn" onClick={() => markRead(it.id)} aria-label={`Mark read: ${it.title}`}>
                         Mark read
                       </button>
                     )}
@@ -272,7 +272,7 @@ export function AlertsPage() {
                 </article>
               ))}
               {data.nextCursor && (
-                <div style={{ padding: '16px 20px' }}>
+                <div style={{ padding: 'var(--s4) 0' }}>
                   <button type="button" className="btn-o" onClick={loadMore} disabled={more}>
                     {more ? 'Loading older alerts' : 'Show older alerts'}
                   </button>

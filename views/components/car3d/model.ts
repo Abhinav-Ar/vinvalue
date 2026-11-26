@@ -5,9 +5,8 @@
  * AutoIQ adaptation removes marks, batches by assembly, compresses and restyles the finishes.
  */
 import * as THREE from 'three';
-import type { PartId } from './parts';
-
-export type { PartId } from './parts';
+/** Assemblies of the model, used to pick a finish per part. */
+export type PartId = 'body' | 'chassis' | 'glass' | 'frontWheel' | 'rearWheel' | 'engine' | 'drivetrain' | 'interior';
 export type CarLook = 'xray' | 'solid';
 export type CarColors = Record<'ink' | 'accent' | 'paper', THREE.Color>;
 type Phase = 'lift' | 'out' | 'down';

@@ -3,11 +3,11 @@ import { createElement } from 'react';
 import { expect, it } from 'vitest';
 import { VehiclePhoto } from '@/views/components/VehiclePhoto';
 const { renderToStaticMarkup } = createRequire(import.meta.url)('react-dom/server');
-it('renders the body-style line drawing and a quiet caption without a photo', () => {
+it('renders an accessible body-style line drawing without a visible fallback caption', () => {
   const html = renderToStaticMarkup(createElement(VehiclePhoto, { car: { year: 2019, make: 'Tesla', model: 'Model 3' } }));
   expect(html).toContain('<svg');
   expect(html).toContain('var(--fill)');
-  expect(html).toContain('<small>Line drawing · no photo found</small>');
+  expect(html).not.toContain('Line drawing · no photo found');
   expect(html).toContain('2019 Tesla Model 3, line drawing');
   expect(html).not.toMatch(/unavailable|error|temporarily/i);
 });
